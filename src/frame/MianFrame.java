@@ -250,7 +250,6 @@ public class MianFrame extends Application {
 
         table.getColumns().addAll( dateCol, value1Col, value2Col, value3Col,value10Col, value5Col, value6Col,value7Col, value8Col, value9Col);
 
-
     }
 
     /**
