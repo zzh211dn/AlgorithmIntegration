@@ -1,32 +1,32 @@
-package frame;
-
-/**
- * Created by zzh on 2016/12/7.
- */
+package algorithm;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.control.CheckBox;
 
 import java.time.LocalDate;
 
 /**
  * Data for primary table rows.
  */
-public  class Data {
+public class Data {
 
-    private final ObjectProperty<LocalDate> date;
-    private final SimpleDoubleProperty value1;
-    private final SimpleDoubleProperty value2;
-    private final SimpleDoubleProperty value3;
+    private ObjectProperty<LocalDate> date;
+    private SimpleDoubleProperty value1;
+    private  SimpleDoubleProperty value2;
+    private  SimpleDoubleProperty value3;
+    private CheckBox box = new CheckBox();
 
-    public Data( LocalDate date, double value1, double value2, double value3) {
+
+    public Data(LocalDate date, double value1, double value2, double value3) {
 
         this.date = new SimpleObjectProperty<LocalDate>( date);
 
         this.value1 = new SimpleDoubleProperty( value1);
         this.value2 = new SimpleDoubleProperty( value2);
         this.value3 = new SimpleDoubleProperty( value3);
+
     }
 
     public final ObjectProperty<LocalDate> dateProperty() {
