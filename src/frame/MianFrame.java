@@ -4,21 +4,34 @@ package frame;
  */
 
 
+
+
 import java.awt.*;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.smooth.gui.SmoothGUI;
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.Glow;
@@ -27,6 +40,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -37,21 +51,50 @@ import static javax.swing.SwingUtilities.updateComponentTreeUI;
 
 public class MianFrame extends Application {
 
+    private  TableView<Data> trianTable = new TableView<>();
+    private  TableView<Data> testTable = new TableView<>();
+    private double[][] TestSet;
+    private double[][] trainSet;
+    private  ObservableList<Data> data =
+            FXCollections.observableArrayList(
+                    new Data( LocalDate.of(2015, Month.JANUARY, 10), 10.0, 20.0, 30.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 11), 40.0, 50.0, 60.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 12), 10.0, 20.0, 30.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 13), 40.0, 50.0, 60.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 14), 10.0, 20.0, 30.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 15), 40.0, 50.0, 60.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 16), 10.0, 20.0, 30.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 17), 40.0, 50.0, 60.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 18), 10.0, 20.0, 30.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 19), 40.0, 50.0, 60.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 20), 10.0, 20.0, 30.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 21), 40.0, 50.0, 60.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 22), 10.0, 20.0, 30.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 23), 40.0, 50.0, 60.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 24), 10.0, 20.0, 30.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 25), 40.0, 50.0, 60.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 26), 10.0, 20.0, 30.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 27), 40.0, 50.0, 60.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 28), 10.0, 20.0, 30.0),
+                    new Data( LocalDate.of(2015, Month.JANUARY, 30), 10.0, 20.0, 30.0)
+
+            );
+
     public static void main(String[] args) {
-        System.setProperty( "javafx.userAgentStylesheetUrl", "CASPIAN" );
-        launch(args);
+        //System.setProperty( "javafx.userAgentStylesheetUrl", "CASPIAN" );
+        MianFrame.launch();
     }
+
 
     @Override
     public void start(Stage stage) {
 
         stage.setTitle("算法软件");
-        final Stage primaryStage = new Stage();
-        Scene scene = new Scene(new VBox(), 800, 600);
 
-        final SwingNode swingNode = new SwingNode();
-        StackPane pane = new StackPane();
+        Scene scene = new Scene(new VBox(), Toolkit.getDefaultToolkit().getScreenSize().getWidth(), Toolkit.getDefaultToolkit().getScreenSize().getHeight());
+
         MenuBar menuBar = new MenuBar();
+        VBox vbox = new VBox();
 
         // --- Menu File
         Menu menuFile = new Menu("文件");
@@ -106,6 +149,7 @@ public class MianFrame extends Application {
         //添加各菜单到菜单栏
 
         menuBar.getMenus().addAll(menuFile,menuPre,menuAnal,menuClassif,menuRegression,menuMaping);
+        menuBar.autosize();
 
         //Action事件监听
         menuItemPre.setOnAction((ActionEvent t) -> {
@@ -113,14 +157,159 @@ public class MianFrame extends Application {
         });
 
 
-        ((VBox) scene.getRoot()).getChildren().addAll(menuBar);
+       addTestSet.setOnAction((ActionEvent t) -> {
+           final Label trianlabel = new Label("测试集");
+           trianlabel.setFont(new Font("Arial", 20));
+
+           trianTable.setEditable(true);
+
+           TableColumn[] test = new TableColumn[100];
+           for(int i = 0;i<99;i++){
+               test[i] = new TableColumn(i+"");
+               trianTable.getColumns().add(test[i]);
+           }
+           TableColumn firstNameCol = new TableColumn("First Name");
+           TableColumn lastNameCol = new TableColumn("Last Name");
+           TableColumn emailCol = new TableColumn("Email");
+
+           //trianTable.getColumns().addAll(test);
+           vbox.setSpacing(5);
+           vbox.setPadding(new Insets(10, 10, 10, 10));
+           vbox.getChildren().add(trianlabel);
+           vbox.getChildren().add( trianTable);
+           vbox.setVisible(true);
+        });
+
+        addTrainSet.setOnAction((ActionEvent t) -> {
+            final Label testlabel = new Label("训练集");
+            testlabel.setFont(new Font("Arial", 20));
+
+            testTable.setEditable(true);
+
+            TableColumn firstNameCol = new TableColumn("First Name");
+            TableColumn lastNameCol = new TableColumn("Last Name");
+            TableColumn emailCol = new TableColumn("Email");
+
+            testTable.getColumns().addAll(firstNameCol, lastNameCol, emailCol);
+           // vbox.setSpacing(5);
+          //  vbox.setPadding(new Insets(10, 10, 10, 10));
+            vbox.getChildren().add(testlabel);
+            vbox.getChildren().add( testTable);
+            vbox.setVisible(true);
+        });
+
+
+        // setup table columns
+        setupTableColumns( testTable);
+        setupTableColumns( trianTable);
+
+        // fill tables with data
+        testTable.setItems(data);
+        trianTable.setItems(data);
+        testTable.setTableMenuButtonVisible(true);
+        trianTable.setTableMenuButtonVisible(true);
+
+        // create container
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll( trianTable,testTable);
+
+
+        ((VBox) scene.getRoot()).getChildren().addAll(vbox);
 
         stage.setScene(scene);
         stage.show();
+
+        ScrollBar table1HorizontalScrollBar = findScrollBar( trianTable, Orientation.HORIZONTAL);
+        ScrollBar table1VerticalScrollBar = findScrollBar( trianTable, Orientation.VERTICAL);
+
+        // this doesn't work:
+        //table1HorizontalScrollBar.setVisible(true);
+       // table1VerticalScrollBar.setVisible(true);
+
+        ScrollBar table2HorizontalScrollBar = findScrollBar( testTable, Orientation.HORIZONTAL);
+        ScrollBar table2VerticalScrollBar = findScrollBar( testTable, Orientation.VERTICAL);
+
+        // this doesn't work:
+      //  table2HorizontalScrollBar.setVisible(true);
+      //  table2VerticalScrollBar.setVisible(true);
+
+        // enforce layout to see if anything has an effect
+     //   VirtualFlow flow1 = (VirtualFlow)  trianTable.lookup(".virtual-flow");
+    //    flow1.requestLayout();
+
+     //   VirtualFlow flow2 = (VirtualFlow) testTable.lookup(".virtual-flow");
+      //  flow2.requestLayout();
     }
 
+    private ScrollBar findScrollBar(TableView<?> table, Orientation orientation) {
+
+        // this would be the preferred solution, but it doesn't work. it always gives back the vertical scrollbar
+        //      return (ScrollBar) table.lookup(".scroll-bar:horizontal");
+        //
+        // => we have to search all scrollbars and return the one with the proper orientation
+
+        Set<Node> set = table.lookupAll(".scroll-bar");
+        for( Node node: set) {
+            ScrollBar bar = (ScrollBar) node;
+            if( bar.getOrientation() == orientation) {
+                return bar;
+            }
+        }
+
+        return null;
+
+    }
+
+    /**
+     * Primary table column mapping.
+     */
+    private void setupTableColumns( TableView table) {
 
 
+        TableColumn<test.Data, LocalDate> dateCol = new TableColumn<>("Date");
+        dateCol.setPrefWidth(120);
+        dateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
 
+        TableColumn<test.Data, Double> value1Col = new TableColumn<>("Value 1");
+        value1Col.setPrefWidth(90);
+        value1Col.setCellValueFactory(new PropertyValueFactory<>("value1"));
+
+        TableColumn<test.Data, Double> value2Col = new TableColumn<>("Value 2");
+        value2Col.setPrefWidth(90);
+        value2Col.setCellValueFactory(new PropertyValueFactory<>("value2"));
+
+
+        TableColumn<test.Data, Double> value3Col = new TableColumn<>("Value 3");
+        value3Col.setPrefWidth(90);
+        value3Col.setCellValueFactory(new PropertyValueFactory<>("value3"));
+
+        TableColumn<test.Data, Double> value4Col = new TableColumn<>("Value 4");
+        value4Col.setPrefWidth(90);
+        value4Col.setCellValueFactory(new PropertyValueFactory<>("value4"));
+
+        TableColumn<test.Data, Double> value5Col = new TableColumn<>("Value 5");
+        value5Col.setPrefWidth(90);
+        value5Col.setCellValueFactory(new PropertyValueFactory<>("value5"));
+
+        TableColumn<test.Data, Double> value6Col = new TableColumn<>("Value 6");
+        value6Col.setPrefWidth(90);
+        value6Col.setCellValueFactory(new PropertyValueFactory<>("value6"));
+
+        TableColumn<test.Data, Double> value7Col = new TableColumn<>("Value 7");
+        value7Col.setPrefWidth(90);
+        value7Col.setCellValueFactory(new PropertyValueFactory<>("value7"));
+
+        TableColumn<test.Data, Double> value8Col = new TableColumn<>("Value 8");
+        value8Col.setPrefWidth(90);
+        value8Col.setCellValueFactory(new PropertyValueFactory<>("value8"));
+
+        TableColumn<test.Data, Double> value9Col = new TableColumn<>("Value 9");
+        value9Col.setPrefWidth(90);
+        value9Col.setCellValueFactory(new PropertyValueFactory<>("value9"));
+
+        table.getColumns().addAll( dateCol, value1Col, value2Col, value3Col,value4Col, value5Col, value6Col,value7Col, value8Col, value9Col);
+
+
+    }
 }
 
