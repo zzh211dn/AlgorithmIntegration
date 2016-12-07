@@ -26,20 +26,26 @@ public class MianFrame extends Application {
     @Override
     public void start(Stage stage) {
         stage.setTitle("算法软件");
-        Scene scene = new Scene(new VBox(), 400, 350);
+        Scene scene = new Scene(new VBox(), 800, 600);
 
         MenuBar menuBar = new MenuBar();
 
         // --- Menu File
-        Menu menuFile = new Menu("File");
+        Menu menuFile = new Menu("文件");
 
         // --- Menu Edit
-        Menu menuEdit = new Menu("Edit");
+        Menu menuEdit = new Menu("数据预处理");
 
         // --- Menu View
-        Menu menuView = new Menu("View");
+        Menu menuView = new Menu("分类算法");
 
-        menuBar.getMenus().addAll(menuFile, menuEdit, menuView);
+        // --- Menu Classification
+        Menu menuClassif = new Menu("分类算法");
+
+        // --- Menu Regression
+        Menu menuRegression = new Menu("回归算法");
+
+        menuBar.getMenus().addAll(menuFile, menuEdit, menuView, menuClassif,menuRegression);
 
 
         ((VBox) scene.getRoot()).getChildren().addAll(menuBar);
