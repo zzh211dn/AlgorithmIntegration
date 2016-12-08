@@ -39,8 +39,9 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.orsoncharts.Chart3DPanel;
+
 import com.orsoncharts.Chart3D;
+import com.orsoncharts.Chart3DPanel;
 import com.orsoncharts.data.xyz.XYZDataset;
 import com.orsoncharts.demo.swing.DemoPanel;
 import com.orsoncharts.demo.swing.ExitOnClose;
