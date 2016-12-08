@@ -1,4 +1,4 @@
-package algorithm;
+package model;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -14,24 +14,21 @@ import java.util.HashMap;
  */
 public class Data {
 
-    private ObjectProperty<Double[][]> data;
+    private SimpleObjectProperty<String> data;
     private ObjectProperty<CheckBox> check;
 
-    public Data(Double[][] data,CheckBox check) {
-
-
-        this.data = new SimpleObjectProperty<Double[][]>(data);
+    public Data(String data,CheckBox check) {
+        this.data = new SimpleObjectProperty<String>(data);
         this.check = new SimpleObjectProperty<CheckBox>(check);
-
     }
 
-    public final ObjectProperty<Double[][]> dataProperty() {
+    public final ObjectProperty<String> dataProperty() {
         return this.data;
     }
-    public final Double[][] getData() {
+    public final String getData() {
         return this.dataProperty().get();
     }
-    public final void setData(final Double[][] data) {
+    public final void setData(String data) {
         this.dataProperty().set(data);
     }
 
@@ -42,7 +39,7 @@ public class Data {
     public final CheckBox getcheck() {
         return this.checkProperty().get();
     }
-    public final void setcheck(final CheckBox check) {
+    public final void setcheck(CheckBox check) {
         this.checkProperty().set(check);
     }
 
