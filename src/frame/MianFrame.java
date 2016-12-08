@@ -33,33 +33,41 @@ public class MianFrame extends Application {
     private TableView<algorithm.Data> trianTable = new TableView<>(); // table with scrollbars
     private TableView<algorithm.Data> testTable = new TableView<>(); // table without scrollbars
 
-    private final ObservableList<algorithm.Data> data =
-            FXCollections.observableArrayList(
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 10), 10.0, 20.0, 30.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 11), 40.0, 50.0, 60.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 12), 10.0, 20.0, 30.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 13), 40.0, 50.0, 60.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 14), 10.0, 20.0, 30.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 15), 40.0, 50.0, 60.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 16), 10.0, 20.0, 30.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 17), 40.0, 50.0, 60.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 18), 10.0, 20.0, 30.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 19), 40.0, 50.0, 60.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 20), 10.0, 20.0, 30.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 21), 40.0, 50.0, 60.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 22), 10.0, 20.0, 30.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 23), 40.0, 50.0, 60.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 24), 10.0, 20.0, 30.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 25), 40.0, 50.0, 60.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 26), 10.0, 20.0, 30.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 27), 40.0, 50.0, 60.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 28), 10.0, 20.0, 30.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 29), 40.0, 50.0, 60.0),
-                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 30), 10.0, 20.0, 30.0)
 
+    private final ObservableList<algorithm.Data> data1 =
+            FXCollections.observableArrayList(
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 10), 10.0, 20.0, 30.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 11), 40.0, 50.0, 60.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 12), 10.0, 20.0, 30.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 13), 40.0, 50.0, 60.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 14), 10.0, 20.0, 30.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 15), 40.0, 50.0, 60.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 16), 10.0, 20.0, 30.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 17), 40.0, 50.0, 60.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 18), 10.0, 20.0, 30.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 19), 40.0, 50.0, 60.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 20), 10.0, 20.0, 30.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 21), 40.0, 50.0, 60.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 22), 10.0, 20.0, 30.0,new CheckBox())
             );
 
 
+    private final ObservableList<algorithm.Data> data2 =
+            FXCollections.observableArrayList(
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 10), 10.0, 20.0, 30.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 11), 40.0, 50.0, 60.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 12), 10.0, 20.0, 30.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 13), 40.0, 50.0, 60.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 14), 10.0, 20.0, 30.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 15), 40.0, 50.0, 60.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 16), 10.0, 20.0, 30.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 17), 40.0, 50.0, 60.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 18), 10.0, 20.0, 30.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 19), 40.0, 50.0, 60.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 20), 10.0, 20.0, 30.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 21), 40.0, 50.0, 60.0,new CheckBox()),
+                    new algorithm.Data( LocalDate.of(2015, Month.JANUARY, 22), 10.0, 20.0, 30.0,new CheckBox())
+            );
 
     public static void main(String[] args) {
         launch(args);
@@ -141,12 +149,12 @@ public class MianFrame extends Application {
 
 
         addTestSet.setOnAction((ActionEvent t) -> {
-            testTable.setItems(data);
+            testTable.setItems(data1);
             vbox.setVisible(true);
         });
 
         addTrainSet.setOnAction((ActionEvent t) -> {
-            trianTable.setItems(data);
+            trianTable.setItems(data2);
             vbox.setVisible(true);
         });
 
@@ -154,8 +162,8 @@ public class MianFrame extends Application {
         setupTableColumns(trianTable);
         setupTableColumns(testTable);
 
-        trianTable.setTableMenuButtonVisible(true);
-        testTable.setTableMenuButtonVisible(true);
+      /*  trianTable.setTableMenuButtonVisible(true);
+        testTable.setTableMenuButtonVisible(true);*/
 
         // create container
         final Label trianLabel = new Label("\r\n"+"  训练集");
@@ -184,7 +192,7 @@ public class MianFrame extends Application {
         ScrollBar table2HorizontalScrollBar = findScrollBar(testTable, Orientation.HORIZONTAL);
         ScrollBar table2VerticalScrollBar = findScrollBar(testTable, Orientation.VERTICAL);
 
-        // this doesn't work:
+      /*  // this doesn't work:
         table2HorizontalScrollBar.setVisible(true);
         table2VerticalScrollBar.setVisible(true);
 
@@ -193,7 +201,7 @@ public class MianFrame extends Application {
         flow1.requestLayout();
 
         VirtualFlow flow2 = (VirtualFlow) testTable.lookup(".virtual-flow");
-        flow2.requestLayout();
+        flow2.requestLayout();*/
 
     }
 
@@ -220,35 +228,12 @@ public class MianFrame extends Application {
         value3Col.setPrefWidth(90);
         value3Col.setCellValueFactory(new PropertyValueFactory<>("value3"));
 
-        TableColumn<algorithm.Data, Double> value4Col = new TableColumn<>("Value 4");
+        TableColumn<algorithm.Data,CheckBox> value4Col = new TableColumn<>("删除");
         value4Col.setPrefWidth(90);
-        value4Col.setCellValueFactory(new PropertyValueFactory<>("value4"));
+        value4Col.setCellValueFactory(new PropertyValueFactory<>("check"));
 
-        TableColumn<algorithm.Data, Double> value5Col = new TableColumn<>("Value 5");
-        value5Col.setPrefWidth(90);
-        value5Col.setCellValueFactory(new PropertyValueFactory<>("value5"));
 
-        TableColumn<algorithm.Data, Double> value6Col = new TableColumn<>("Value 6");
-        value6Col.setPrefWidth(90);
-        value6Col.setCellValueFactory(new PropertyValueFactory<>("value6"));
-
-        TableColumn<algorithm.Data, Double> value7Col = new TableColumn<>("Value 7");
-        value7Col.setPrefWidth(90);
-        value7Col.setCellValueFactory(new PropertyValueFactory<>("value7"));
-
-        TableColumn<algorithm.Data, Double> value8Col = new TableColumn<>("Value 8");
-        value8Col.setPrefWidth(90);
-        value8Col.setCellValueFactory(new PropertyValueFactory<>("value8"));
-
-        TableColumn<algorithm.Data, Double> value9Col = new TableColumn<>("Value 9");
-        value9Col.setPrefWidth(90);
-        value9Col.setCellValueFactory(new PropertyValueFactory<>("value9"));
-
-        TableColumn<algorithm.Data,CheckBox> value10Col = new TableColumn<>("box");
-        value10Col.setPrefWidth(90);
-        value10Col.setCellValueFactory(new PropertyValueFactory<>("value9"));
-
-        table.getColumns().addAll( dateCol, value1Col, value2Col, value3Col,value10Col, value5Col, value6Col,value7Col, value8Col, value9Col);
+        table.getColumns().addAll( dateCol, value1Col, value2Col, value3Col,value4Col);
 
     }
 
