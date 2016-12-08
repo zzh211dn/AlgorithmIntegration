@@ -29,9 +29,10 @@ import javafx.stage.Stage;
 import com.sun.javafx.scene.control.skin.VirtualFlow;
 
 public class MianFrame extends Application {
-
-    private TableView<algorithm.Data> trianTable = new TableView<>(); // table with scrollbars
-    private TableView<algorithm.Data> testTable = new TableView<>(); // table without scrollbars
+    // table with scrollbars
+    private TableView<algorithm.Data> trianTable = new TableView<>();
+    // table without scrollbars
+    private TableView<algorithm.Data> testTable = new TableView<>();
 
 
     private final ObservableList<algorithm.Data> data1 =

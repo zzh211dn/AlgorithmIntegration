@@ -7,19 +7,16 @@ import javafx.scene.control.CheckBox;
 
 import java.time.LocalDate;
 
-/**
- * Data for primary table rows.
+/**表格数据类
+ * Created by zzh on 2016/12/7.
  */
 public class Data {
 
-    private ObjectProperty<LocalDate> date;
-    private SimpleDoubleProperty value1;
-    private  SimpleDoubleProperty value2;
-    private  SimpleDoubleProperty value3;
+    private  ObjectProperty<Double[]> data;
     private ObjectProperty<CheckBox> check;
 
 
-    public Data(LocalDate date, double value1, double value2, double value3,CheckBox check) {
+    public Data(Double[] date,CheckBox check) {
 
         this.date = new SimpleObjectProperty<LocalDate>( date);
 
@@ -30,6 +27,10 @@ public class Data {
 
     }
 
+    /**
+     * 取数方法 系统调用
+     * @return
+     */
     public final ObjectProperty<LocalDate> dateProperty() {
         return this.date;
     }
