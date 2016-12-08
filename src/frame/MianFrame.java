@@ -266,4 +266,5 @@ class Table_Model extends AbstractTableModel {
         return getValueAt(0, col).getClass();
     }
 
+
 }
