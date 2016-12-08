@@ -5,11 +5,11 @@ package frame;
 
 import java.awt.*;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.Set;
+import java.util.Vector;
 
-import algorithm.Data;
-import javafx.scene.text.Font;
+import javafx.embed.swing.SwingNode;
+import model.Data;
 
 import com.smooth.gui.SmoothGUI;
 import javafx.application.Application;
@@ -17,61 +17,40 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.*;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import com.sun.javafx.scene.control.skin.VirtualFlow;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
 
 public class MianFrame extends Application {
     // table with scrollbars
     private TableView<Data> trianTable = new TableView<>();
     // table without scrollbars
     private TableView<Data> testTable = new TableView<>();
-    private Double[][] data = new Double[][]{
-            {1.1,1.1},{2.2,2.2},{3.3,3.3},{4.4,4.4}
-    };
+    private String data ="1.0";
+    private JTable jtable;
+    private Table_Model model = null;
+    private JScrollPane s_pan = null;
+
 
     private final ObservableList<Data> data1 =
             FXCollections.observableArrayList(
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
                     new Data(data,new CheckBox())
+
             );
 
 
     private final ObservableList<Data> data2 =
             FXCollections.observableArrayList(
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
-                    new Data(data,new CheckBox()),
                     new Data(data,new CheckBox())
+
             );
 
     public static void main(String[] args) {
@@ -163,9 +142,8 @@ public class MianFrame extends Application {
             vbox.setVisible(true);
         });
 
-        // setup table columns
-        setupTableColumns(trianTable);
-        setupTableColumns(testTable);
+
+
 
       /*  trianTable.setTableMenuButtonVisible(true);
         testTable.setTableMenuButtonVisible(true);*/
@@ -180,90 +158,113 @@ public class MianFrame extends Application {
         vbox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
         trianTable.setMaxSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),Toolkit.getDefaultToolkit().getScreenSize().getHeight()/2);
         testTable.setMaxSize(Toolkit.getDefaultToolkit().getScreenSize().getWidth(),Toolkit.getDefaultToolkit().getScreenSize().getHeight()/2);
-        vBox.getChildren().addAll(trianLabel, trianTable,testLabel, testTable);
+        model = new Table_Model(20);
+        jtable = new JTable(model);
+
+
+
+        model.addRow("翔", true, "30");
+        model.addRow("逗逗", false, "21");
+        model.addRow("我", true, "24");
+
+        s_pan = new JScrollPane(jtable);
+
+        final SwingNode swingNode = new SwingNode();
+        swingNode.setContent(s_pan);
+
+        vBox.getChildren().addAll(trianLabel, swingNode);
 
         ((VBox) scene.getRoot()).getChildren().addAll(menuBar,vBox);
 
         stage.setScene(scene);
         stage.show();
 
-        ScrollBar table1HorizontalScrollBar = findScrollBar(trianTable, Orientation.HORIZONTAL);
-        ScrollBar table1VerticalScrollBar = findScrollBar(trianTable, Orientation.VERTICAL);
+    }
 
-        // this doesn't work:
-        table1HorizontalScrollBar.setVisible(true);
-        table1VerticalScrollBar.setVisible(true);
 
-        ScrollBar table2HorizontalScrollBar = findScrollBar(testTable, Orientation.HORIZONTAL);
-        ScrollBar table2VerticalScrollBar = findScrollBar(testTable, Orientation.VERTICAL);
 
-      /*  // this doesn't work:
-        table2HorizontalScrollBar.setVisible(true);
-        table2VerticalScrollBar.setVisible(true);
 
-        // enforce layout to see if anything has an effect
-        VirtualFlow flow1 = (VirtualFlow) trianTable.lookup(".virtual-flow");
-        flow1.requestLayout();
 
-        VirtualFlow flow2 = (VirtualFlow) testTable.lookup(".virtual-flow");
-        flow2.requestLayout();*/
 
+
+
+}
+class Table_Model extends AbstractTableModel {
+    private static final long serialVersionUID = -3094977414157589758L;
+
+    private Vector content = null;
+
+    private String[] title_name = { "姓名", "性别", "年龄" };
+
+    public Table_Model() {
+        content = new Vector();
+    }
+
+    public Table_Model(int count) {
+        content = new Vector(count);
     }
 
     /**
-     * Primary table column mapping.
+     * 加入一空行
+     * @param row 行号
      */
-    private void setupTableColumns( TableView table) {
-
-
-        TableColumn<Data, LocalDate> dateCol = new TableColumn<>("Date");
-        dateCol.setPrefWidth(120);
-        dateCol.setCellValueFactory(new PropertyValueFactory<>("data"));
-
-        TableColumn<Data, Double> value1Col = new TableColumn<>("Value 1");
-        value1Col.setPrefWidth(90);
-        value1Col.setCellValueFactory(new PropertyValueFactory<>("value1"));
-
-        TableColumn<Data, Double> value2Col = new TableColumn<>("Value 2");
-        value2Col.setPrefWidth(90);
-        value2Col.setCellValueFactory(new PropertyValueFactory<>("value2"));
-
-
-        TableColumn<Data, Double> value3Col = new TableColumn<>("Value 3");
-        value3Col.setPrefWidth(90);
-        value3Col.setCellValueFactory(new PropertyValueFactory<>("value3"));
-
-        TableColumn<Data,CheckBox> value4Col = new TableColumn<>("删除");
-        value4Col.setPrefWidth(90);
-        value4Col.setCellValueFactory(new PropertyValueFactory<>("check"));
-
-
-        table.getColumns().addAll( dateCol, value1Col, value2Col, value3Col,value4Col);
-
+    public void addRow(int row) {
+        Vector v = new Vector(3);
+        v.add(0, null);
+        v.add(1, null);
+        v.add(2, null);
+        content.add(row, v);
     }
 
     /**
-     * Find the horizontal scrollbar of the given table.
-     * @param table
-     * @return
+     * 加入一行内容
      */
-    private ScrollBar findScrollBar(TableView<?> table, Orientation orientation) {
+    public void addRow(String name, boolean bool, String age) {
+        Vector v = new Vector(3);
+        v.add(0, name);
+        v.add(1, bool); // JCheckBox是Boolean的默认显示组件，这里仅仅为了看效果，其实用JComboBox显示***更合适
 
-        // this would be the preferred solution, but it doesn't work. it always gives back the vertical scrollbar
-        //      return (ScrollBar) table.lookup(".scroll-bar:horizontal");
-        //      
-        // => we have to search all scrollbars and return the one with the proper orientation
+        v.add(2, age); // 本列在前面已经设置成了JComboBox组件，这里随便输入什么字符串都没关系
 
-        Set<Node> set = table.lookupAll(".scroll-bar");
-        for( Node node: set) {
-            ScrollBar bar = (ScrollBar) node;
-            if( bar.getOrientation() == orientation) {
-                return bar;
-            }
+        content.add(v);
+    }
+
+    public void removeRow(int row) {
+        content.remove(row);
+    }
+
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        if(rowIndex == 2) {
+            return false;
         }
-
-        return null;
-
+        return true;
     }
+
+    public void setValueAt(Object value, int row, int col) {
+        ((Vector) content.get(row)).remove(col);
+        ((Vector) content.get(row)).add(col, value);
+        this.fireTableCellUpdated(row, col);
+    }
+
+    public String getColumnName(int col) {
+        return title_name[col];
+    }
+
+    public int getColumnCount() {
+        return title_name.length;
+    }
+
+    public int getRowCount() {
+        return content.size();
+    }
+
+    public Object getValueAt(int row, int col) {
+        return ((Vector) content.get(row)).get(col);
+    }
+
+    public Class getColumnClass(int col) {
+        return getValueAt(0, col).getClass();
+    }
+
 
 }
