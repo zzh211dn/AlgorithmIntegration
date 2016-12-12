@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -21,11 +22,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public class MianFrame extends Application {
@@ -37,10 +37,17 @@ public class MianFrame extends Application {
     private SwingNode trianSwingNode, testSwingNode;
     VBox trianBox = new VBox();
     VBox testBox = new VBox();
+    HBox trianLabelBox;
+    HBox testLabelBox;
     Label trianLabel, testLabel;
-    String[] trianColumnNames,testColumnNames;
-    String[][] trianTableVales,testTableVales;
-    private HashMap<String,List<String[]>> fileData =  new HashMap<>();
+    String[] trianColumnNames, testColumnNames;
+    String[][] trianTableVales, testTableVales;
+    private HashMap<String, List<String[]>> trianFileData;
+    private HashMap<String, List<String[]>> testFileData;
+    FileAction fileAction = new FileAction();
+    Button trianAddButton = new Button("添加");
+    Button testAddButton = new Button("添加");
+    static HashMap<String, String> dataDir;
 
     public static void main(String[] args) {
         launch(args);
@@ -101,12 +108,8 @@ public class MianFrame extends Application {
         menuBar.autosize();
 
         // create container
-        trianLabel = new Label("\r\n" + "  训练集");
-        trianLabel.setFont(new javafx.scene.text.Font("Arial", 20));
-        testLabel = new Label("\r\n" + "   测试集");
-        testLabel.setFont(new javafx.scene.text.Font("Arial", 20));
-        vbox.setSpacing(5);
-        vbox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+
+
         vbox.setSpacing(5);
         vbox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
 
@@ -122,23 +125,20 @@ public class MianFrame extends Application {
          * 打开训练集
          */
         addTrainSet.setOnAction((ActionEvent t) -> {
-            final FileChooser fileChooser = new FileChooser();
-            configureFileChooser(fileChooser);
+            dataDir = new HashMap<>();
+            String dirName = "";
+            FileChooser fileChooser = new FileChooser();
+            configureOpenFileChooser(fileChooser);
             java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
-            for(int i=0;i<fileList.size();i++){
-                try {
-                    readData(fileList.get(i));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
 
-            HashMap trianData = getFileData();
-            trianTableVales = map2Array(trianData);
-            trianColumnNames= new String[trianTableVales[0].length];
-            for(int i=0;i<trianTableVales[0].length;i++){
-                trianColumnNames[i]=i+"";
-            }
+            if (fileList != null)
+                dirName = fileList.get(0).getParentFile().getAbsolutePath();
+            initLabel(dirName);
+            trianFileData = new HashMap<>();
+            initChooserData(fileList, trianFileData, dirName);
+
+            trianTableVales = map2Array(trianFileData, 1, dirName);
+            trianColumnNames = initColumnNames(trianFileData);
             initTable(trianColumnNames, trianTableVales, 1);
             vbox.setVisible(true);
         });
@@ -148,32 +148,69 @@ public class MianFrame extends Application {
          */
         addTestSet.setOnAction((ActionEvent t) -> {
 
-            final FileChooser fileChooser = new FileChooser();
-            configureFileChooser(fileChooser);
+            FileChooser fileChooser = new FileChooser();
+            configureOpenFileChooser(fileChooser);
             java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
-            for(int i=0;i<fileList.size();i++){
-                try {
-                    readData(fileList.get(i));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            testFileData = new HashMap<>();
+            initChooserData(fileList, testFileData, "");
 
-            HashMap testData = getFileData();
-            testTableVales = map2Array(testData);
-            testColumnNames= new String[testTableVales[0].length];
-            for(int i=0;i<testTableVales[0].length;i++){
-                testColumnNames[i]=i+"";
-            }
+            testTableVales = map2Array(testFileData, 2, "");
+            testColumnNames = initColumnNames(testFileData);
             initTable(testColumnNames, testTableVales, 2);
-           /* for(int i=0;i<testTableVales[0].length;i++){
-                TableColumn tc = testTable.getColumn(i);
-                tc.setWidth(50);
-                tc.setMinWidth(50);
-            }*/
             vbox.setVisible(true);
         });
 
+        /**
+         * 添加训练集
+         */
+        trianAddButton.setOnAction(event -> {
+            String dirName = "";
+            FileChooser fileChooser = new FileChooser();
+            configureOpenFileChooser(fileChooser);
+            java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
+            if (fileList != null)
+                dirName = fileList.get(0).getParentFile().getAbsolutePath();
+            initLabel(dirName);
+            if (trianFileData == null)
+                trianFileData = new HashMap<>();
+            initChooserData(fileList, trianFileData, dirName);
+            trianTableVales = map2Array(trianFileData, 1, dirName);
+            trianColumnNames = initColumnNames(trianFileData);
+            initTable(trianColumnNames, trianTableVales, 1);
+        });
+
+        /**
+         * 添加测试集
+         */
+        testAddButton.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+            configureOpenFileChooser(fileChooser);
+            java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
+            String dirName = fileChooser.getInitialDirectory().getAbsolutePath();
+            initLabel(dirName);
+            if (testFileData == null)
+                testFileData = new HashMap<>();
+            initChooserData(fileList, testFileData, "");
+            testTableVales = map2Array(testFileData, 2, dirName);
+            testColumnNames = initColumnNames(testFileData);
+            initTable(testColumnNames, testTableVales, 2);
+        });
+
+        /**
+         * 保存测试集
+         */
+        saveTrainSet.setOnAction(event -> {
+            FileChooser fileSaveChooser = new FileChooser();
+
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+                    "zyz 文件 (*.zyz)", "*.zyz");
+            fileSaveChooser.getExtensionFilters().add(extFilter);
+
+            File file = fileSaveChooser.showSaveDialog(stage);
+            if (file != null) {
+
+            }
+        });
 
         ((VBox) scene.getRoot()).getChildren().addAll(menuBar, trianBox, testBox);
         stage.setScene(scene);
@@ -181,108 +218,213 @@ public class MianFrame extends Application {
 
     }
 
+
     /**
      * 表格初始化方法
      *
      * @param columnNames
      * @param tableVales
-     * @param type
+     * @param type        1为训练集 2为测试集
      */
     public void initTable(String[] columnNames, String[][] tableVales, int type) {
-        TableColumn col;
+
+
         if (type == 1) {
+            if (trianBox.getChildren().size() != 0)
+                trianBox.getChildren().clear();
+            trianLabelBox = new HBox();
+            trianLabel = new Label("  训练集   ");
+            trianLabel.setFont(new javafx.scene.text.Font("Arial", 20));
+            trianLabelBox.getChildren().addAll(trianLabel, trianAddButton);
+            trianLabelBox.setSpacing(5);
+            trianLabelBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
 
             trianTableModel = new DefaultTableModel(tableVales, columnNames);
             trianTable = new JTable(trianTableModel);
             trianTable.setRowHeight(50);
             trianTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-            for (int i = 0; i < trianTable.getColumnCount(); i++)
-            {
-                col = trianTable.getColumn(i+"");
-                col.setMinWidth(50);
-                col.setMaxWidth(50);
-                col.setPreferredWidth(50);
 
-            }
+            initColumn(trianTable);
             trianScroll = new JScrollPane(trianTable);
             trianScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             trianSwingNode = new SwingNode();
             trianSwingNode.setContent(trianScroll);
-            trianBox.getChildren().addAll(trianLabel, trianSwingNode);
+            trianBox.getChildren().addAll(trianLabelBox, trianSwingNode);
         } else {
+            if (testBox.getChildren().size() != 0)
+                testBox.getChildren().clear();
+            testLabelBox = new HBox();
+            testLabel = new Label("   测试集   ");
+            testLabel.setFont(new javafx.scene.text.Font("Arial", 20));
+            testLabelBox.getChildren().addAll(testLabel, testAddButton);
+            testLabelBox.setSpacing(5);
+            testLabelBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
             testTableModel = new DefaultTableModel(tableVales, columnNames);
             testTable = new JTable(testTableModel);
             testTable.setRowHeight(50);
             testTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-            for (int i = 0; i < testTable.getColumnCount(); i++)
-            {
-                col = testTable.getColumn(i+"");
-                col.setMinWidth(50);
-                col.setPreferredWidth(50);
-                col.setMaxWidth(50);
-            }
+            initColumn(testTable);
             testScroll = new JScrollPane();
             testScroll.setViewportView(testTable);
             testScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             testSwingNode = new SwingNode();
 
             testSwingNode.setContent(testScroll);
-            testBox.getChildren().addAll(testLabel, testSwingNode);
+            testBox.getChildren().addAll(testLabelBox, testSwingNode);
         }
     }
 
-    private static void configureFileChooser(
+    /**
+     * 初始化文件打开选择器
+     *
+     * @param fileChooser
+     */
+    private static void configureOpenFileChooser(
             final FileChooser fileChooser) {
         fileChooser.setTitle("文件选择");
         fileChooser.setInitialDirectory(
                 new File(System.getProperty("user.home"))
         );
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("csv格式", "*.csv"),
-                new FileChooser.ExtensionFilter("txt格式", "*.txt")
+                new FileChooser.ExtensionFilter("zyz文件,","*.zyz"),
+                new FileChooser.ExtensionFilter("csv文件", "*.csv"),
+                new FileChooser.ExtensionFilter("txt文件", "*.txt")
         );
     }
 
-    private void readData(File file) throws IOException {
-        BufferedReader read = new BufferedReader(new FileReader(file));
-        read.read();
-        String line;
-        List<String[]> dataList = new ArrayList<>();
-        while((line=read.readLine())!=null){
-            String[] subLine = line.split(",");
-            dataList.add(subLine);
-        }
-        fileData.put(file.getName(),dataList);
-    }
 
-    public HashMap<String, List<String[]>> getFileData() {
-        return fileData;
-    }
-
-    private String[][] map2Array(HashMap<String,List<String[]>> fileData){
+    /**
+     * Map数据转为二维数组数据
+     *
+     * @param fileData
+     * @param type     1为训练集数据，2为测试集数据
+     * @return 二维表格数据
+     */
+    private String[][] map2Array(HashMap<String, List<String[]>> fileData, int type, String dirName) {
         int mapLength = fileData.size();
         Iterator iterator = fileData.values().iterator();
         List<String[]> sigData = (List<String[]>) iterator.next();
         int fileLength = sigData.size();
-        String[][] tableData  = new String[mapLength][fileLength+1];
+
+        String[][] tableData = new String[mapLength][fileLength + 4];
         Iterator ite = fileData.values().iterator();
         // tableData = new String[fileLength][dataLength];
-        int i=0;
-
-        while (ite.hasNext()){
+        int i = 0;
+        while (ite.hasNext()) {
             List<String[]> list = (List<String[]>) ite.next();
             Iterator listIte = list.iterator();
-            int j=0;
-            while (listIte.hasNext()){
-                String[] data = (String[]) listIte.next();
-                tableData[i][j] = data[1];
-                j++;
+            listIte.next();
+            for (int j = 4; j <= fileLength + 3; j++) {
+
+                if (listIte.hasNext()) {
+                    String[] data = (String[]) listIte.next();
+                    tableData[i][j] = data[1];
+
+                }
             }
             i++;
         }
+        Iterator iteName = fileData.keySet().iterator();
+        int n = 0;
+        while (iteName.hasNext()) {
+            tableData[n][0] = n + 1 + "";
+            tableData[n][1] = (String) iteName.next();
+            List<String[]> name = (List<String[]>) fileData.get(tableData[n][1]);
 
+            String[] fileName = name.iterator().next();
+            String label = dataDir.get(fileName[1]);
+            tableData[n][2] = label;
+            n++;
+        }
 
         return tableData;
     }
+
+    /**
+     * 从fileList读取数据
+     *
+     * @param fileList
+     */
+    private void initChooserData(List<File> fileList, HashMap<String, List<String[]>> fileData, String dirName) {
+        if (fileList != null)
+            for (int i = 0; i < fileList.size(); i++) {
+                try {
+                    fileAction.readData(fileList.get(i), fileData, dirName);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+    }
+
+    /**
+     * 生成标签数据
+     *
+     * @param dirName
+     */
+    private void initLabel(String dirName) {
+        if (!dataDir.containsKey(dirName)) {
+            dataDir.put(dirName, dataDir.size() + 1 + "");
+        }
+    }
+
+    /**
+     * 初始化列名
+     *
+     * @param fileData
+     * @return
+     */
+    private String[] initColumnNames(HashMap<String, List<String[]>> fileData) {
+        Iterator iterator = fileData.values().iterator();
+        List<String[]> sigData = (List<String[]>) iterator.next();
+        int fileLength = sigData.size();
+        String[] initColumnName = new String[fileLength + 4];
+        initColumnName[0] = "序号";
+        initColumnName[1] = "文件名";
+        initColumnName[2] = "实际值";
+        initColumnName[3] = "目标值";
+        for (int i = 4; i < fileLength + 4; i++) {
+            initColumnName[i] = i - 3 + "";
+        }
+        return initColumnName;
+    }
+
+    /**
+     * 初始化列属性
+     *
+     * @param table
+     */
+    private void initColumn(JTable table) {
+        TableColumn col;
+        TableColumn colNum = table.getColumn("序号");
+        colNum.setMinWidth(40);
+        colNum.setPreferredWidth(20);
+        colNum.setMaxWidth(50);
+
+        TableColumn colFile = table.getColumn("文件名");
+        colFile.setMinWidth(50);
+        colFile.setPreferredWidth(100);
+        colFile.setMaxWidth(200);
+
+        TableColumn colLab = table.getColumn("实际值");
+        colLab.setMinWidth(40);
+        colLab.setPreferredWidth(20);
+        colLab.setMaxWidth(50);
+
+        TableColumn colRes = table.getColumn("目标值");
+        colRes.setMinWidth(50);
+        colRes.setPreferredWidth(50);
+        colRes.setMaxWidth(100);
+        for (int i = 1; i < table.getColumnCount() - 4; i++) {
+            col = table.getColumn(i + "");
+
+            col.setMinWidth(50);
+            col.setPreferredWidth(50);
+            col.setMaxWidth(100);
+
+
+        }
+
+    }
+
 }
