@@ -208,7 +208,7 @@ public class MianFrame extends Application {
 
             File file = fileSaveChooser.showSaveDialog(stage);
             if (file != null) {
-
+                fileAction.saveData(file,testTableVales);
             }
         });
 
