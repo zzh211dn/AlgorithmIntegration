@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class MianFrame extends Application {
@@ -42,6 +43,7 @@ public class MianFrame extends Application {
     Label trianLabel, testLabel;
     String[] trianColumnNames, testColumnNames;
     String[][] trianTableVales, testTableVales;
+    List<String[]> zyzData;
     private HashMap<String, List<String[]>> trianFileData;
     private HashMap<String, List<String[]>> testFileData;
     FileAction fileAction = new FileAction();
@@ -108,8 +110,6 @@ public class MianFrame extends Application {
         menuBar.autosize();
 
         // create container
-
-
         vbox.setSpacing(5);
         vbox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
 
@@ -126,6 +126,7 @@ public class MianFrame extends Application {
          */
         addTrainSet.setOnAction((ActionEvent t) -> {
             dataDir = new HashMap<>();
+            zyzData = new LinkedList<>();
             String dirName = "";
             FileChooser fileChooser = new FileChooser();
             configureOpenFileChooser(fileChooser);
@@ -135,10 +136,15 @@ public class MianFrame extends Application {
                 dirName = fileList.get(0).getParentFile().getAbsolutePath();
             initLabel(dirName);
             trianFileData = new HashMap<>();
-            initChooserData(fileList, trianFileData, dirName);
-
-            trianTableVales = map2Array(trianFileData, 1, dirName);
-            trianColumnNames = initColumnNames(trianFileData);
+            if (initChooserData(fileList, trianFileData, dirName)) {
+                trianTableVales = map2Array(trianFileData, 1, dirName);
+                trianColumnNames = initCSVColumnNames(trianFileData);
+                trianAddButton.setDisable(false);
+            } else {
+                trianTableVales = array2Array(zyzData);
+                trianColumnNames = initZYZColumnNames(zyzData);
+                trianAddButton.setDisable(true);
+            }
             initTable(trianColumnNames, trianTableVales, 1);
             vbox.setVisible(true);
         });
@@ -147,15 +153,20 @@ public class MianFrame extends Application {
          * 打开测试集
          */
         addTestSet.setOnAction((ActionEvent t) -> {
-
+            zyzData = new LinkedList<>();
             FileChooser fileChooser = new FileChooser();
             configureOpenFileChooser(fileChooser);
             java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
             testFileData = new HashMap<>();
-            initChooserData(fileList, testFileData, "");
-
-            testTableVales = map2Array(testFileData, 2, "");
-            testColumnNames = initColumnNames(testFileData);
+            if (initChooserData(fileList, testFileData, "")) {
+                testTableVales = map2Array(testFileData, 2, "");
+                testColumnNames = initCSVColumnNames(testFileData);
+                testAddButton.setDisable(false);
+            } else {
+                testTableVales = array2Array(zyzData);
+                testColumnNames = initZYZColumnNames(zyzData);
+                testAddButton.setDisable(true);
+            }
             initTable(testColumnNames, testTableVales, 2);
             vbox.setVisible(true);
         });
@@ -173,9 +184,13 @@ public class MianFrame extends Application {
             initLabel(dirName);
             if (trianFileData == null)
                 trianFileData = new HashMap<>();
-            initChooserData(fileList, trianFileData, dirName);
-            trianTableVales = map2Array(trianFileData, 1, dirName);
-            trianColumnNames = initColumnNames(trianFileData);
+            if (initChooserData(fileList, trianFileData, dirName)) {
+                trianTableVales = map2Array(trianFileData, 1, dirName);
+                trianColumnNames = initCSVColumnNames(trianFileData);
+            } else {
+                trianTableVales = array2Array(zyzData);
+                trianColumnNames = initZYZColumnNames(zyzData);
+            }
             initTable(trianColumnNames, trianTableVales, 1);
         });
 
@@ -190,9 +205,15 @@ public class MianFrame extends Application {
             initLabel(dirName);
             if (testFileData == null)
                 testFileData = new HashMap<>();
-            initChooserData(fileList, testFileData, "");
-            testTableVales = map2Array(testFileData, 2, dirName);
-            testColumnNames = initColumnNames(testFileData);
+            if (initChooserData(fileList, testFileData, "")) {
+                testTableVales = map2Array(testFileData, 2, "");
+                testColumnNames = initCSVColumnNames(testFileData);
+            } else {
+                testTableVales = array2Array(zyzData);
+                testColumnNames = initZYZColumnNames(zyzData);
+
+            }
+
             initTable(testColumnNames, testTableVales, 2);
         });
 
@@ -208,14 +229,13 @@ public class MianFrame extends Application {
 
             File file = fileSaveChooser.showSaveDialog(stage);
             if (file != null) {
-                fileAction.saveData(file,testTableVales);
+                fileAction.saveData(file, trianTableVales);
             }
         });
 
         ((VBox) scene.getRoot()).getChildren().addAll(menuBar, trianBox, testBox);
         stage.setScene(scene);
         stage.show();
-
     }
 
 
@@ -287,8 +307,8 @@ public class MianFrame extends Application {
                 new File(System.getProperty("user.home"))
         );
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("zyz文件,","*.zyz"),
                 new FileChooser.ExtensionFilter("csv文件", "*.csv"),
+                new FileChooser.ExtensionFilter("zyz文件,", "*.zyz"),
                 new FileChooser.ExtensionFilter("txt文件", "*.txt")
         );
     }
@@ -342,19 +362,54 @@ public class MianFrame extends Application {
     }
 
     /**
+     * zyz文件数组数据转为二维表格数据
+     *
+     * @param zyzData
+     * @return
+     */
+    private String[][] array2Array(List<String[]> zyzData) {
+        Iterator temp = zyzData.iterator();
+        int listLength = zyzData.size();
+        int dataLength = ((String[]) temp.next()).length;
+        String[][] fileData = new String[listLength][dataLength];
+        Iterator iterator = zyzData.iterator();
+        int i = 0;
+        while (iterator.hasNext()) {
+            String[] data = (String[]) iterator.next();
+            for (int j = 0; j < data.length; j++) {
+                fileData[i][j] = data[j];
+            }
+            i++;
+        }
+        return fileData;
+
+    }
+
+    /**
      * 从fileList读取数据
      *
      * @param fileList
      */
-    private void initChooserData(List<File> fileList, HashMap<String, List<String[]>> fileData, String dirName) {
+    private boolean initChooserData(List<File> fileList, HashMap<String, List<String[]>> fileData, String dirName) {
         if (fileList != null)
-            for (int i = 0; i < fileList.size(); i++) {
+            if (fileList.get(0).getName().endsWith(".csv") | fileList.get(0).getName().endsWith(".txt") | fileList.get(0).getName().endsWith(".CSV") | fileList.get(0).getName().endsWith(".TXT")) {
+                for (int i = 0; i < fileList.size(); i++) {
+                    try {
+                        fileAction.readCSVData(fileList.get(i), fileData, dirName);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return true;
+            } else {
                 try {
-                    fileAction.readData(fileList.get(i), fileData, dirName);
+                    zyzData = fileAction.readZYZData(fileList.get(0));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                return false;
             }
+        return false;
     }
 
     /**
@@ -369,12 +424,12 @@ public class MianFrame extends Application {
     }
 
     /**
-     * 初始化列名
+     * 初始化CSV和TXT文件列名
      *
      * @param fileData
      * @return
      */
-    private String[] initColumnNames(HashMap<String, List<String[]>> fileData) {
+    private String[] initCSVColumnNames(HashMap<String, List<String[]>> fileData) {
         Iterator iterator = fileData.values().iterator();
         List<String[]> sigData = (List<String[]>) iterator.next();
         int fileLength = sigData.size();
@@ -384,6 +439,26 @@ public class MianFrame extends Application {
         initColumnName[2] = "实际值";
         initColumnName[3] = "目标值";
         for (int i = 4; i < fileLength + 4; i++) {
+            initColumnName[i] = i - 3 + "";
+        }
+        return initColumnName;
+    }
+
+    /**
+     * 初始化ZYZ文件列名
+     *
+     * @param zyzData
+     * @return
+     */
+    private String[] initZYZColumnNames(List<String[]> zyzData) {
+        Iterator iterator = zyzData.iterator();
+        String[] sigData = (String[]) iterator.next();
+        String[] initColumnName = new String[sigData.length];
+        initColumnName[0] = "序号";
+        initColumnName[1] = "文件名";
+        initColumnName[2] = "实际值";
+        initColumnName[3] = "目标值";
+        for (int i = 4; i < sigData.length; i++) {
             initColumnName[i] = i - 3 + "";
         }
         return initColumnName;

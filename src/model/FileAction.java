@@ -1,57 +1,79 @@
 package model;
 
-import javafx.application.Application;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-
-import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * 文件读写类
  */
-public final class FileAction  {
+public final class FileAction {
 
 
     /**
-     * 读文件方法
-     * @param file 文件
+     * 读csv和txt文件方法
+     *
+     * @param file     文件
      * @param fileData 数据存储Map
      * @throws IOException
      */
-    public void readData(File file,HashMap<String,List<String[]>> fileData,String dirName) throws IOException {
+    public void readCSVData(File file, HashMap<String, List<String[]>> fileData, String dirName) throws IOException {
         BufferedReader read = new BufferedReader(new FileReader(file));
         String line;
-        String[] name = {"",dirName};
+        String[] name = {"", dirName};
         List<String[]> dataList = new ArrayList<>();
         dataList.add(name);
-        while((line=read.readLine())!=null){
+        while ((line = read.readLine()) != null) {
             String[] subLine = line.split(",");
             dataList.add(subLine);
         }
-        fileData.put(file.getName(),dataList);
+        fileData.put(file.getName(), dataList);
     }
 
-    public void saveData(File file,String[][] tableData){
+    /**
+     * 读取zyz格式文件方法
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    public List<String[]> readZYZData(File file) throws IOException {
+        List<String[]> zyzData = new LinkedList<>();
+        BufferedReader read = new BufferedReader(new FileReader(file));
+        String line;
+        while ((line = read.readLine()) != null) {
+            String[] subLine = line.split(",");
+            zyzData.add(subLine);
+        }
+        return zyzData;
+    }
+
+    /**
+     * 写文件方法
+     *
+     * @param file      写入文件
+     * @param tableData 写入数据
+     */
+    public void saveData(File file, String[][] tableData) {
 
         try {
-            FileOutputStream out = new FileOutputStream(file);
-            for(int i = 0;i<tableData.length;i++){
-                for(int j = 0;j<tableData[i].length;j++) {
-                    out.write((tableData[i][j] ).getBytes());
-                    if(j!=tableData[i].length-1)
-                        out.write((",").getBytes());
+            FileWriter out = new FileWriter(file, false);
+            for (int i = 0; i < tableData.length; i++) {
+                for (int j = 0; j < tableData[i].length; j++) {
+                    if (tableData[i][j] != null) {
+                        out.write((tableData[i][j]));
+                        System.out.println("i:" + i + "," + "j:" + j + ":" + tableData[i][j]);
+                    } else
+                        out.write((""));
+                    if (j != tableData[i].length - 1)
+                        out.write((","));
                 }
-                if(i!=tableData.length-1)
-                out.write(("\\r\\n").getBytes());
+                if (i != tableData.length - 1)
+                    out.write(System.getProperty("line.separator"));
             }
+
+            out.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
