@@ -39,9 +39,24 @@ public final class FileAction  {
         fileData.put(file.getName(),dataList);
     }
 
-    public void saveData(File file,String[][] tableDta){
+    public void saveData(File file,String[][] tableData){
 
-
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            for(int i = 0;i<tableData.length;i++){
+                for(int j = 0;j<tableData[i].length;j++) {
+                    out.write((tableData[i][j] ).getBytes());
+                    if(j!=tableData[i].length-1)
+                        out.write((",").getBytes());
+                }
+                if(i!=tableData.length-1)
+                out.write(("\\r\\n").getBytes());
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
