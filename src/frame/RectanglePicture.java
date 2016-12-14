@@ -26,6 +26,7 @@ public class RectanglePicture extends Application  {
     public HashSet<Float> hashSetG = new HashSet<Float>();
     public HashSet<Float> hashSetB = new HashSet<Float>();
 
+    //获取RGB随机值，并保证不重复。
     public Float[] getRandom(int type)
     {
         if(hashMap.get(type)!=null)
@@ -75,10 +76,10 @@ public class RectanglePicture extends Application  {
             {
                 double h = (scene.getHeight()-50) /rownum;
                 double w = (scene.getWidth()-50) / colnum;
-                System.out.println("scene.getHeight()"+ scene.getHeight());
-                System.out.println("scene.getWidth()"+ scene.getWidth());
-                System.out.println("h:"+ h);
-                System.out.println("w:"+ w);
+//                System.out.println("scene.getHeight()"+ scene.getHeight());
+//                System.out.println("scene.getWidth()"+ scene.getWidth());
+//                System.out.println("h:"+ h);
+//                System.out.println("w:"+ w);
                 Rectangle r = new Rectangle(25+h*j, 25+w*i,w ,h);
                 Float[] rgbColor = getRandom(i + j);
                 Color color = new Color(rgbColor[0], rgbColor[1], rgbColor[2], 0.9);//RGB颜色，参数4最后为透明性

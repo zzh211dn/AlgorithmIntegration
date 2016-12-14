@@ -1,5 +1,6 @@
 package algorithm;
 
+import org.encog.Encog;
 import org.encog.engine.network.activation.ActivationLinear;
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.ml.data.MLData;
@@ -14,6 +15,7 @@ import org.encog.neural.networks.training.propagation.resilient.ResilientPropaga
 import org.encog.util.Format;
 import org.encog.util.simple.EncogUtility;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import static org.encog.util.simple.EncogUtility.formatNeuralData;
@@ -36,7 +38,7 @@ public class BPNN {
         return res;
     }
 
-
+    //需要先trainBPNN，然后直接computeBPNN即可。
     public BasicNetwork network= new BasicNetwork();
     public void trainBPNN(double[][] feature,double[][] lable,int hiddenLayer,int iterateTimes)
     {
@@ -56,20 +58,28 @@ public class BPNN {
         System.out.println("nexgt=================");
     }
 
-    public void computeBPNN(double[][] pridictDataSet)
+    public Double[][] computeBPNN(double[][] pridictDataSet)
     {
-        double[][] testLabel = new double[pridictDataSet.length][1];
+        double[][] testLabel = new double[pridictDataSet.length][1];//该testlabel无用。因为算法需要，所以传入空lable
         MLDataSet testingSet = new BasicMLDataSet(pridictDataSet, testLabel);
-
         EncogUtility.evaluate(network, testingSet);
         String content = "";
-
+        ArrayList<Double> result = new ArrayList<>();
         Iterator it = testingSet.iterator();
+
         while(it.hasNext()) {
             MLDataPair pair = (MLDataPair)it.next();
             MLData output = network.compute(pair.getInput());
             content = content+("Actual=" + formatNeuralData(output)+"\r\n");
+            result.add(Double.parseDouble(formatNeuralData(output)));
         }
+        Encog.getInstance().shutdown();
+        Double[][] returnResult = new Double[result.size()][1];
+        for(int i = 0;i<result.size();i++)
+        {
+            returnResult[i][1] = result.get(i);
+        }
+        return returnResult;
     }
 
 

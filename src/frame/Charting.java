@@ -40,12 +40,10 @@ public class Charting extends Application {
     @FXML
     private Label outputLabel;
 
-    ;
-
     private long startTime;
 
     private Timeline addDataTimeline;
-    int i = 0;
+
     @FXML
     void addSample(XYChart.Series<Number, Number> tempSeries) {
         for(int m = 0;m<10;m++) {

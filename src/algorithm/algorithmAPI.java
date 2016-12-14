@@ -6,7 +6,7 @@ import java.util.TreeMap;
  * Created by zzh on 2016/12/7.
  */
 public class algorithmAPI {
-
+    public Double[][] result ;
 
     public Double[][] double2Double(double[][] doubleData)
     {
@@ -34,8 +34,6 @@ public class algorithmAPI {
         return result;
     }
 
-
-
     public Double[][] getSVM(Double[][] data)
     {
        return null;
@@ -43,7 +41,8 @@ public class algorithmAPI {
 
     public Double[][] getPCAResult(Double[][] data) {
         PCA callPCA = new PCA();
-        return double2Double(callPCA.computePCA(Double2double(data)).getArray());
+        result = double2Double(callPCA.computePCA(Double2double(data)).getArray());
+        return result;
     }
 
     /*
@@ -52,6 +51,14 @@ public class algorithmAPI {
     public TreeMap<String,Integer> getKemeansResult(Double[][] data,int k ) {
         Kmeans callKmeans = new Kmeans();
         return callKmeans.computeKmeans(Double2double(data),k);
+    }
+    //bpnn直接传入特征集，label，测试集，
+    public Double[][] getBPNN(Double[][] feature,Double[][] lable,Double[][] pridictDataSet,int hiddenLayer,int iterateTimes)
+    {
+        BPNN bpnn = new BPNN();
+        bpnn.trainBPNN(Double2double(feature),Double2double(lable),hiddenLayer,iterateTimes);
+        result = bpnn.computeBPNN(Double2double(pridictDataSet));
+        return result;
     }
 
 
