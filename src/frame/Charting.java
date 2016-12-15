@@ -26,13 +26,28 @@ import org.gillius.jfxutils.chart.JFXChartUtil;
 import org.gillius.jfxutils.chart.StableTicksAxis;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.TimeZone;
 
 public class Charting extends Application {
     public static void main( String[] args ) {
-        launch( );
+        launch();
     }
+    ArrayList<Double [][]> thisDatas;
+    public boolean drawChat(ArrayList<Double [][]> datas)
+    {
+        thisDatas = datas;
+        try {
+            launch();
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+
 
     @FXML
     private LineChart<Number, Number> chart;
@@ -45,9 +60,10 @@ public class Charting extends Application {
     private Timeline addDataTimeline;
 
     @FXML
-    void addSample(XYChart.Series<Number, Number> tempSeries) {
-        for(int m = 0;m<10;m++) {
-            tempSeries.getData().add(new XYChart.Data<Number, Number>(m,new Random().nextInt(10)));// System.currentTimeMillis() - startTime,valueSlider.getValue()
+    void addSample(XYChart.Series<Number, Number> tempSeries,Double[][] xydata) {
+        for(int i = 0;i<xydata.length;i++)
+        {
+            tempSeries.getData().add(new XYChart.Data<Number, Number>(xydata[i][0],xydata[i][1]));// System.currentTimeMillis() - startTime,valueSlider.getValue()
         }
 
     }
@@ -73,17 +89,14 @@ public class Charting extends Application {
     @FXML
     void initialize() {
         //Set chart to format dates on the X axis
-        ((StableTicksAxis) chart.getXAxis()).setAutoRangePadding(1);
-
-        XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
-        XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-        series.setName( "Date" );
-        series1.setName( "Date1" );
-        addSample(series);
-        addSample(series1);
-
-
-        chart.getData().addAll( series ,series1);
+//        ((StableTicksAxis) chart.getXAxis()).setAutoRangePadding();//设置间隔
+        ((StableTicksAxis) chart.getXAxis()).setForceZeroInRange(false);//强制设置X轴不为0开头
+        for(int m = 0;m<thisDatas.size();m++) {
+            XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
+            series.setName("Date"+m);
+            addSample(series,thisDatas.get(m));
+            chart.getData().add(series);
+        }
 
         chart.setOnMouseMoved( new EventHandler<MouseEvent>() {
             public void handle( MouseEvent mouseEvent ) {
