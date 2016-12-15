@@ -34,10 +34,10 @@ public class algorithmAPI {
         return result;
     }
 
-    public Double[][] getSVMResult(double[][] trainData,double[][] trainlabel,int svm_type,int kener_type ,double[][] testData)
+    public Double[][] getSVMResult(Double[][] trainData,Double[][] trainlabel,int svm_type,int kener_type ,double[][] testData)
     {
         SVM svm = new SVM();
-        svm.trainSVM(trainData,trainlabel,svm_type,kener_type);
+        svm.trainSVM(Double2double(trainData),Double2double(trainlabel),svm_type,kener_type);
         result = svm.computeSVM(testData);
         return result;
     }
@@ -67,6 +67,7 @@ public class algorithmAPI {
         result = bpnn.computeBPNN(Double2double(testData));
         return result;
     }
+
 
 
 }
