@@ -522,7 +522,7 @@ public class MianFrame extends Application {
     /**
      * 表格数据导出
      * @param type 1为训练集，其他为测试集
-     * @return
+     * @return 表格数据
      */
     public String[][] dataOut(int type){
         if(type==1)
