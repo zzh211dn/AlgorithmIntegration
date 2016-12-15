@@ -307,9 +307,9 @@ public class MianFrame extends Application {
                 new File(System.getProperty("user.home"))
         );
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("csv文件", "*.csv"),
+                new FileChooser.ExtensionFilter("csv文件,", "*.csv"),
                 new FileChooser.ExtensionFilter("zyz文件,", "*.zyz"),
-                new FileChooser.ExtensionFilter("txt文件", "*.txt")
+                new FileChooser.ExtensionFilter("txt文件,", "*.txt")
         );
     }
 
@@ -445,6 +445,23 @@ public class MianFrame extends Application {
     }
 
     /**
+     * 初始化算法计算结果列名
+     */
+
+    private String[] initAlgorithmColumnNames(String[][] data){
+        int columnLength = data[0].length;
+        String[] initColumnName = new String[columnLength];
+        initColumnName[0] = "序号";
+        initColumnName[1] = "文件名";
+        initColumnName[2] = "实际值";
+        initColumnName[3] = "目标值";
+        for (int i = 4; i < columnLength; i++) {
+            initColumnName[i] = i - 3 + "";
+        }
+        return initColumnName;
+    }
+
+    /**
      * 初始化ZYZ文件列名
      *
      * @param zyzData
@@ -500,6 +517,34 @@ public class MianFrame extends Application {
 
         }
 
+    }
+
+    /**
+     * 表格数据导出
+     * @param type 1为训练集，其他为测试集
+     * @return
+     */
+    public String[][] dataOut(int type){
+        if(type==1)
+            return trianTableVales;
+        else
+            return testTableVales;
+    }
+
+    /**
+     * 算法结果导入表格
+     * @param data 计算结果
+     * @param type 1为训练集，其他为测试集
+     */
+    public void dataIn(String[][] data,int type){
+        String[] columnName = initAlgorithmColumnNames(data);
+        if(type==1) {
+
+            initTable(columnName, data, 1);
+        }
+        else {
+            initTable(columnName, data, 2);
+        }
     }
 
 }
