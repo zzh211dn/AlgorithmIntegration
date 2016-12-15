@@ -4,6 +4,7 @@ package frame;
  * Created by zzh on 2016/12/7.
  */
 
+import algorithm.algorithmAPI;
 import com.smooth.gui.SmoothGUI;
 import javafx.application.Application;
 import javafx.embed.swing.SwingNode;
@@ -50,6 +51,7 @@ public class MianFrame extends Application {
     Button trianAddButton = new Button("添加");
     Button testAddButton = new Button("添加");
     static HashMap<String, String> dataDir;
+    algorithmAPI algorithmAPI = new algorithmAPI();
 
     public static void main(String[] args) {
         launch(args);
@@ -57,6 +59,7 @@ public class MianFrame extends Application {
 
     @Override
     public void start(Stage stage) {
+
 
         double width = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
         double high = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
@@ -231,6 +234,21 @@ public class MianFrame extends Application {
             if (file != null) {
                 fileAction.saveData(file, trianTableVales);
             }
+        });
+
+        /**
+         *PCA方法调用
+         */
+        addPCA.setOnAction(event -> {
+
+
+        });
+
+        /**
+         * SVM方法调用
+         */
+        addSVM.setOnAction(event -> {
+            new svmChooser(dataOut(1),dataOut(2));
         });
 
         ((VBox) scene.getRoot()).getChildren().addAll(menuBar, trianBox, testBox);
@@ -448,7 +466,7 @@ public class MianFrame extends Application {
      * 初始化算法计算结果列名
      */
 
-    private String[] initAlgorithmColumnNames(String[][] data){
+    private String[] initAlgorithmColumnNames(String[][] data) {
         int columnLength = data[0].length;
         String[] initColumnName = new String[columnLength];
         initColumnName[0] = "序号";
@@ -521,28 +539,40 @@ public class MianFrame extends Application {
 
     /**
      * 表格数据导出
+     *
      * @param type 1为训练集，其他为测试集
      * @return 表格数据
      */
-    public String[][] dataOut(int type){
-        if(type==1)
-            return trianTableVales;
-        else
-            return testTableVales;
+    public Double[][] dataOut(int type) {
+        Double[][] data;
+        if (type == 1) {
+            data = new Double[trianTableVales.length][trianTableVales[0].length - 4];
+            for (int i = 0; i < data.length; i++)
+                for (int j = 4; j < trianTableVales[0].length; j++) {
+                    data[i][j - 4] = Double.valueOf(trianTableVales[i][j]);
+                }
+        } else {
+            data = new Double[testTableVales.length][testTableVales[0].length - 4];
+            for (int i = 0; i < data.length; i++)
+                for (int j = 4; j < testTableVales[0].length; j++) {
+                    data[i][j - 4] = Double.valueOf(testTableVales[i][j]);
+                }
+        }
+        return data;
     }
 
     /**
      * 算法结果导入表格
+     *
      * @param data 计算结果
      * @param type 1为训练集，其他为测试集
      */
-    public void dataIn(String[][] data,int type){
+    public void dataIn(String[][] data, int type) {
         String[] columnName = initAlgorithmColumnNames(data);
-        if(type==1) {
+        if (type == 1) {
 
             initTable(columnName, data, 1);
-        }
-        else {
+        } else {
             initTable(columnName, data, 2);
         }
     }

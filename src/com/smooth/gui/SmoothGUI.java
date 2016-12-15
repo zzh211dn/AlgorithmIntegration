@@ -18,14 +18,7 @@ import java.awt.event.MouseListener;
 import java.io.FileWriter;
 import java.util.ArrayList;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import com.shanghaiUni.compute.Compute;
 import com.shanghaiUni.compute.SmoothCompute;
@@ -35,7 +28,7 @@ import com.smooth.parameter.SmoothParameters;
  * @author Administrator
  *
  */
-public class SmoothGUI extends JFrame 
+public class SmoothGUI extends JDialog
  implements ActionListener
 {
 	/**
@@ -52,9 +45,7 @@ public class SmoothGUI extends JFrame
 	private SmoothParameters smoothParameters;
 	private boolean InitComplete; 
 	private int ControlNum;
-	/**
-	 * @param args
-	 */
+
 //	public static void main(String[] args) {
 //		// TODO Auto-generated method stub
 //		SmoothGUI smoothGUI=new SmoothGUI();
@@ -62,7 +53,21 @@ public class SmoothGUI extends JFrame
 //	}
 	public SmoothGUI()
 	{
+		try {
+			UIManager.setLookAndFeel(
+                    "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
+		SwingUtilities.updateComponentTreeUI(this);
 		this.container = getContentPane();
+        this.setModal(true);
 		Toolkit kit=Toolkit.getDefaultToolkit();
 		int screenWidth=kit.getScreenSize().width;
 		int screenHeight=kit.getScreenSize().height;
