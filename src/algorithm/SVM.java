@@ -8,6 +8,7 @@ import org.encog.ml.data.basic.BasicMLDataSet;
 import org.encog.ml.svm.KernelType;
 import org.encog.ml.svm.SVMType;
 import org.encog.ml.svm.training.SVMTrain;
+import org.encog.neural.NeuralNetworkError;
 
 import java.util.ArrayList;
 
@@ -16,15 +17,49 @@ import java.util.ArrayList;
  */
 public class SVM {
     org.encog.ml.svm.SVM svm;
-    public void trainSVM(double[][] trainData,double[][] trainlabel,int type){
+    public void trainSVM(double[][] trainData,double[][] trainlabel,int SVMtype,int kenelType){
+        org.encog.ml.svm.SVMType svm_type;
+        switch(SVMtype) {
+            case 1:
+                svm_type = SVMType.NewSupportVectorRegression;
+                break;
+            case 2:
+                svm_type = SVMType.NewSupportVectorClassification;
+                break;
+            case 3:
+                svm_type = SVMType.SupportVectorOneClass;
+                break;
+            case 4:
+                svm_type = SVMType.EpsilonSupportVectorRegression;
+                break;
+            case 5:
+                svm_type = SVMType.NewSupportVectorRegression;
+                break;
+            default:
+                throw new NeuralNetworkError("Invalid svm type");
+        }
+        org.encog.ml.svm.KernelType kernel_type;
+        switch(kenelType) {
+            case 1:
+                kernel_type = KernelType.Linear;
+                break;
+            case 2:
+                kernel_type = KernelType.Poly;
+                break;
+            case 3:
+                kernel_type = KernelType.RadialBasisFunction;
+                break;
+            case 4:
+                kernel_type = KernelType.Sigmoid;
+                break;
+            case 5:
+                kernel_type = KernelType.Precomputed;
+                break;
+            default:
+                throw new NeuralNetworkError("Invalid svm type");
+        }
 
-        if(type ==1)
-        {
-            svm = new org.encog.ml.svm.SVM(trainData[0].length, SVMType.NewSupportVectorRegression, KernelType.Linear);
-        }
-        else {
-            svm = new org.encog.ml.svm.SVM(trainData[0].length, false);
-        }
+        svm = new org.encog.ml.svm.SVM(trainData[0].length,svm_type, kernel_type);
 
         // create training data
         MLDataSet trainingSet = new BasicMLDataSet(trainData,trainlabel);

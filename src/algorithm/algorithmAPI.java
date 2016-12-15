@@ -34,10 +34,10 @@ public class algorithmAPI {
         return result;
     }
 
-    public Double[][] getSVMResult(double[][] trainData,double[][] trainlabel,int type,double[][] testData)
+    public Double[][] getSVMResult(double[][] trainData,double[][] trainlabel,int svm_type,int kener_type ,double[][] testData)
     {
         SVM svm = new SVM();
-        svm.trainSVM(trainData,trainlabel,type);
+        svm.trainSVM(trainData,trainlabel,svm_type,kener_type);
         result = svm.computeSVM(testData);
         return result;
     }
@@ -60,11 +60,11 @@ public class algorithmAPI {
     * bpnn直接传入特征集，label，测试集，隐藏层数，迭代次数。
     * 返回预测分类结果
     */
-    public Double[][] getBPNNResult(Double[][] feature,Double[][] lable,Double[][] pridictDataSet,int hiddenLayer,int iterateTimes)
+    public Double[][] getBPNNResult(Double[][] trainData,Double[][] lable,Double[][] testData,int hiddenLayer,int iterateTimes)
     {
         BPNN bpnn = new BPNN();
-        bpnn.trainBPNN(Double2double(feature),Double2double(lable),hiddenLayer,iterateTimes);
-        result = bpnn.computeBPNN(Double2double(pridictDataSet));
+        bpnn.trainBPNN(Double2double(trainData),Double2double(lable),hiddenLayer,iterateTimes);
+        result = bpnn.computeBPNN(Double2double(testData));
         return result;
     }
 

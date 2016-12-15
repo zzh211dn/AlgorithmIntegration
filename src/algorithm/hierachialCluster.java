@@ -83,7 +83,7 @@ public class hierachialCluster {
 
 
         String inputPath = "C:\\Users\\fish123\\Desktop\\input.txt";
-        int k = Integer.parseInt("3");
+        int k = Integer.parseInt("4");
 
         // Load input file.
         try{
@@ -162,6 +162,7 @@ public class hierachialCluster {
             // Update mClusters.
             double[] average = averageBetween(mClusters.get(ith), mClusters.get(jth), mNumPointsInClusters.get(ith), mNumPointsInClusters.get(jth));
             mClusters.set(ith, average);
+            System.out.println("ith:"+ith+"    average:"+average[0]+"  "+average[1]);
             mNumPointsInClusters.set(ith, (mNumPointsInClusters.get(ith) + mNumPointsInClusters.get(jth)));
             mClusters.remove(jth);
 
