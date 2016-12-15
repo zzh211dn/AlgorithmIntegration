@@ -9,17 +9,22 @@ import org.encog.ml.svm.KernelType;
 import org.encog.ml.svm.SVMType;
 import org.encog.ml.svm.training.SVMTrain;
 
+import java.util.ArrayList;
+
 /**
  * Created by fish123 on 2016/12/14.
  */
 public class SVM {
+    org.encog.ml.svm.SVM svm;
+    public void trainSVM(double[][] trainData,double[][] trainlabel,int type){
 
-    public void trainSVM(double[][] trainData,double[][] trainlabel,double[][] testData){
-//        SVM svm = new SVM(testDatas.get(0).size(), SVMType.NewSupportVectorRegression, KernelType.Linear);
-
-        double[][] dataTotest = new double[testData.length][testData[0].length];
-
-        org.encog.ml.svm.SVM svm = new org.encog.ml.svm.SVM(testData[0].length,false);
+        if(type ==1)
+        {
+            svm = new org.encog.ml.svm.SVM(trainData[0].length, SVMType.NewSupportVectorRegression, KernelType.Linear);
+        }
+        else {
+            svm = new org.encog.ml.svm.SVM(trainData[0].length, false);
+        }
 
         // create training data
         MLDataSet trainingSet = new BasicMLDataSet(trainData,trainlabel);
@@ -28,25 +33,39 @@ public class SVM {
         final SVMTrain train = new SVMTrain(svm, trainingSet);
         train.iteration();
         train.finishTraining();
+    }
 
+
+    public Double[][] computeSVM(double[][] testData)
+    {
+        double[][] dataTotest = new double[testData.length][testData[0].length];
         double[][] TLabel = new double[testData.length][1];
         for(int i=0;i<dataTotest.length;i++){
             TLabel[i][0] = Math.random();
         }
 
-
         MLDataSet testSet = new BasicMLDataSet(dataTotest,TLabel);
         // test the SVM
         System.out.println("SVM Results:");
         int index = 0;
+
+        ArrayList<Double> result = new ArrayList<>();
         String content = "";
         for(MLDataPair pair: testSet ) {
             final MLData output = svm.compute(pair.getInput());
             content+= "predist=" + output.getData(0)+"\r\n";
+            result.add(output.getData(0));
             index++;
         }
 
-        Encog.getInstance().shutdown();
+        Double[][] returnResult = new Double[result.size()][1];
+        for(int i = 0;i<result.size();i++)
+        {
+            returnResult[i][1] = result.get(i);
+        }
+        return returnResult;
+
     }
+
 
 }

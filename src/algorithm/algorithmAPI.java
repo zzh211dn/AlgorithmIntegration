@@ -34,9 +34,12 @@ public class algorithmAPI {
         return result;
     }
 
-    public Double[][] getSVM(Double[][] data)
+    public Double[][] getSVMResult(double[][] trainData,double[][] trainlabel,int type,double[][] testData)
     {
-       return null;
+        SVM svm = new SVM();
+        svm.trainSVM(trainData,trainlabel,type);
+        result = svm.computeSVM(testData);
+        return result;
     }
 
     public Double[][] getPCAResult(Double[][] data) {
@@ -45,15 +48,19 @@ public class algorithmAPI {
         return result;
     }
 
-    /*
+    /**
     *  返回 key = [1.0, 2.0, 3.0, 3.0] String 类型，value = type
     */
     public TreeMap<String,Integer> getKemeansResult(Double[][] data,int k ) {
         Kmeans callKmeans = new Kmeans();
         return callKmeans.computeKmeans(Double2double(data),k);
     }
-    //bpnn直接传入特征集，label，测试集，
-    public Double[][] getBPNN(Double[][] feature,Double[][] lable,Double[][] pridictDataSet,int hiddenLayer,int iterateTimes)
+
+    /**
+    * bpnn直接传入特征集，label，测试集，隐藏层数，迭代次数。
+    * 返回预测分类结果
+    */
+    public Double[][] getBPNNResult(Double[][] feature,Double[][] lable,Double[][] pridictDataSet,int hiddenLayer,int iterateTimes)
     {
         BPNN bpnn = new BPNN();
         bpnn.trainBPNN(Double2double(feature),Double2double(lable),hiddenLayer,iterateTimes);
