@@ -46,7 +46,7 @@ public class ScatterPlot3d {
             XYZSeries s = new XYZSeries(name);
 
             for(int i = 0; i < count; ++i) {
-                s.add(Math.random() * 100.0D, Math.random() / 100.0D, Math.random() * 100.0D);
+                s.add(Math.random() * 100.0D, Math.random() / 100.0D, Math.random() * 100.0D);//放入xyz数据
             }
 
             return s;
