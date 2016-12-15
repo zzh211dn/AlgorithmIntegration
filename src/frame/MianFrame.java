@@ -9,10 +9,13 @@ import com.smooth.gui.SmoothGUI;
 import javafx.application.Application;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -248,12 +251,56 @@ public class MianFrame extends Application {
          * SVM方法调用
          */
         addSVM.setOnAction(event -> {
-            new svmChooser(dataOut(1),dataOut(2));
+            Stage svmStage = new Stage();
+            svmStage.setTitle("选择支持向量机类型：");
+            final javafx.scene.control.Button button = new Button("确定");
+            Scene svmScene = new Scene(new Group(), 500, 90);
+            final ComboBox svmComboBox = new ComboBox();
+            svmComboBox.getItems().addAll(
+                    " SupportVectorClassification",
+                    " NewSupportVectorClassification",
+                    " SupportVectorOneClass",
+                    " EpsilonSupportVectorRegression",
+                    " NewSupportVectorRegression"
+            );
+            svmComboBox.setValue(" SupportVectorClassification");
+
+            final ComboBox coreComboBox = new ComboBox();
+            coreComboBox.getItems().addAll(
+                    "Linear",
+                    "Poly",
+                    "RadialBasisFunction",
+                    "Sigmoid",
+                    "Precomputed"
+            );
+            coreComboBox.setValue("Linear");
+
+            button.setOnAction(event1 -> {
+                Double[][] result = algorithmAPI.getSVMResult(dataOut(1), getLabel(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, dataOut(2));
+
+            });
+
+            GridPane grid = new GridPane();
+            grid.setVgap(2);
+            grid.setHgap(4);
+
+            grid.add(new Label("请选择支持向量机类型: "), 0, 0);
+            grid.add(svmComboBox, 1, 0);
+            grid.add(new Label("请选择核函数类型: "), 0, 2);
+            grid.add(coreComboBox, 1, 2);
+            grid.add(button, 2, 3);
+
+            Group root = (Group) svmScene.getRoot();
+            root.getChildren().add(grid);
+            svmStage.setScene(svmScene);
+            svmStage.show();
         });
 
         ((VBox) scene.getRoot()).getChildren().addAll(menuBar, trianBox, testBox);
         stage.setScene(scene);
         stage.show();
+
+
     }
 
 
@@ -535,6 +582,19 @@ public class MianFrame extends Application {
 
         }
 
+    }
+
+    /**
+     * 导出训练集标签
+     *
+     * @return
+     */
+    public Double[][] getLabel() {
+        Double[][] label;
+        label = new Double[trianTableVales.length][1];
+        for (int i = 0; i < trianTableVales.length; i++)
+            label[i][0] = Double.valueOf(trianTableVales[i][2]);
+        return label;
     }
 
     /**
