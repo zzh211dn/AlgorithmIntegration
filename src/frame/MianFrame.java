@@ -173,6 +173,8 @@ public class MianFrame extends Application {
                 testColumnNames = initZYZColumnNames(zyzData);
                 testAddButton.setDisable(true);
             }
+            System.out.println("表长："+testColumnNames.length);
+            System.out.println("数据长："+testTableVales[0].length);
             initTable(testColumnNames, testTableVales, 2);
             vbox.setVisible(true);
         });
@@ -276,7 +278,13 @@ public class MianFrame extends Application {
             coreComboBox.setValue("Linear");
 
             button.setOnAction(event1 -> {
-                Double[][] result = algorithmAPI.getSVMResult(dataOut(1), getLabel(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, dataOut(2));
+                Double[][] testResult = algorithmAPI.getSVMResult(dataOut(1), getLabel(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, dataOut(2));
+                Double[][] trianResul = algorithmAPI.getSVMResult(dataOut(1), getLabel(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, dataOut(1));
+                trianTableVales = resultForm(trianResul,1);
+                initTable(trianColumnNames, trianTableVales, 1);
+                testTableVales = resultForm(testResult,2);
+                initTable(testColumnNames, testTableVales, 2);
+                svmStage.close();
 
             });
 
@@ -390,11 +398,12 @@ public class MianFrame extends Application {
         int mapLength = fileData.size();
         Iterator iterator = fileData.values().iterator();
         List<String[]> sigData = (List<String[]>) iterator.next();
-        int fileLength = sigData.size();
+        int fileLength = sigData.size()-1;
 
         String[][] tableData = new String[mapLength][fileLength + 4];
+
         Iterator ite = fileData.values().iterator();
-        // tableData = new String[fileLength][dataLength];
+
         int i = 0;
         while (ite.hasNext()) {
             List<String[]> list = (List<String[]>) ite.next();
@@ -418,7 +427,11 @@ public class MianFrame extends Application {
             List<String[]> name = (List<String[]>) fileData.get(tableData[n][1]);
 
             String[] fileName = name.iterator().next();
-            String label = dataDir.get(fileName[1]);
+            String label;
+            if(fileName[1]!=null&&dataDir!=null)
+            label = dataDir.get(fileName[1]);
+            else
+            label = "";
             tableData[n][2] = label;
             n++;
         }
@@ -456,7 +469,7 @@ public class MianFrame extends Application {
      * @param fileList
      */
     private boolean initChooserData(List<File> fileList, HashMap<String, List<String[]>> fileData, String dirName) {
-        if (fileList != null)
+
             if (fileList.get(0).getName().endsWith(".csv") | fileList.get(0).getName().endsWith(".txt") | fileList.get(0).getName().endsWith(".CSV") | fileList.get(0).getName().endsWith(".TXT")) {
                 for (int i = 0; i < fileList.size(); i++) {
                     try {
@@ -474,7 +487,6 @@ public class MianFrame extends Application {
                 }
                 return false;
             }
-        return false;
     }
 
     /**
@@ -498,12 +510,12 @@ public class MianFrame extends Application {
         Iterator iterator = fileData.values().iterator();
         List<String[]> sigData = (List<String[]>) iterator.next();
         int fileLength = sigData.size();
-        String[] initColumnName = new String[fileLength + 4];
+        String[] initColumnName = new String[fileLength + 3];
         initColumnName[0] = "序号";
         initColumnName[1] = "文件名";
         initColumnName[2] = "实际值";
         initColumnName[3] = "目标值";
-        for (int i = 4; i < fileLength + 4; i++) {
+        for (int i = 4; i < fileLength+3; i++) {
             initColumnName[i] = i - 3 + "";
         }
         return initColumnName;
@@ -597,6 +609,21 @@ public class MianFrame extends Application {
         return label;
     }
 
+    private String[][] resultForm(Double[][] result,int type){
+        String[][] data;
+       if(type==1){
+         data = trianTableVales;
+           for(int i=0;i<data.length;i++)
+               data[i][3]=result[i][0]+"";
+       }
+        else{
+            data = testTableVales;
+            for(int i=0;i<data.length;i++)
+                data[i][3]=result[i][0]+"";
+        }
+        return data;
+    }
+
     /**
      * 表格数据导出
      *
@@ -609,13 +636,15 @@ public class MianFrame extends Application {
             data = new Double[trianTableVales.length][trianTableVales[0].length - 4];
             for (int i = 0; i < data.length; i++)
                 for (int j = 4; j < trianTableVales[0].length; j++) {
-                    data[i][j - 4] = Double.valueOf(trianTableVales[i][j]);
+                    if(trianTableVales[i][j]!=null)
+                    data[i][j - 4] = Double.parseDouble(trianTableVales[i][j]);
                 }
         } else {
             data = new Double[testTableVales.length][testTableVales[0].length - 4];
             for (int i = 0; i < data.length; i++)
                 for (int j = 4; j < testTableVales[0].length; j++) {
-                    data[i][j - 4] = Double.valueOf(testTableVales[i][j]);
+                    if(testTableVales[i][j]!=null&&testTableVales[i][j]!="")
+                    data[i][j - 4] = Double.parseDouble(testTableVales[i][j]);
                 }
         }
         return data;

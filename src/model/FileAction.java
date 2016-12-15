@@ -27,6 +27,7 @@ public final class FileAction {
         dataList.add(name);
         while ((line = read.readLine()) != null) {
             String[] subLine = line.split(",");
+
             dataList.add(subLine);
         }
         fileData.put(file.getName(), dataList);
@@ -63,7 +64,6 @@ public final class FileAction {
                 for (int j = 0; j < tableData[i].length; j++) {
                     if (tableData[i][j] != null) {
                         out.write((tableData[i][j]));
-                        System.out.println("i:" + i + "," + "j:" + j + ":" + tableData[i][j]);
                     } else
                         out.write((""));
                     if (j != tableData[i].length - 1)

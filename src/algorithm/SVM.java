@@ -96,7 +96,7 @@ public class SVM {
         Double[][] returnResult = new Double[result.size()][1];
         for(int i = 0;i<result.size();i++)
         {
-            returnResult[i][1] = result.get(i);
+            returnResult[i][0] = result.get(i);
         }
         return returnResult;
 
