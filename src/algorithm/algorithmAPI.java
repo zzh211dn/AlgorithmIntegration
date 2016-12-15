@@ -34,13 +34,14 @@ public class algorithmAPI {
         return result;
     }
 
-    public Double[][] getSVMResult(Double[][] trainData,Double[][] trainlabel,int svm_type,int kener_type ,double[][] testData)
+    public Double[][] getSVMResult(Double[][] trainData,Double[][] trainlabel,int svm_type,int kener_type ,Double[][] testData)
     {
         SVM svm = new SVM();
         svm.trainSVM(Double2double(trainData),Double2double(trainlabel),svm_type,kener_type);
-        result = svm.computeSVM(testData);
+        result = svm.computeSVM((Double2double(testData)));
         return result;
     }
+
 
     public Double[][] getPCAResult(Double[][] data) {
         PCA callPCA = new PCA();
@@ -49,17 +50,17 @@ public class algorithmAPI {
     }
 
     /**
-    *  返回 key = [1.0, 2.0, 3.0, 3.0] String 类型，value = type
-    */
+     *  杩斿洖 key = [1.0, 2.0, 3.0, 3.0] String 绫诲瀷锛寁alue = type
+     */
     public TreeMap<String,Integer> getKemeansResult(Double[][] data,int k ) {
         Kmeans callKmeans = new Kmeans();
         return callKmeans.computeKmeans(Double2double(data),k);
     }
 
     /**
-    * bpnn直接传入特征集，label，测试集，隐藏层数，迭代次数。
-    * 返回预测分类结果
-    */
+     * bpnn鐩存帴浼犲叆鐗瑰緛闆嗭紝label锛屾祴璇曢泦锛岄殣钘忓眰鏁帮紝杩唬娆℃暟銆?
+     * 杩斿洖棰勬祴鍒嗙被缁撴灉
+     */
     public Double[][] getBPNNResult(Double[][] trainData,Double[][] lable,Double[][] testData,int hiddenLayer,int iterateTimes)
     {
         BPNN bpnn = new BPNN();
