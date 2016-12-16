@@ -48,6 +48,8 @@ public class MianFrame extends Application {
     String[] trianColumnNames, testColumnNames;
     String[][] trianTableVales, testTableVales;
     List<String[]> zyzData;
+    Double[][] testResult;
+    Double[][] trianResult;
     private HashMap<String, List<String[]>> trianFileData;
     private HashMap<String, List<String[]>> testFileData;
     FileAction fileAction = new FileAction();
@@ -55,7 +57,8 @@ public class MianFrame extends Application {
     Button testAddButton = new Button("添加");
     static HashMap<String, String> dataDir;
     algorithmAPI algorithmAPI = new algorithmAPI();
-
+    double width;
+    double high;
     public static void main(String[] args) {
         launch(args);
     }
@@ -63,9 +66,8 @@ public class MianFrame extends Application {
     @Override
     public void start(Stage stage) {
 
-
-        double width = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
-        double high = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+        width = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+        high = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
         stage.setWidth(width);
         stage.setHeight(high);
         stage.setTitle("算法软件");
@@ -173,8 +175,6 @@ public class MianFrame extends Application {
                 testColumnNames = initZYZColumnNames(zyzData);
                 testAddButton.setDisable(true);
             }
-            System.out.println("表长："+testColumnNames.length);
-            System.out.println("数据长："+testTableVales[0].length);
             initTable(testColumnNames, testTableVales, 2);
             vbox.setVisible(true);
         });
@@ -200,6 +200,7 @@ public class MianFrame extends Application {
                 trianColumnNames = initZYZColumnNames(zyzData);
             }
             initTable(trianColumnNames, trianTableVales, 1);
+
         });
 
         /**
@@ -234,7 +235,6 @@ public class MianFrame extends Application {
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
                     "zyz 文件 (*.zyz)", "*.zyz");
             fileSaveChooser.getExtensionFilters().add(extFilter);
-
             File file = fileSaveChooser.showSaveDialog(stage);
             if (file != null) {
                 fileAction.saveData(file, trianTableVales);
@@ -245,8 +245,27 @@ public class MianFrame extends Application {
          *PCA方法调用
          */
         addPCA.setOnAction(event -> {
-
-
+            trianResult = algorithmAPI.getPCAResult(dataOut(1));
+            testResult = algorithmAPI.getPCAResult(dataOut(2));
+            trianTableVales = resultForm(trianResult, 1);
+            testTableVales = resultForm(testResult, 2);
+            Stage pcaStage = new Stage();
+            Scene pcaScence = new Scene(new Group(),width/2,high/2);
+            GridPane grid = new GridPane();
+            grid.setVgap(2);
+            grid.setHgap(4);
+            Label trianLabel = new Label("训练集");
+            Button addTrian = new Button();
+            Label testLabel = new Label("测试集");
+            Button addTest = new Button();
+            grid.add(trianLabel,0,0);
+            grid.add(addTrian,1,0);
+            grid.add(testLabel,0,3);
+            grid.add(addTest,1,3);
+            Group root = (Group) pcaScence.getRoot();
+            root.getChildren().add(grid);
+            pcaStage.setScene(pcaScence);
+            pcaStage.show();
         });
 
         /**
@@ -278,11 +297,11 @@ public class MianFrame extends Application {
             coreComboBox.setValue("Linear");
 
             button.setOnAction(event1 -> {
-                Double[][] testResult = algorithmAPI.getSVMResult(dataOut(1), getLabel(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, dataOut(2));
-                Double[][] trianResul = algorithmAPI.getSVMResult(dataOut(1), getLabel(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, dataOut(1));
-                trianTableVales = resultForm(trianResul,1);
+                testResult = algorithmAPI.getSVMResult(dataOut(1), getLabel(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, dataOut(2));
+                trianResult = algorithmAPI.getSVMResult(dataOut(1), getLabel(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, dataOut(1));
+                trianTableVales = resultForm(trianResult, 1);
                 initTable(trianColumnNames, trianTableVales, 1);
-                testTableVales = resultForm(testResult,2);
+                testTableVales = resultForm(testResult, 2);
                 initTable(testColumnNames, testTableVales, 2);
                 svmStage.close();
 
@@ -398,7 +417,7 @@ public class MianFrame extends Application {
         int mapLength = fileData.size();
         Iterator iterator = fileData.values().iterator();
         List<String[]> sigData = (List<String[]>) iterator.next();
-        int fileLength = sigData.size()-1;
+        int fileLength = sigData.size() - 1;
 
         String[][] tableData = new String[mapLength][fileLength + 4];
 
@@ -428,10 +447,10 @@ public class MianFrame extends Application {
 
             String[] fileName = name.iterator().next();
             String label;
-            if(fileName[1]!=null&&dataDir!=null)
-            label = dataDir.get(fileName[1]);
+            if (fileName[1] != null && dataDir != null)
+                label = dataDir.get(fileName[1]);
             else
-            label = "";
+                label = "";
             tableData[n][2] = label;
             n++;
         }
@@ -470,23 +489,23 @@ public class MianFrame extends Application {
      */
     private boolean initChooserData(List<File> fileList, HashMap<String, List<String[]>> fileData, String dirName) {
 
-            if (fileList.get(0).getName().endsWith(".csv") | fileList.get(0).getName().endsWith(".txt") | fileList.get(0).getName().endsWith(".CSV") | fileList.get(0).getName().endsWith(".TXT")) {
-                for (int i = 0; i < fileList.size(); i++) {
-                    try {
-                        fileAction.readCSVData(fileList.get(i), fileData, dirName);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                return true;
-            } else {
+        if (fileList.get(0).getName().endsWith(".csv") | fileList.get(0).getName().endsWith(".txt") | fileList.get(0).getName().endsWith(".CSV") | fileList.get(0).getName().endsWith(".TXT")) {
+            for (int i = 0; i < fileList.size(); i++) {
                 try {
-                    zyzData = fileAction.readZYZData(fileList.get(0));
+                    fileAction.readCSVData(fileList.get(i), fileData, dirName);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                return false;
             }
+            return true;
+        } else {
+            try {
+                zyzData = fileAction.readZYZData(fileList.get(0));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
     }
 
     /**
@@ -515,7 +534,7 @@ public class MianFrame extends Application {
         initColumnName[1] = "文件名";
         initColumnName[2] = "实际值";
         initColumnName[3] = "目标值";
-        for (int i = 4; i < fileLength+3; i++) {
+        for (int i = 4; i < fileLength + 3; i++) {
             initColumnName[i] = i - 3 + "";
         }
         return initColumnName;
@@ -609,17 +628,16 @@ public class MianFrame extends Application {
         return label;
     }
 
-    private String[][] resultForm(Double[][] result,int type){
+    private String[][] resultForm(Double[][] result, int type) {
         String[][] data;
-       if(type==1){
-         data = trianTableVales;
-           for(int i=0;i<data.length;i++)
-               data[i][3]=result[i][0]+"";
-       }
-        else{
+        if (type == 1) {
+            data = trianTableVales;
+            for (int i = 0; i < data.length; i++)
+                data[i][3] = result[i][0] + "";
+        } else {
             data = testTableVales;
-            for(int i=0;i<data.length;i++)
-                data[i][3]=result[i][0]+"";
+            for (int i = 0; i < data.length; i++)
+                data[i][3] = result[i][0] + "";
         }
         return data;
     }
@@ -636,15 +654,15 @@ public class MianFrame extends Application {
             data = new Double[trianTableVales.length][trianTableVales[0].length - 4];
             for (int i = 0; i < data.length; i++)
                 for (int j = 4; j < trianTableVales[0].length; j++) {
-                    if(trianTableVales[i][j]!=null)
-                    data[i][j - 4] = Double.parseDouble(trianTableVales[i][j]);
+                    if (trianTableVales[i][j] != null)
+                        data[i][j - 4] = Double.parseDouble(trianTableVales[i][j]);
                 }
         } else {
             data = new Double[testTableVales.length][testTableVales[0].length - 4];
             for (int i = 0; i < data.length; i++)
                 for (int j = 4; j < testTableVales[0].length; j++) {
-                    if(testTableVales[i][j]!=null&&testTableVales[i][j]!="")
-                    data[i][j - 4] = Double.parseDouble(testTableVales[i][j]);
+                    if (testTableVales[i][j] != null && testTableVales[i][j] != "")
+                        data[i][j - 4] = Double.parseDouble(testTableVales[i][j]);
                 }
         }
         return data;
