@@ -9,10 +9,11 @@ import com.smooth.gui.SmoothGUI;
 import javafx.application.Application;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
+import javafx.geometry.*;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.GridPane;
@@ -26,6 +27,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.TextField;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -245,23 +247,50 @@ public class MianFrame extends Application {
          *PCA方法调用
          */
         addPCA.setOnAction(event -> {
-            trianResult = algorithmAPI.getPCAResult(dataOut(1));
+            /*trianResult = algorithmAPI.getPCAResult(dataOut(1));
             testResult = algorithmAPI.getPCAResult(dataOut(2));
             trianTableVales = resultForm(trianResult, 1);
-            testTableVales = resultForm(testResult, 2);
+            testTableVales = resultForm(testResult, 2);*/
             Stage pcaStage = new Stage();
             Scene pcaScence = new Scene(new Group(),width/2,high/2);
             GridPane grid = new GridPane();
             grid.setVgap(2);
             grid.setHgap(4);
-            Label trianLabel = new Label("训练集");
-            Button addTrian = new Button();
-            Label testLabel = new Label("测试集");
-            Button addTest = new Button();
+            Label trianLabel = new Label("训练集: ");
+            Button addTrian = new Button("删除");
+            Label testLabel = new Label("测试集: ");
+            Button addTest = new Button("删除");
+
+           String[] pcaTrianColumnNames = initPCAColumnNames(trianResult);
+           DefaultTableModel pacaTrianTableModel = new DefaultTableModel(trianResult, pcaTrianColumnNames);
+           JTable pcaTrianTable = new JTable(pacaTrianTableModel);
+            pcaTrianTable.setRowHeight(50);
+            pcaTrianTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+            initColumn(pcaTrianTable);
+           JScrollPane pcaTrianScroll = new JScrollPane(pcaTrianTable);
+            pcaTrianScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            SwingNode pcaTrianSwingNode = new SwingNode();
+            pcaTrianSwingNode.setContent(pcaTrianScroll);
+
+            String[] pcaTestColumnNames = initPCAColumnNames(testResult);
+            DefaultTableModel pacaTestTableModel = new DefaultTableModel(testResult, pcaTestColumnNames);
+            JTable pcaTestTable = new JTable(pacaTestTableModel);
+            pcaTestTable.setRowHeight(50);
+            pcaTestTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+            initColumn(pcaTestTable);
+            JScrollPane pcaTestScroll = new JScrollPane(pcaTestTable);
+            pcaTestScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            SwingNode pcaTestSwingNode = new SwingNode();
+            pcaTestSwingNode.setContent(pcaTestScroll);
+
             grid.add(trianLabel,0,0);
             grid.add(addTrian,1,0);
+            grid.add(pcaTrianSwingNode,0,2);
             grid.add(testLabel,0,3);
             grid.add(addTest,1,3);
+            grid.add(pcaTestSwingNode,0,4);
             Group root = (Group) pcaScence.getRoot();
             root.getChildren().add(grid);
             pcaStage.setScene(pcaScence);
@@ -323,6 +352,41 @@ public class MianFrame extends Application {
             svmStage.show();
         });
 
+        addBPNN.setOnAction(event -> {
+            Stage bpnnStage = new Stage();
+            GridPane grid = new GridPane();
+            grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+            grid.setVgap(3);
+            grid.setHgap(1);
+            Scene bpnnScene = new Scene(grid,200,100);
+
+            final javafx.scene.control.TextField hiddenLayer = new javafx.scene.control.TextField();
+            hiddenLayer.setPromptText("请输入隐藏层数");
+            hiddenLayer.deselect();
+            GridPane.setConstraints(hiddenLayer, 0, 0);
+            grid.getChildren().add(hiddenLayer);
+
+            final javafx.scene.control.TextField iterateTimes = new javafx.scene.control.TextField();
+            iterateTimes.setPromptText("请输入迭代次数");
+            GridPane.setConstraints(iterateTimes, 0, 1);
+            grid.getChildren().add(iterateTimes);
+
+            Button button = new Button("确定");
+            GridPane.setConstraints(button, 0, 2);
+            grid.getChildren().add(button);
+            bpnnStage.setScene(bpnnScene);
+            bpnnStage.show();
+
+            button.setOnAction(event1 -> {
+                trianResult = algorithmAPI.getBPNNResult(dataOut(1),getLabel(),dataOut(1),Integer.valueOf(hiddenLayer.getText()),Integer.valueOf(iterateTimes.getText()));
+                testResult = algorithmAPI.getBPNNResult(dataOut(1),getLabel(),dataOut(2),Integer.valueOf(hiddenLayer.getText()),Integer.valueOf(iterateTimes.getText()));
+                trianTableVales = resultForm(trianResult, 1);
+                initTable(trianColumnNames, trianTableVales, 1);
+                testTableVales = resultForm(testResult, 2);
+                initTable(testColumnNames, testTableVales, 2);
+                bpnnStage.close();
+            });
+        });
         ((VBox) scene.getRoot()).getChildren().addAll(menuBar, trianBox, testBox);
         stage.setScene(scene);
         stage.show();
@@ -576,6 +640,24 @@ public class MianFrame extends Application {
         }
         return initColumnName;
     }
+
+    /**
+     * 生成PCA结果列标签
+     * @param pcaResult
+     * @return
+     */
+    private String[] initPCAColumnNames(Double[][] pcaResult){
+        String[] initColumnName = new String[pcaResult[0].length+4];
+        initColumnName[0] = "序号";
+        initColumnName[1] = "文件名";
+        initColumnName[2] = "实际值";
+        initColumnName[3] = "目标值";
+        for (int i = 4; i < pcaResult[0].length+4; i++) {
+            initColumnName[i] = i - 3 + "";
+        }
+        return initColumnName;
+    }
+
 
     /**
      * 初始化列属性
