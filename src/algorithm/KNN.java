@@ -24,6 +24,19 @@ public class KNN {
         return result;
     }
 
+    public ArrayList<String> Double2StringList(Double[][] data)
+    {
+        ArrayList<String> result = new ArrayList<>();
+
+        for(int i = 0;i<data.length;i++)
+        {
+            result.add(data[i][0].toString());
+        }
+        return result;
+    }
+
+
+
 
     /**
      * 设置优先级队列的比较函数，距离越大，优先级越高

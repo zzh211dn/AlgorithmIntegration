@@ -74,14 +74,24 @@ public class algorithmAPI {
         result = bpnn.computeBPNN(Double2double(testData));
         return result;
     }
-
+    /**
+     * bpnn算法
+     * @param  datas 训练集； 以行为文件单位
+     * @param  Label  训练集标签   格式为 Label[i][0],只有一列
+     * @param  testDatas   测试集 以行为文件单位
+     * @param  k  距离
+     * @return  Double[i][0] 只有一列，每一行代表一个文件的结果
+     */
     public Double[][] getKNNResult(Double[][] datas, Double[][] testDatas, Double[][] Label, int k)
     {
         KNN knn = new KNN();
         ArrayList<ArrayList<Double>> trainData = knn.Double2List(datas);
+        ArrayList<String> trainLabel = knn.Double2StringList(Label);
         ArrayList<ArrayList<Double>> testData = knn.Double2List(testDatas);
-        ArrayList<ArrayList<Double>> trainLabel = knn.Double2List(Label);
-//        result = knn.knn(trainData,testData,trainLabel,k);
+        for(int i = 0;i<testData.size();i++)
+        {
+            result[i][0] = Double.valueOf(knn.knn(trainData,testData.get(i),trainLabel,k));
+        }
         return result;
     }
 
