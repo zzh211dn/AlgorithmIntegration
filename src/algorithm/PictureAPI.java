@@ -58,13 +58,13 @@ public class PictureAPI {
             for (int i = 0; i < datas.length; i++) {
                 for (int j = 0; j < datas[0].length; j++) {
                     datas[i][j] = r.nextDouble();
-                    System.out.print(datas[i][j]+"    ");
+//                    System.out.print(datas[i][j]+"    ");
                 }
-                System.out.println();
+//                System.out.println();
             }
             arrayList.add(datas);
         }
-        System.out.println("next");
+//        System.out.println("next");
         new PictureAPI().getScatterResult(arrayList);
 
     }

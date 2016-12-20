@@ -48,12 +48,9 @@ public class ScatterPlot3d {
 
             for(int i = 0; i < count; ++i) {
                 s.add(datas[i][0], datas[i][1],  datas[i][2]);//放入xyz数据
-                System.out.println(datas[i][0]+"  "+datas[i][1]+"  "+datas[i][2]);
+//                System.out.println(datas[i][0]+"  "+datas[i][1]+"  "+datas[i][2]);
             }
 
             return s;
         }
-
-
-
 }
