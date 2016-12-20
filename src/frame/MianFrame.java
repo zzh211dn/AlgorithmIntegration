@@ -9,15 +9,16 @@ import com.smooth.gui.SmoothGUI;
 import javafx.application.Application;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
-import javafx.geometry.*;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -27,7 +28,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.TextField;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -61,6 +61,7 @@ public class MianFrame extends Application {
     algorithmAPI algorithmAPI = new algorithmAPI();
     double width;
     double high;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -102,7 +103,8 @@ public class MianFrame extends Application {
         //添加分析算法子菜单
         javafx.scene.control.MenuItem addPLS = new javafx.scene.control.MenuItem("偏最小二乘");
         javafx.scene.control.MenuItem addPCA = new javafx.scene.control.MenuItem("主成分分析");
-        menuAnal.getItems().addAll(addPCA, addPLS);
+        javafx.scene.control.MenuItem addMAD = new javafx.scene.control.MenuItem("马氏距离");
+        menuAnal.getItems().addAll(addPCA, addPLS, addMAD);
         //添加分类算法子菜单
         javafx.scene.control.MenuItem addSVM = new javafx.scene.control.MenuItem("支持向量机");
         javafx.scene.control.MenuItem addKNN = new javafx.scene.control.MenuItem("最近邻");
@@ -252,7 +254,7 @@ public class MianFrame extends Application {
             trianTableVales = resultForm(trianResult, 1);
             testTableVales = resultForm(testResult, 2);
             Stage pcaStage = new Stage();
-            Scene pcaScence = new Scene(new Group(),width/2,high/2);
+            Scene pcaScence = new Scene(new Group(), width / 2, high / 2);
             GridPane grid = new GridPane();
             grid.setVgap(2);
             grid.setHgap(4);
@@ -261,14 +263,14 @@ public class MianFrame extends Application {
             Label testLabel = new Label("测试集: ");
             Button addTest = new Button("添加");
 
-           String[] pcaTrianColumnNames = initPCAColumnNames(trianResult);
-           DefaultTableModel pacaTrianTableModel = new DefaultTableModel(trianResult, pcaTrianColumnNames);
-           JTable pcaTrianTable = new JTable(pacaTrianTableModel);
+            String[] pcaTrianColumnNames = initPCAColumnNames(trianResult);
+            DefaultTableModel pacaTrianTableModel = new DefaultTableModel(trianResult, pcaTrianColumnNames);
+            JTable pcaTrianTable = new JTable(pacaTrianTableModel);
             pcaTrianTable.setRowHeight(50);
             pcaTrianTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
             initColumn(pcaTrianTable);
-           JScrollPane pcaTrianScroll = new JScrollPane(pcaTrianTable);
+            JScrollPane pcaTrianScroll = new JScrollPane(pcaTrianTable);
             pcaTrianScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             SwingNode pcaTrianSwingNode = new SwingNode();
             pcaTrianSwingNode.setContent(pcaTrianScroll);
@@ -285,12 +287,12 @@ public class MianFrame extends Application {
             SwingNode pcaTestSwingNode = new SwingNode();
             pcaTestSwingNode.setContent(pcaTestScroll);
 
-            grid.add(trianLabel,0,0);
-            grid.add(addTrian,1,0);
-            grid.add(pcaTrianSwingNode,0,2);
-            grid.add(testLabel,0,3);
-            grid.add(addTest,1,3);
-            grid.add(pcaTestSwingNode,0,4);
+            grid.add(trianLabel, 0, 0);
+            grid.add(addTrian, 1, 0);
+            grid.add(pcaTrianSwingNode, 0, 2);
+            grid.add(testLabel, 0, 3);
+            grid.add(addTest, 1, 3);
+            grid.add(pcaTestSwingNode, 0, 4);
             Group root = (Group) pcaScence.getRoot();
             root.getChildren().add(grid);
             pcaStage.setScene(pcaScence);
@@ -352,13 +354,16 @@ public class MianFrame extends Application {
             svmStage.show();
         });
 
+        /**
+         * BPNN方法调用
+         */
         addBPNN.setOnAction(event -> {
             Stage bpnnStage = new Stage();
             GridPane grid = new GridPane();
             grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
             grid.setVgap(3);
             grid.setHgap(1);
-            Scene bpnnScene = new Scene(grid,200,100);
+            Scene bpnnScene = new Scene(grid, 200, 100);
 
             final javafx.scene.control.TextField hiddenLayer = new javafx.scene.control.TextField();
             hiddenLayer.setPromptText("请输入隐藏层数");
@@ -378,8 +383,8 @@ public class MianFrame extends Application {
             bpnnStage.show();
 
             button.setOnAction(event1 -> {
-                trianResult = algorithmAPI.getBPNNResult(dataOut(1),getLabel(),dataOut(1),Integer.valueOf(hiddenLayer.getText()),Integer.valueOf(iterateTimes.getText()));
-                testResult = algorithmAPI.getBPNNResult(dataOut(1),getLabel(),dataOut(2),Integer.valueOf(hiddenLayer.getText()),Integer.valueOf(iterateTimes.getText()));
+                trianResult = algorithmAPI.getBPNNResult(dataOut(1), getLabel(), dataOut(1), Integer.valueOf(hiddenLayer.getText()), Integer.valueOf(iterateTimes.getText()));
+                testResult = algorithmAPI.getBPNNResult(dataOut(1), getLabel(), dataOut(2), Integer.valueOf(hiddenLayer.getText()), Integer.valueOf(iterateTimes.getText()));
                 trianTableVales = resultForm(trianResult, 1);
                 initTable(trianColumnNames, trianTableVales, 1);
                 testTableVales = resultForm(testResult, 2);
@@ -387,6 +392,74 @@ public class MianFrame extends Application {
                 bpnnStage.close();
             });
         });
+        /**
+         * 马氏距离方法调用
+         */
+        addMAD.setOnAction(event -> {
+            javafx.scene.control.TextArea jta = new javafx.scene.control.TextArea();
+            String[][] data;
+            Double[] dataA;
+            Double[] dataB;
+            Double sumA = Double.valueOf(0);
+            String nameA;
+            String nameB;
+            FileChooser fileChooser = new FileChooser();
+            configureOpenFileChooser(fileChooser);
+            java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
+            HashMap<String, List<String[]>> madFileData = new HashMap<>();
+            initChooserData(fileList, madFileData, "");
+            data = map2Array(madFileData, 2, "");
+
+            for (int k = 0; k < data.length; k++) {
+                dataA = new Double[data[k].length - 4];
+                nameA = data[k][1];
+                for (int i = 0; i < data[k].length-4; i++) {
+                    dataA[i] = Double.valueOf(data[k][i+4]);
+                    sumA += dataA[i];
+                }
+                for (int j = k; j < data.length; j++) {
+                    dataB = new Double[data[j].length - 4];
+                    nameB = data[j][1];
+                    for (int l = 0; l < data[j].length-4; l++) {
+                        dataB[l] = Double.valueOf(data[j][l+4]);
+                    }
+                    Double mean = sumA / dataA.length;
+                    Double stdSum = Double.valueOf(0);
+                    for (int i = 0; i < dataA.length; i++) {
+                        stdSum += Math.pow(dataA[i] - mean, 2);
+                    }
+                    int length = dataA.length;
+                    Double stdPower2 = stdSum / length;
+                    Double madPower2 = Double.valueOf(0);
+
+                    for (int i = 0; i <length; i++) {
+                        madPower2 += Math.pow(dataA[i] - dataB[i], 2) / stdPower2;
+                    }
+                    Double mad = Math.pow(madPower2, 0.5);
+                    jta.appendText("计算元组: "+nameA+"和"+nameB+"的马氏距离为："+mad);
+                    jta.appendText("\r\n");
+                }
+            }
+
+            //实例化文本框
+            jta.setWrapText(true);           //在文本框上添加滚动条
+            jta.setFont(new javafx.scene.text.Font("Arial", 18));
+            jta.setPrefSize(900,250);
+
+            Stage madStage = new Stage();
+            GridPane grid = new GridPane();
+            grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+            grid.setVgap(1);
+            grid.setHgap(1);
+            Scene madScene = new Scene(grid, 950, 290);
+            GridPane.setConstraints(jta, 0, 0);
+            grid.getChildren().add(jta);
+            madStage.setScene(madScene);
+            madStage.setResizable(false);
+            madStage.show();
+
+        });
+
         ((VBox) scene.getRoot()).getChildren().addAll(menuBar, trianBox, testBox);
         stage.setScene(scene);
         stage.show();
@@ -515,8 +588,8 @@ public class MianFrame extends Application {
                 label = dataDir.get(fileName[1]);
             else
                 label = "";
-            if(type == 1)
-            tableData[n][2] = label;
+            if (type == 1)
+                tableData[n][2] = label;
             n++;
         }
 
@@ -644,16 +717,17 @@ public class MianFrame extends Application {
 
     /**
      * 生成PCA结果列标签
+     *
      * @param pcaResult
      * @return
      */
-    private String[] initPCAColumnNames(Double[][] pcaResult){
-        String[] initColumnName = new String[pcaResult[0].length+4];
+    private String[] initPCAColumnNames(Double[][] pcaResult) {
+        String[] initColumnName = new String[pcaResult[0].length + 4];
         initColumnName[0] = "序号";
         initColumnName[1] = "文件名";
         initColumnName[2] = "实际值";
         initColumnName[3] = "目标值";
-        for (int i = 4; i < pcaResult[0].length+4; i++) {
+        for (int i = 4; i < pcaResult[0].length + 4; i++) {
             initColumnName[i] = i - 3 + "";
         }
         return initColumnName;
@@ -709,7 +783,6 @@ public class MianFrame extends Application {
             label[i][0] = Double.valueOf(trianTableVales[i][2]);
         return label;
     }
-
 
 
     private String[][] resultForm(Double[][] result, int type) {
