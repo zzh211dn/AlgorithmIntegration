@@ -4,6 +4,7 @@ package frame;
  * Created by zzh on 2016/12/7.
  */
 
+import algorithm.PictureAPI;
 import algorithm.algorithmAPI;
 import com.smooth.gui.SmoothGUI;
 import javafx.application.Application;
@@ -15,10 +16,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -28,11 +27,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.geom.Arc2D;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
 
 public class MianFrame extends Application {
@@ -90,6 +88,14 @@ public class MianFrame extends Application {
         javafx.scene.control.Menu menuRegression = new javafx.scene.control.Menu("回归算法");
         // --- Menu Maping
         javafx.scene.control.Menu menuMaping = new javafx.scene.control.Menu("Maping");
+        // --- Menu 画图
+        javafx.scene.control.Menu menuPic  = new javafx.scene.control.Menu("画图");
+
+        //添加画图
+        javafx.scene.control.MenuItem addChating = new javafx.scene.control.MenuItem("绘制二维图");
+        javafx.scene.control.MenuItem addRectangle = new javafx.scene.control.MenuItem("绘制矩阵图");
+        javafx.scene.control.MenuItem addScatter = new javafx.scene.control.MenuItem("绘制三维图");
+        menuPic.getItems().addAll(addChating,addRectangle,addScatter);
 
         //添加数据预处理菜单
         javafx.scene.control.MenuItem menuItemPre = new javafx.scene.control.MenuItem("数据预处理");
@@ -114,11 +120,10 @@ public class MianFrame extends Application {
         javafx.scene.control.MenuItem addBPNN = new javafx.scene.control.MenuItem("人工神经网络");
         menuRegression.getItems().addAll(addBPNN);
         //添加Maping子菜单
-        javafx.scene.control.MenuItem addPrintPic = new javafx.scene.control.MenuItem("画图");
         javafx.scene.control.MenuItem addKmeans = new javafx.scene.control.MenuItem("K-聚类");
-        menuMaping.getItems().addAll(addPrintPic, addKmeans);
+        menuMaping.getItems().addAll(addKmeans);
         //添加各菜单到菜单栏
-        menuBar.getMenus().addAll(menuFile, menuPre, menuAnal, menuClassif, menuRegression, menuMaping);
+        menuBar.getMenus().addAll(menuFile, menuPre, menuAnal, menuClassif, menuRegression, menuMaping,menuPic);
         menuBar.autosize();
 
         // create container
@@ -141,7 +146,7 @@ public class MianFrame extends Application {
             zyzData = new LinkedList<>();
             String dirName = "";
             FileChooser fileChooser = new FileChooser();
-            configureOpenFileChooser(fileChooser);
+            configureOpenFileChooser(fileChooser,1);
             java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
 
             if (fileList != null)
@@ -167,7 +172,7 @@ public class MianFrame extends Application {
         addTestSet.setOnAction((ActionEvent t) -> {
             zyzData = new LinkedList<>();
             FileChooser fileChooser = new FileChooser();
-            configureOpenFileChooser(fileChooser);
+            configureOpenFileChooser(fileChooser,1);
             java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
             testFileData = new HashMap<>();
             if (initChooserData(fileList, testFileData, "")) {
@@ -189,7 +194,7 @@ public class MianFrame extends Application {
         trianAddButton.setOnAction(event -> {
             String dirName = "";
             FileChooser fileChooser = new FileChooser();
-            configureOpenFileChooser(fileChooser);
+            configureOpenFileChooser(fileChooser,1);
             java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
             if (fileList != null)
                 dirName = fileList.get(0).getParentFile().getAbsolutePath();
@@ -212,7 +217,7 @@ public class MianFrame extends Application {
          */
         testAddButton.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
-            configureOpenFileChooser(fileChooser);
+            configureOpenFileChooser(fileChooser,1);
             java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
             String dirName = fileChooser.getInitialDirectory().getAbsolutePath();
             initLabel(dirName);
@@ -392,6 +397,7 @@ public class MianFrame extends Application {
                 bpnnStage.close();
             });
         });
+
         /**
          * 马氏距离方法调用
          */
@@ -404,7 +410,7 @@ public class MianFrame extends Application {
             String nameA;
             String nameB;
             FileChooser fileChooser = new FileChooser();
-            configureOpenFileChooser(fileChooser);
+            configureOpenFileChooser(fileChooser,1);
             java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
             HashMap<String, List<String[]>> madFileData = new HashMap<>();
             initChooserData(fileList, madFileData, "");
@@ -440,9 +446,8 @@ public class MianFrame extends Application {
                     jta.appendText("\r\n");
                 }
             }
-
             //实例化文本框
-            jta.setWrapText(true);           //在文本框上添加滚动条
+            jta.setWrapText(true);
             jta.setFont(new javafx.scene.text.Font("Arial", 18));
             jta.setPrefSize(900,250);
 
@@ -457,16 +462,43 @@ public class MianFrame extends Application {
             madStage.setScene(madScene);
             madStage.setResizable(false);
             madStage.show();
+        });
 
+        /**
+         * 二维画图调用
+         */
+        addChating.setOnAction(event -> {
+            PictureAPI pictureAPI = new PictureAPI();
+            FileChooser fileChooser = new FileChooser();
+            configureOpenFileChooser(fileChooser,2);
+            java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
+            HashMap<String, List<String[]>> picFileData = new HashMap<>();
+            initChooserData(fileList, picFileData, "");
+            ArrayList<Double[][]> picMap =  picMap(picFileData);
+            pictureAPI.getChatingResult(picMap);
+        });
+        /**
+         * 三维画图调用
+         */
+        addScatter.setOnAction(event -> {
+         /*   PictureAPI pictureAPI = new PictureAPI();
+            FileChooser fileChooser = new FileChooser();
+            configureOpenFileChooser(fileChooser,2);
+            File file = fileChooser.showOpenDialog(stage);
+            HashMap<String, List<String[]>> picFileData = new HashMap<>();
+            initChooserData(fileList, picFileData, "");
+            ArrayList<Double[][]> picMap =  picMap(picFileData);
+            pictureAPI.getChatingResult(picMap);*/
         });
 
         ((VBox) scene.getRoot()).getChildren().addAll(menuBar, trianBox, testBox);
         stage.setScene(scene);
         stage.show();
-
-
     }
 
+
+
+    
 
     /**
      * 表格初始化方法
@@ -530,16 +562,17 @@ public class MianFrame extends Application {
      * @param fileChooser
      */
     private static void configureOpenFileChooser(
-            final FileChooser fileChooser) {
+            final FileChooser fileChooser,int type) {
         fileChooser.setTitle("文件选择");
         fileChooser.setInitialDirectory(
                 new File(System.getProperty("user.home"))
         );
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("csv文件,", "*.csv"),
-                new FileChooser.ExtensionFilter("zyz文件,", "*.zyz"),
                 new FileChooser.ExtensionFilter("txt文件,", "*.txt")
         );
+        if(type==1)
+        fileChooser.getExtensionFilters().add( new FileChooser.ExtensionFilter("zyz文件,", "*.zyz"));
     }
 
 
@@ -592,7 +625,6 @@ public class MianFrame extends Application {
                 tableData[n][2] = label;
             n++;
         }
-
         return tableData;
     }
 
@@ -761,14 +793,34 @@ public class MianFrame extends Application {
         colRes.setMaxWidth(100);
         for (int i = 1; i < table.getColumnCount() - 4; i++) {
             col = table.getColumn(i + "");
-
             col.setMinWidth(50);
             col.setPreferredWidth(50);
             col.setMaxWidth(100);
+        }
+    }
 
+    private ArrayList<Double [][]> picMap(HashMap<String, List<String[]>> picMap){
+        ArrayList<Double[][]> doubleMap = new ArrayList<>();
+        Iterator ite = picMap.values().iterator();
+        while (ite.hasNext()){
+            List<String[]> stringData = (List<String[]>) ite.next();
+            Double[][] data = new Double[stringData.size()][stringData.get(0).length];
+            Iterator listIte = stringData.iterator();
+            int j = 0;
+            listIte.next();
+            while (listIte.hasNext()) {
+                String[] sigData = (String[]) listIte.next();
+                for(int i=0;i<sigData.length;i++){
+                    data[j][i] = Double.valueOf(sigData[i]);
+                }
+                j++;
+            }
 
+            doubleMap.add(data);
         }
 
+
+        return doubleMap;
     }
 
     /**
@@ -834,7 +886,6 @@ public class MianFrame extends Application {
     public void dataIn(String[][] data, int type) {
         String[] columnName = initAlgorithmColumnNames(data);
         if (type == 1) {
-
             initTable(columnName, data, 1);
         } else {
             initTable(columnName, data, 2);
