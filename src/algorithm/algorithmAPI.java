@@ -1,4 +1,6 @@
 package algorithm;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 
 
@@ -50,7 +52,7 @@ public class algorithmAPI {
     }
 
     /**
-     *  杩斿洖 key = [1.0, 2.0, 3.0, 3.0] String 绫诲瀷锛寁alue = type
+     *  返回类型 key = [1.0, 2.0, 3.0, 3.0] String ；value = type 即聚类类别
      */
     public TreeMap<String,Integer> getKemeansResult(Double[][] data,int k ) {
         Kmeans callKmeans = new Kmeans();
@@ -58,8 +60,12 @@ public class algorithmAPI {
     }
 
     /**
-     * bpnn鐩存帴浼犲叆鐗瑰緛闆嗭紝label锛屾祴璇曢泦锛岄殣钘忓眰鏁帮紝杩唬娆℃暟銆?
-     * 杩斿洖棰勬祴鍒嗙被缁撴灉
+     * bpnn算法
+     * @param  trainData 训练集；
+     * @param  lable  训练集标签
+     * @param  testData       测试集
+     * @param  hiddenLayer    隐藏层，默认40
+     * @param  iterateTimes    迭代次数，默认1000；
      */
     public Double[][] getBPNNResult(Double[][] trainData,Double[][] lable,Double[][] testData,int hiddenLayer,int iterateTimes)
     {
@@ -69,6 +75,14 @@ public class algorithmAPI {
         return result;
     }
 
-
+    public Double[][] getKNNResult(Double[][] datas, Double[][] testDatas, Double[][] Label, int k)
+    {
+        KNN knn = new KNN();
+        ArrayList<ArrayList<Double>> trainData = knn.Double2List(datas);
+        ArrayList<ArrayList<Double>> testData = knn.Double2List(testDatas);
+        ArrayList<ArrayList<Double>> trainLabel = knn.Double2List(Label);
+//        result = knn.knn(trainData,testData,trainLabel,k);
+        return result;
+    }
 
 }

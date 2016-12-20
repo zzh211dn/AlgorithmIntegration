@@ -12,14 +12,16 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 
 
 public class RectanglePicture extends Application  {
-    public int width = 5;
-    public int height = 5;
+    int rownum = 8;
+    int colnum = 5;
+    private ArrayList<Double [][]> fileType;
 
     public HashMap<Integer,Float[]> hashMap = new HashMap<Integer, Float[]>();
     public HashSet<Float> hashSetR = new HashSet<Float>();
@@ -68,28 +70,31 @@ public class RectanglePicture extends Application  {
     public void start(Stage stage) {
         Group root = new Group();
         Scene scene = new Scene(root, 500, 500, Color.WHITE);
-        int rownum = 10;
-        int colnum = 10;
+
         for(int i = 0;i<rownum;i++)
         {
             for(int j = 0;j<colnum;j++)
             {
                 double h = (scene.getHeight()-50) /rownum;
                 double w = (scene.getWidth()-50) / colnum;
-//                System.out.println("scene.getHeight()"+ scene.getHeight());
-//                System.out.println("scene.getWidth()"+ scene.getWidth());
-//                System.out.println("h:"+ h);
-//                System.out.println("w:"+ w);
-                Rectangle r = new Rectangle(25+h*j, 25+w*i,w ,h);
-                Float[] rgbColor = getRandom(i + j);
+                Rectangle r = new Rectangle(25+ w*j, 25+h*i,w ,h);
+
+                Float[] rgbColor = getRandom(Integer.valueOf(fileType.get(i)[j][0].toString()));
                 Color color = new Color(rgbColor[0], rgbColor[1], rgbColor[2], 0.9);//RGB颜色，参数4最后为透明性
                 r.setFill(color);
                 root.getChildren().add(r);
             }
         }
-        stage.setTitle("JavaFX Scene Graph ");
+        stage.setTitle("Recangle Picture ");
         stage.setScene(scene);
         stage.show();
+    }
+
+    public void drawRectangle(ArrayList<Double [][]> datas, int row, int col)
+    {
+        colnum = col;
+        rownum = row;
+        fileType = datas;
     }
 
     public static void main(String[] args) {

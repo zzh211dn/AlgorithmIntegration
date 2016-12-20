@@ -25,17 +25,17 @@ import static org.encog.util.simple.EncogUtility.formatNeuralData;
  */
 public class BPNN {
 
-    public String trainToError(MLTrain train, double error, int maxIteration) {
+    public void trainToError(MLTrain train, double error, int maxIteration) {
         int epoch = 1;
-        System.out.println("Beginning training...");
+//        System.out.println("Beginning training...");
         String res = "";
         do {
             train.iteration();
             ++epoch;
         } while(train.getError() > error && !train.isTrainingDone() && epoch< maxIteration);
-        res = ("Iteration #" + Format.formatInteger(epoch) + " Error:" + Format.formatPercent(train.getError()) + " Target Error: " + Format.formatPercent(error));
+//        res = ("Iteration #" + Format.formatInteger(epoch) + " Error:" + Format.formatPercent(train.getError()) + " Target Error: " + Format.formatPercent(error));
         train.finishTraining();
-        return res;
+//        return res;
     }
 
     //需要先trainBPNN，然后直接computeBPNN即可。
@@ -54,8 +54,8 @@ public class BPNN {
 
         Integer maxIteration = Integer.valueOf(iterateTimes);
         // Evaluate the neural network.
-        String errorRes = trainToError(train, 0.00001,maxIteration);
-        System.out.println("nexgt=================");
+        trainToError(train, 0.00001,maxIteration);
+//        System.out.println("nexgt=================");
     }
 
     public Double[][] computeBPNN(double[][] pridictDataSet)
@@ -63,14 +63,14 @@ public class BPNN {
         double[][] testLabel = new double[pridictDataSet.length][1];//该testlabel无用。因为算法需要，所以传入空lable
         MLDataSet testingSet = new BasicMLDataSet(pridictDataSet, testLabel);
         EncogUtility.evaluate(network, testingSet);
-        String content = "";
+//        String content = "";
         ArrayList<Double> result = new ArrayList<>();
         Iterator it = testingSet.iterator();
 
         while(it.hasNext()) {
             MLDataPair pair = (MLDataPair)it.next();
             MLData output = network.compute(pair.getInput());
-            content = content+("Actual=" + formatNeuralData(output)+"\r\n");
+//            content = content+("Actual=" + formatNeuralData(output)+"\r\n");
             result.add(Double.parseDouble(formatNeuralData(output)));
         }
         Encog.getInstance().shutdown();

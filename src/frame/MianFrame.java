@@ -304,7 +304,7 @@ public class MianFrame extends Application {
             Stage svmStage = new Stage();
             svmStage.setTitle("选择支持向量机类型：");
             final javafx.scene.control.Button button = new Button("确定");
-            Scene svmScene = new Scene(new Group(), 500, 90);
+            Scene svmScene = new Scene(new Group(), 450, 90);
             final ComboBox svmComboBox = new ComboBox();
             svmComboBox.getItems().addAll(
                     " SupportVectorClassification",
@@ -340,11 +340,11 @@ public class MianFrame extends Application {
             grid.setVgap(2);
             grid.setHgap(4);
 
-            grid.add(new Label("请选择支持向量机类型: "), 0, 0);
-            grid.add(svmComboBox, 1, 0);
-            grid.add(new Label("请选择核函数类型: "), 0, 2);
-            grid.add(coreComboBox, 1, 2);
-            grid.add(button, 2, 3);
+            grid.add(new Label("请选择支持向量机类型: "), 1, 0);
+            grid.add(svmComboBox, 2, 0);
+            grid.add(new Label("请选择核函数类型: "), 1, 2);
+            grid.add(coreComboBox, 2, 2);
+            grid.add(button, 3, 4);
 
             Group root = (Group) svmScene.getRoot();
             root.getChildren().add(grid);

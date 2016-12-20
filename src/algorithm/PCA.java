@@ -146,6 +146,7 @@ public class PCA {
         for(int i=0;i<n;i++){
             total+=temp1[i];
         }
+        System.out.println("total-------------"+total);
         int sum=1;
         temp=temp1[0];
         for(int i=0;i<n;i++){

@@ -35,6 +35,7 @@ package frame;/* ===================
  */
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -62,7 +63,11 @@ public class PrintScatterChart extends JFrame {
     public PrintScatterChart(String title) {
         super(title);
         addWindowListener(new ExitOnClose());
-        getContentPane().add(createDemoPanel());
+    }
+
+    public void getDataSet(ArrayList<Double [][]> datas)
+    {
+        getContentPane().add(createDemoPanel(datas));
     }
 
     /**
@@ -72,10 +77,10 @@ public class PrintScatterChart extends JFrame {
      *
      * @return A panel containing the content for the demo.
      */
-    public static JPanel createDemoPanel() {
+    public static JPanel createDemoPanel(ArrayList<Double [][]> datas) {
         DemoPanel content = new DemoPanel(new BorderLayout());
         content.setPreferredSize(OrsonChartsDemo.DEFAULT_CONTENT_SIZE);
-        XYZDataset dataset = ScatterPlot3d.createDataset();
+        XYZDataset dataset = ScatterPlot3d.createDataset(datas);
         Chart3D chart = ScatterPlot3d.createChart(dataset);
         Chart3DPanel chartPanel = new Chart3DPanel(chart);
         content.setChartPanel(chartPanel);
@@ -90,8 +95,9 @@ public class PrintScatterChart extends JFrame {
      * @param args  command line arguments (ignored).
      */
     public static void main(String[] args) {
-        PrintScatterChart app = new PrintScatterChart("散点图");
-        app.pack();
-        app.setVisible(true);
+//        PrintScatterChart app = new PrintScatterChart("散点图");
+//        app.getDataSet();
+//        app.pack();
+//        app.setVisible(true);
     }
 }

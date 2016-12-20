@@ -12,6 +12,8 @@ import com.orsoncharts.label.StandardXYZLabelGenerator;
 import com.orsoncharts.plot.XYZPlot;
 import com.orsoncharts.renderer.xyz.ScatterXYZRenderer;
 
+import java.util.ArrayList;
+
 /**
  * Created by fish123 on 2016/12/7.
  */
@@ -20,7 +22,7 @@ public class ScatterPlot3d {
         }
 
         public static Chart3D createChart(XYZDataset dataset) {
-            Chart3D chart = Chart3DFactory.createScatterChart("HAHA ", "HEHE", dataset, "X", "Y", "Z");
+            Chart3D chart = Chart3DFactory.createScatterChart("Chart", "", dataset, "X", "Y", "Z");
             XYZPlot plot = (XYZPlot)chart.getPlot();
             plot.setDimensions(new Dimension3D(10.0D, 4.0D, 4.0D));
             plot.setLegendLabelGenerator(new StandardXYZLabelGenerator("%s (%2$,d)"));
@@ -31,22 +33,22 @@ public class ScatterPlot3d {
             return chart;
         }
 
-        public static XYZDataset<String> createDataset() {
-            XYZSeries s1 = createRandomSeries("S1", 20);
-            XYZSeries s2 = createRandomSeries("S2", 50);
-            XYZSeries s3 = createRandomSeries("S3", 150);
+        public static XYZDataset<String> createDataset(ArrayList<Double [][]> datas) {
             XYZSeriesCollection dataset = new XYZSeriesCollection();
-            dataset.add(s1);
-            dataset.add(s2);
-            dataset.add(s3);
+            for(int i = 0;i<datas.size();i++)
+            {
+                XYZSeries s1 = createRandomSeries("S"+i, datas.get(i).length,datas.get(i));
+                dataset.add(s1);
+            }
             return dataset;
         }
 
-        private static XYZSeries<String> createRandomSeries(String name, int count) {
+        private static XYZSeries<String> createRandomSeries(String name, int count,Double[][] datas) {
             XYZSeries s = new XYZSeries(name);
 
             for(int i = 0; i < count; ++i) {
-                s.add(Math.random() * 100.0D, Math.random() / 100.0D, Math.random() * 100.0D);//放入xyz数据
+                s.add(datas[i][0], datas[i][1],  datas[i][2]);//放入xyz数据
+                System.out.println(datas[i][0]+"  "+datas[i][1]+"  "+datas[i][2]);
             }
 
             return s;
