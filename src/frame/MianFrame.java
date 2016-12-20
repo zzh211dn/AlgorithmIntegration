@@ -247,19 +247,19 @@ public class MianFrame extends Application {
          *PCA方法调用
          */
         addPCA.setOnAction(event -> {
-            /*trianResult = algorithmAPI.getPCAResult(dataOut(1));
+            trianResult = algorithmAPI.getPCAResult(dataOut(1));
             testResult = algorithmAPI.getPCAResult(dataOut(2));
             trianTableVales = resultForm(trianResult, 1);
-            testTableVales = resultForm(testResult, 2);*/
+            testTableVales = resultForm(testResult, 2);
             Stage pcaStage = new Stage();
             Scene pcaScence = new Scene(new Group(),width/2,high/2);
             GridPane grid = new GridPane();
             grid.setVgap(2);
             grid.setHgap(4);
             Label trianLabel = new Label("训练集: ");
-            Button addTrian = new Button("删除");
+            Button addTrian = new Button("添加");
             Label testLabel = new Label("测试集: ");
-            Button addTest = new Button("删除");
+            Button addTest = new Button("添加");
 
            String[] pcaTrianColumnNames = initPCAColumnNames(trianResult);
            DefaultTableModel pacaTrianTableModel = new DefaultTableModel(trianResult, pcaTrianColumnNames);
@@ -515,6 +515,7 @@ public class MianFrame extends Application {
                 label = dataDir.get(fileName[1]);
             else
                 label = "";
+            if(type == 1)
             tableData[n][2] = label;
             n++;
         }
@@ -658,7 +659,6 @@ public class MianFrame extends Application {
         return initColumnName;
     }
 
-
     /**
      * 初始化列属性
      *
@@ -709,6 +709,8 @@ public class MianFrame extends Application {
             label[i][0] = Double.valueOf(trianTableVales[i][2]);
         return label;
     }
+
+
 
     private String[][] resultForm(Double[][] result, int type) {
         String[][] data;
