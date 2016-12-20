@@ -1,5 +1,6 @@
 package frame;
 
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import javafx.application.Application;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -30,22 +31,14 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.TimeZone;
 
-public class Charting extends Application {
-    public static void main( String[] args ) {
-        launch();
-    }
-    ArrayList<Double [][]> thisDatas;
-    public boolean drawChat(ArrayList<Double [][]> datas)
+public class Charting {
+//    public static void main( String[] args ) {
+//        launch();
+//    }
+    public static ArrayList<Double [][]> thisDatas = new ArrayList<>();
+    public void drawChat(ArrayList<Double [][]> datas)
     {
         thisDatas = datas;
-        try {
-            launch();
-            return true;
-        }
-        catch (Exception e)
-        {
-            return false;
-        }
     }
 
 
@@ -61,9 +54,11 @@ public class Charting extends Application {
 
     @FXML
     void addSample(XYChart.Series<Number, Number> tempSeries,Double[][] xydata) {
+
         for(int i = 0;i<xydata.length;i++)
         {
             tempSeries.getData().add(new XYChart.Data<Number, Number>(xydata[i][0],xydata[i][1]));// System.currentTimeMillis() - startTime,valueSlider.getValue()
+//            System.out.println(xydata[i][0]+"    "+xydata[i][1]);
         }
 
     }
@@ -74,16 +69,15 @@ public class Charting extends Application {
         chart.getYAxis().setAutoRanging( true );
     }
 
-    @Override
-    public void start( Stage stage ) throws Exception {
+//    @Override
+    public Scene start( ArrayList<Double [][]> datas) throws Exception {
+        thisDatas = datas;
+        System.out.println("thisDatas----"+thisDatas.size());
         FXMLLoader loader = new FXMLLoader( getClass().getResource("../Charting.fxml") );
         Region contentRootRegion = (Region) loader.load();
-
         StackPane root = JFXUtil.createScalePane( contentRootRegion, 960, 540, false );//调整框架大小
         Scene scene = new Scene( root, root.getPrefWidth(), root.getPrefHeight() );
-        stage.setScene( scene );
-        stage.setTitle( "Charting" );
-        stage.show();
+        return scene;
     }
 
     @FXML
@@ -91,13 +85,13 @@ public class Charting extends Application {
         //Set chart to format dates on the X axis
 //        ((StableTicksAxis) chart.getXAxis()).setAutoRangePadding();//设置间隔
         ((StableTicksAxis) chart.getXAxis()).setForceZeroInRange(false);//强制设置X轴不为0开头
+        System.out.println("thisDatas-2222---"+thisDatas.size());
         for(int m = 0;m<thisDatas.size();m++) {
             XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
             series.setName("Date"+m);
             addSample(series,thisDatas.get(m));
             chart.getData().add(series);
         }
-
         chart.setOnMouseMoved( new EventHandler<MouseEvent>() {
             public void handle( MouseEvent mouseEvent ) {
                 double xStart = chart.getXAxis().getLocalToParentTransform().getTx();
@@ -125,7 +119,6 @@ public class Charting extends Application {
             }
         } );
         panner.start();
-
         //Zooming works only via primary mouse button without ctrl held down
         JFXChartUtil.setupZooming( chart, new EventHandler<MouseEvent>() {
             public void handle( MouseEvent mouseEvent ) {
@@ -134,7 +127,6 @@ public class Charting extends Application {
                     mouseEvent.consume();
             }
         } );
-
         JFXChartUtil.addDoublePrimaryClickAutoRangeHandler( chart );
     }
 }

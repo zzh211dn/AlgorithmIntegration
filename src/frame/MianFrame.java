@@ -467,16 +467,42 @@ public class MianFrame extends Application {
         /**
          * 二维画图调用
          */
+//        addChating.setOnAction(event -> {
+//            PictureAPI pictureAPI = new PictureAPI();
+//            FileChooser fileChooser = new FileChooser();
+//            configureOpenFileChooser(fileChooser,2);
+//            java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
+//            HashMap<String, List<String[]>> picFileData = new HashMap<>();
+//            initChooserData(fileList, picFileData, "");
+//            ArrayList<Double[][]> picMap =  picMap(picFileData);
+//            pictureAPI.getChatingResult(picMap);
+//        });
         addChating.setOnAction(event -> {
-            PictureAPI pictureAPI = new PictureAPI();
             FileChooser fileChooser = new FileChooser();
             configureOpenFileChooser(fileChooser,2);
             java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
             HashMap<String, List<String[]>> picFileData = new HashMap<>();
             initChooserData(fileList, picFileData, "");
             ArrayList<Double[][]> picMap =  picMap(picFileData);
-            pictureAPI.getChatingResult(picMap);
+            Charting charting = new Charting();
+            try {
+//                charting.drawChat(picMap);
+                Scene sceneChart = charting.start(picMap);
+                Stage chartStage = new Stage();
+                chartStage.setScene(sceneChart);
+                System.out.println("10-=--=-=-==--=-==");;
+                chartStage.show();
+            }
+            catch (Exception e)
+            {
+                System.out.println(e.toString());
+
+            }
         });
+
+
+
+
         /**
          * 三维画图调用
          */
@@ -498,7 +524,7 @@ public class MianFrame extends Application {
 
 
 
-    
+
 
     /**
      * 表格初始化方法
@@ -572,7 +598,7 @@ public class MianFrame extends Application {
                 new FileChooser.ExtensionFilter("txt文件,", "*.txt")
         );
         if(type==1)
-        fileChooser.getExtensionFilters().add( new FileChooser.ExtensionFilter("zyz文件,", "*.zyz"));
+            fileChooser.getExtensionFilters().add( new FileChooser.ExtensionFilter("zyz文件,", "*.zyz"));
     }
 
 

@@ -10,6 +10,11 @@ import java.util.Random;
 /**
  * Created by syxya on 2016/12/15.
  */
+
+
+
+
+
 public class PictureAPI {
 
     /**
@@ -19,8 +24,11 @@ public class PictureAPI {
      * */
     public void getChatingResult(ArrayList<Double [][]> datas)
     {
+
         Charting charting = new Charting();
+        System.out.println("here");
         charting.drawChat(datas);
+
     }
     /**
      * @param datas 传入二维数组，实际只有一个文件，为了格式统一
@@ -54,7 +62,7 @@ public class PictureAPI {
         Random r = new Random();
         ArrayList<Double[][]> arrayList = new ArrayList<>();
         for(int m = 0;m<3;m++) {
-            Double[][] datas = new Double[4][3];
+            Double[][] datas = new Double[4][2];
             for (int i = 0; i < datas.length; i++) {
                 for (int j = 0; j < datas[0].length; j++) {
                     datas[i][j] = r.nextDouble();
@@ -65,7 +73,7 @@ public class PictureAPI {
             arrayList.add(datas);
         }
 //        System.out.println("next");
-        new PictureAPI().getScatterResult(arrayList);
+        new PictureAPI().getChatingResult(arrayList);
 
     }
 }
