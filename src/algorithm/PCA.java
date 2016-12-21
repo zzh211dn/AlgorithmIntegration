@@ -150,7 +150,7 @@ public class PCA {
         int sum=1;
         temp=temp1[0];
         for(int i=0;i<n;i++){
-            if(temp/total<=0.99999){
+            if(temp/total<=1){
                 temp+=temp1[i+1];
                 sum++;
             }

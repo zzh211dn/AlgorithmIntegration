@@ -11,11 +11,6 @@ import java.util.Random;
 /**
  * Created by syxya on 2016/12/15.
  */
-
-
-
-
-
 public class PictureAPI {
 
     /**
@@ -45,7 +40,7 @@ public class PictureAPI {
      * @param row 需要生成的行数
      * @param  col 需要生成的列数
      * */
-    public Scene getRectangleResult(ArrayList<Double [][]> datas,int row,int col)
+    public Scene getRectangleResult(Double [][] datas,int row,int col)
     {
         RectanglePicture rectanglePicture = new RectanglePicture();
          rectanglePicture.drawRectangle(datas,row,col);

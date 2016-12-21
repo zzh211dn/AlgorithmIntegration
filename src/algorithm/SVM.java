@@ -99,8 +99,5 @@ public class SVM {
             returnResult[i][0] = result.get(i);
         }
         return returnResult;
-
     }
-
-
 }
