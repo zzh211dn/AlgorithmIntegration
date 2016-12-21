@@ -50,6 +50,18 @@ public final class FileAction {
         }
         return zyzData;
     }
+    public ArrayList<Double[][]>openPCAFile(File file) throws IOException {
+        ArrayList<Double[][]> picList = new ArrayList<>();
+        BufferedReader read = new BufferedReader(new FileReader(file));
+        String line;
+        while ((line = read.readLine()) != null) {
+            String[] subLine = line.split(",");
+          //  picList.add(subLine);
+        }
+
+
+        return picList;
+    }
 
     /**
      * 写文件方法

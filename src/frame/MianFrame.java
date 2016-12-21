@@ -822,19 +822,21 @@ public class MianFrame extends Application {
         }
     }
 
-    private ArrayList<Double [][]> picMap(HashMap<String, List<String[]>> picMap){
+    private ArrayList<Double[][]> picMap(HashMap<String, List<String[]>> picMap) {
         ArrayList<Double[][]> doubleMap = new ArrayList<>();
         Iterator ite = picMap.values().iterator();
-        while (ite.hasNext()){
+
+        while (ite.hasNext()) {
             List<String[]> stringData = (List<String[]>) ite.next();
-            Double[][] data = new Double[stringData.size()][stringData.get(0).length];
+            Double[][] data = new Double[stringData.size()-1][stringData.get(0).length];
             Iterator listIte = stringData.iterator();
             int j = 0;
             listIte.next();
             while (listIte.hasNext()) {
                 String[] sigData = (String[]) listIte.next();
-                for(int i=0;i<sigData.length;i++){
+                for (int i = 0; i < sigData.length; i++) {
                     data[j][i] = Double.valueOf(sigData[i]);
+
                 }
                 j++;
             }

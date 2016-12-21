@@ -26,23 +26,9 @@ public class PictureAPI {
     public Scene getChatingResult(ArrayList<Double [][]> datas1)
     {
 
-        Random r = new Random();
-        ArrayList<Double[][]> arrayList = new ArrayList<>();
-        for(int m = 0;m<3;m++) {
-            Double[][] datas = new Double[4][2];
-            for (int i = 0; i < datas.length; i++) {
-                for (int j = 0; j < datas[0].length; j++) {
-                    datas[i][j] = r.nextDouble();
-                    System.out.print(datas[i][j]+"    ");
-                }
-                System.out.println();
-            }
-            arrayList.add(datas);
-        }
-
         try {
             Charting charting = new Charting();
-            charting.drawChat(arrayList);
+            charting.drawChat(datas1);
             Scene sceneChart = charting.start();
             return sceneChart;
         }
@@ -52,6 +38,7 @@ public class PictureAPI {
         }
         return null;
     }
+
     /**
      * @param datas 传入二维数组，实际只有一个文件，为了格式统一
      * datas.get(i)[j][0]为标签项
