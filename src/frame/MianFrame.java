@@ -484,13 +484,10 @@ public class MianFrame extends Application {
             HashMap<String, List<String[]>> picFileData = new HashMap<>();
             initChooserData(fileList, picFileData, "");
             ArrayList<Double[][]> picMap =  picMap(picFileData);
-            Charting charting = new Charting();
+            PictureAPI pictureAPI = new PictureAPI();
             try {
-//                charting.drawChat(picMap);
-                Scene sceneChart = charting.start(picMap);
                 Stage chartStage = new Stage();
-                chartStage.setScene(sceneChart);
-                System.out.println("10-=--=-=-==--=-==");;
+                chartStage.setScene(pictureAPI.getChatingResult(picMap));
                 chartStage.show();
             }
             catch (Exception e)

@@ -32,13 +32,13 @@ import java.util.Random;
 import java.util.TimeZone;
 
 public class Charting {
-//    public static void main( String[] args ) {
-//        launch();
-//    }
+    public static void main( String[] args ) {
+        Application.launch();
+    }
     public static ArrayList<Double [][]> thisDatas = new ArrayList<>();
     public void drawChat(ArrayList<Double [][]> datas)
     {
-        thisDatas = datas;
+            thisDatas = datas;
     }
 
 
@@ -53,12 +53,11 @@ public class Charting {
     private Timeline addDataTimeline;
 
     @FXML
-    void addSample(XYChart.Series<Number, Number> tempSeries,Double[][] xydata) {
+    void addSample(XYChart.Series<Number, Number> tempSeries,Double[][] datas) {
 
-        for(int i = 0;i<xydata.length;i++)
+        for(int i = 0;i<datas.length;i++)
         {
-            tempSeries.getData().add(new XYChart.Data<Number, Number>(xydata[i][0],xydata[i][1]));// System.currentTimeMillis() - startTime,valueSlider.getValue()
-//            System.out.println(xydata[i][0]+"    "+xydata[i][1]);
+            tempSeries.getData().add(new XYChart.Data<Number, Number>(datas[i][0],datas[i][1]));// System.currentTimeMillis() - startTime,valueSlider.getValue()
         }
 
     }
@@ -69,10 +68,8 @@ public class Charting {
         chart.getYAxis().setAutoRanging( true );
     }
 
-//    @Override
-    public Scene start( ArrayList<Double [][]> datas) throws Exception {
-        thisDatas = datas;
-        System.out.println("thisDatas----"+thisDatas.size());
+    //    @Override
+    public Scene start() throws Exception {
         FXMLLoader loader = new FXMLLoader( getClass().getResource("../Charting.fxml") );
         Region contentRootRegion = (Region) loader.load();
         StackPane root = JFXUtil.createScalePane( contentRootRegion, 960, 540, false );//调整框架大小
@@ -85,10 +82,9 @@ public class Charting {
         //Set chart to format dates on the X axis
 //        ((StableTicksAxis) chart.getXAxis()).setAutoRangePadding();//设置间隔
         ((StableTicksAxis) chart.getXAxis()).setForceZeroInRange(false);//强制设置X轴不为0开头
-        System.out.println("thisDatas-2222---"+thisDatas.size());
         for(int m = 0;m<thisDatas.size();m++) {
             XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
-            series.setName("Date"+m);
+            series.setName("Date"+ m);
             addSample(series,thisDatas.get(m));
             chart.getData().add(series);
         }

@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.Random;
 
 
-public class RectanglePicture extends Application  {
+public class RectanglePicture {
     int rownum = 8;
     int colnum = 5;
     private ArrayList<Double [][]> fileType;
@@ -66,8 +66,7 @@ public class RectanglePicture extends Application  {
 
     }
 
-    @Override
-    public void start(Stage stage) {
+    public Scene start() {
         Group root = new Group();
         Scene scene = new Scene(root, 500, 500, Color.WHITE);
 
@@ -85,9 +84,10 @@ public class RectanglePicture extends Application  {
                 root.getChildren().add(r);
             }
         }
-        stage.setTitle("Recangle Picture ");
-        stage.setScene(scene);
-        stage.show();
+        return scene;
+//        stage.setTitle("Recangle Picture ");
+//        stage.setScene(scene);
+//        stage.show();
     }
 
     public void drawRectangle(ArrayList<Double [][]> datas, int row, int col)
@@ -98,7 +98,7 @@ public class RectanglePicture extends Application  {
     }
 
     public static void main(String[] args) {
-        launch(args);
+//        launch(args);
 //        Random random = new Random();
 //        Float temp = random.nextFloat();
 //        System.out.println(temp);

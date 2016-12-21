@@ -3,6 +3,7 @@ package algorithm;
 import frame.Charting;
 import frame.PrintScatterChart;
 import frame.RectanglePicture;
+import javafx.scene.Scene;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -18,17 +19,38 @@ import java.util.Random;
 public class PictureAPI {
 
     /**
-     * @param datas 传入二维数组，多个文件，
+     * @param datas1 传入二维数组，多个文件，
      * datas.get(i)[j][0]为横坐标，datas.get(i)[j][1]为纵坐标
      *
      * */
-    public void getChatingResult(ArrayList<Double [][]> datas)
+    public Scene getChatingResult(ArrayList<Double [][]> datas1)
     {
 
-        Charting charting = new Charting();
-        System.out.println("here");
-        charting.drawChat(datas);
+        Random r = new Random();
+        ArrayList<Double[][]> arrayList = new ArrayList<>();
+        for(int m = 0;m<3;m++) {
+            Double[][] datas = new Double[4][2];
+            for (int i = 0; i < datas.length; i++) {
+                for (int j = 0; j < datas[0].length; j++) {
+                    datas[i][j] = r.nextDouble();
+                    System.out.print(datas[i][j]+"    ");
+                }
+                System.out.println();
+            }
+            arrayList.add(datas);
+        }
 
+        try {
+            Charting charting = new Charting();
+            charting.drawChat(arrayList);
+            Scene sceneChart = charting.start();
+            return sceneChart;
+        }
+        catch (Exception e)
+        {
+            System.out.print(e.toString());
+        }
+        return null;
     }
     /**
      * @param datas 传入二维数组，实际只有一个文件，为了格式统一
@@ -36,10 +58,12 @@ public class PictureAPI {
      * @param row 需要生成的行数
      * @param  col 需要生成的列数
      * */
-    public void getRectangleResult(ArrayList<Double [][]> datas,int row,int col)
+    public Scene getRectangleResult(ArrayList<Double [][]> datas,int row,int col)
     {
         RectanglePicture rectanglePicture = new RectanglePicture();
-        rectanglePicture.drawRectangle(datas,row,col);
+         rectanglePicture.drawRectangle(datas,row,col);
+        Scene sceneRect= rectanglePicture.start();
+        return sceneRect;
     }
 
 
@@ -62,18 +86,18 @@ public class PictureAPI {
         Random r = new Random();
         ArrayList<Double[][]> arrayList = new ArrayList<>();
         for(int m = 0;m<3;m++) {
-            Double[][] datas = new Double[4][2];
+            Double[][] datas = new Double[25][3];
             for (int i = 0; i < datas.length; i++) {
                 for (int j = 0; j < datas[0].length; j++) {
                     datas[i][j] = r.nextDouble();
-//                    System.out.print(datas[i][j]+"    ");
+                    System.out.print(datas[i][j]+"    ");
                 }
-//                System.out.println();
+                System.out.println();
             }
             arrayList.add(datas);
         }
 //        System.out.println("next");
-        new PictureAPI().getChatingResult(arrayList);
+        new PictureAPI().getScatterResult(arrayList);
 
     }
 }
