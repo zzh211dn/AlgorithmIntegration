@@ -326,7 +326,7 @@ public class MianFrame extends Application {
                 HBox testPcaLabelBox = new HBox();
                 Label testPcaLabel = new Label("  测试集   ");
                 testPcaLabel.setFont(new javafx.scene.text.Font("Arial", 20));
-                testPcaLabelBox.getChildren().addAll(testPcaLabel, trianPcaAddButton);
+                testPcaLabelBox.getChildren().addAll(testPcaLabel, testPcaAddButton);
                 testPcaLabelBox.setSpacing(5);
                 testPcaLabelBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
 
@@ -341,7 +341,30 @@ public class MianFrame extends Application {
                 ((VBox) pcaScence.getRoot()).getChildren().addAll(trianPcaBox, testPcaBox);
                 pcaStage.setScene(pcaScence);
                 pcaStage.show();
-                pcaStage.show();
+
+                trianPcaAddButton.setOnAction(event2 -> {
+                    FileChooser fileSaveChooser = new FileChooser();
+
+                    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+                            "zyz 文件 (*.zyz)", "*.zyz");
+                    fileSaveChooser.getExtensionFilters().add(extFilter);
+                    File file = fileSaveChooser.showSaveDialog(stage);
+                    if (file != null) {
+                        fileAction.saveData(file, trianPcaString);
+                    }
+                });
+
+                testPcaAddButton.setOnAction(event2 -> {
+                    FileChooser fileSaveChooser = new FileChooser();
+
+                    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+                            "zyz 文件 (*.zyz)", "*.zyz");
+                    fileSaveChooser.getExtensionFilters().add(extFilter);
+                    File file = fileSaveChooser.showSaveDialog(stage);
+                    if (file != null) {
+                        fileAction.saveData(file, testPcaString);
+                    }
+                });
             });
 
 
@@ -641,7 +664,7 @@ public class MianFrame extends Application {
                 PictureAPI pictureAPI = new PictureAPI();
                 try {
                     Stage chartStage = new Stage();
-                    chartStage.setScene(pictureAPI.getRectangleResult(result,row,col));
+                    chartStage.setScene(pictureAPI.getRectangleResult(result,row+1,col+1));
                     chartStage.show();
                 }
                 catch (Exception e)
@@ -649,7 +672,7 @@ public class MianFrame extends Application {
                     e.printStackTrace();
 
                 }
-         /*    //   stage.close();
+                kmeansStage.close();
                 javafx.scene.control.TextArea jta = new javafx.scene.control.TextArea();
                 for(int i=0;i<result.length;i++){
                     jta.appendText("计算元组: "+fileList.get(i).getName()+"的类别为："+result[i]);
@@ -665,12 +688,12 @@ public class MianFrame extends Application {
                 textgrid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
                 textgrid.setVgap(1);
                 textgrid.setHgap(1);
-                Scene textScene = new Scene(grid, 950, 290);
+                Scene textScene = new Scene(textgrid, 950, 290);
                 GridPane.setConstraints(jta, 0, 0);
-                grid.getChildren().add(jta);
+                textgrid.getChildren().add(jta);
                 textStage.setScene(textScene);
                 textStage.setResizable(false);
-                textStage.show();*/
+                textStage.show();
             });
         });
 
@@ -1119,18 +1142,31 @@ public class MianFrame extends Application {
 
     private String[][] addInf(Double[][] data,int type){
         String[][] addData = new String[data.length][data[0].length+4];
-        if(type==0)
+      /*  if(type==0)
         for(int i=0;i<data.length;i++)
             for(int j=0;j<5;j++)
                 if(trianTableVales[i][j]!=null)
                 addData[i][j] = trianTableVales[i][j];
         else
-            for(int l=0;l<data.length-1;l++)
+            for(int l=0;l<data.length;l++)
                 for(int m=0;m<5;m++) {
                     System.out.println(l+","+m);
                     if (testTableVales[l][m] != null)
                         addData[l][m] = testTableVales[l][m];
-                }
+                }*/
+        if(type==0) {
+            for (int i = 0; i < trianTableVales.length; i++)
+                for (int j = 0; j < 5; j++)
+                    if (trianTableVales[i][j] != null)
+                        addData[i][j] = trianTableVales[i][j];
+        }
+        else{
+            for (int i = 0; i < testTableVales.length; i++)
+                for (int j = 0; j < 5; j++)
+                    if (testTableVales[i][j] != null)
+                        addData[i][j] = testTableVales[i][j];
+        }
+
         for(int i=0;i<data.length;i++)
             for(int j=0;j<data[i].length;j++)
                 addData[i][j+4] = data[i][j]+"";
