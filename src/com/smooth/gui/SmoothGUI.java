@@ -46,11 +46,11 @@ public class SmoothGUI extends JDialog
 	private boolean InitComplete; 
 	private int ControlNum;
 
-//	public static void main(String[] args) {
-//		// TODO Auto-generated method stub
-//		SmoothGUI smoothGUI=new SmoothGUI();
-//
-//	}
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		new SmoothGUI();
+
+	}
 	public SmoothGUI()
 	{
 		try {
@@ -67,7 +67,7 @@ public class SmoothGUI extends JDialog
 		}
 		SwingUtilities.updateComponentTreeUI(this);
 		this.container = getContentPane();
-        this.setModal(true);
+      //  this.setModal(true);
 		Toolkit kit=Toolkit.getDefaultToolkit();
 		int screenWidth=kit.getScreenSize().width;
 		int screenHeight=kit.getScreenSize().height;

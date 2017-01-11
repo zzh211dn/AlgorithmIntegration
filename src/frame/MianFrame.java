@@ -4,9 +4,12 @@ package frame;
  * Created by zzh on 2016/12/7.
  */
 
+import algorithm.Kmeans;
 import algorithm.PictureAPI;
 import algorithm.algorithmAPI;
 import com.smooth.gui.SmoothGUI;
+import com.sun.corba.se.impl.orbutil.graph.Graph;
+
 import javafx.application.Application;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
@@ -50,8 +53,8 @@ public class MianFrame extends Application {
     List<String[]> zyzData;
     Double[][] testResult;
     Double[][] trianResult;
-    private HashMap<String, List<String[]>> trianFileData;
-    private HashMap<String, List<String[]>> testFileData;
+    private LinkedHashMap<String, List<String[]>> trianFileData;
+    private LinkedHashMap<String, List<String[]>> testFileData;
     FileAction fileAction = new FileAction();
     Button trianAddButton = new Button("添加");
     Button testAddButton = new Button("添加");
@@ -135,7 +138,9 @@ public class MianFrame extends Application {
          * 数据预处理
          */
         menuItemPre.setOnAction((ActionEvent t) -> {
-            new SmoothGUI();
+            SmoothGUI smoothGUI=  new SmoothGUI();
+            smoothGUI.setModal(true);
+            smoothGUI.show();
         });
 
         /**
@@ -152,7 +157,7 @@ public class MianFrame extends Application {
             if (fileList != null)
                 dirName = fileList.get(0).getParentFile().getAbsolutePath();
             initLabel(dirName);
-            trianFileData = new HashMap<>();
+            trianFileData = new LinkedHashMap<>();
             if (initChooserData(fileList, trianFileData, dirName)) {
                 trianTableVales = map2Array(trianFileData, 1, dirName);
                 trianColumnNames = initCSVColumnNames(trianFileData);
@@ -174,7 +179,7 @@ public class MianFrame extends Application {
             FileChooser fileChooser = new FileChooser();
             configureOpenFileChooser(fileChooser,1);
             java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
-            testFileData = new HashMap<>();
+            testFileData = new LinkedHashMap<>();
             if (initChooserData(fileList, testFileData, "")) {
                 testTableVales = map2Array(testFileData, 2, "");
                 testColumnNames = initCSVColumnNames(testFileData);
@@ -200,7 +205,7 @@ public class MianFrame extends Application {
                 dirName = fileList.get(0).getParentFile().getAbsolutePath();
             initLabel(dirName);
             if (trianFileData == null)
-                trianFileData = new HashMap<>();
+                trianFileData = new LinkedHashMap<>();
             if (initChooserData(fileList, trianFileData, dirName)) {
                 trianTableVales = map2Array(trianFileData, 1, dirName);
                 trianColumnNames = initCSVColumnNames(trianFileData);
@@ -222,7 +227,7 @@ public class MianFrame extends Application {
             String dirName = fileChooser.getInitialDirectory().getAbsolutePath();
             initLabel(dirName);
             if (testFileData == null)
-                testFileData = new HashMap<>();
+                testFileData = new LinkedHashMap<>();
             if (initChooserData(fileList, testFileData, "")) {
                 testTableVales = map2Array(testFileData, 2, "");
                 testColumnNames = initCSVColumnNames(testFileData);
@@ -412,7 +417,7 @@ public class MianFrame extends Application {
             FileChooser fileChooser = new FileChooser();
             configureOpenFileChooser(fileChooser,1);
             java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
-            HashMap<String, List<String[]>> madFileData = new HashMap<>();
+            LinkedHashMap<String, List<String[]>> madFileData = new LinkedHashMap<>();
             initChooserData(fileList, madFileData, "");
             data = map2Array(madFileData, 2, "");
 
@@ -481,7 +486,7 @@ public class MianFrame extends Application {
             FileChooser fileChooser = new FileChooser();
             configureOpenFileChooser(fileChooser,2);
             java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
-            HashMap<String, List<String[]>> picFileData = new HashMap<>();
+            LinkedHashMap<String, List<String[]>> picFileData = new LinkedHashMap<>();
             initChooserData(fileList, picFileData, "");
             ArrayList<Double[][]> picMap =  picMap(picFileData);
             PictureAPI pictureAPI = new PictureAPI();
@@ -492,7 +497,7 @@ public class MianFrame extends Application {
             }
             catch (Exception e)
             {
-                System.out.println(e.toString());
+              e.printStackTrace();
 
             }
         });
@@ -504,22 +509,135 @@ public class MianFrame extends Application {
          * 三维画图调用
          */
         addScatter.setOnAction(event -> {
-         /*   PictureAPI pictureAPI = new PictureAPI();
             FileChooser fileChooser = new FileChooser();
             configureOpenFileChooser(fileChooser,2);
-            File file = fileChooser.showOpenDialog(stage);
-            HashMap<String, List<String[]>> picFileData = new HashMap<>();
+            java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
+            LinkedHashMap<String, List<String[]>> picFileData = new LinkedHashMap<>();
             initChooserData(fileList, picFileData, "");
             ArrayList<Double[][]> picMap =  picMap(picFileData);
-            pictureAPI.getChatingResult(picMap);*/
+            PictureAPI pictureAPI = new PictureAPI();
+            try {
+               pictureAPI.getScatterResult(picMap);
+
+            }
+            catch (Exception e)
+            {
+              e.printStackTrace();
+
+            }
+        });
+
+        /**
+         * 矩阵画图调用
+         */
+        addRectangle.setOnAction(event -> {
+         
+        });
+
+        /**
+         * kmeans方法调用
+         */
+        addKmeans.setOnAction(event -> {
+
+            Stage kmeansStage = new Stage();
+            GridPane grid = new GridPane();
+            grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+            grid.setVgap(8);
+            grid.setHgap(1);
+            Scene kmeansScene = new Scene(grid, 200,250);
+
+            final Label kmeansLabel = new Label("请输入k值：");
+            GridPane.setConstraints(kmeansLabel, 0, 0);
+            grid.getChildren().add(kmeansLabel);
+
+            final javafx.scene.control.TextField kTimes = new javafx.scene.control.TextField();
+            kTimes.setPromptText("请输入k值：");
+            GridPane.setConstraints(kTimes, 0, 1);
+            grid.getChildren().add(kTimes);
+
+            final javafx.scene.control.TextField leftX = new javafx.scene.control.TextField();
+            leftX.setPromptText("请输入左上x值：");
+            GridPane.setConstraints(leftX, 0, 2);
+            grid.getChildren().add(leftX);
+
+            final javafx.scene.control.TextField leftY = new javafx.scene.control.TextField();
+            leftY.setPromptText("请输入左上y值：");
+            GridPane.setConstraints(leftY, 0, 3);
+            grid.getChildren().add(leftY);
+
+            final javafx.scene.control.TextField rightX = new javafx.scene.control.TextField();
+            rightX.setPromptText("请输入右下x值：");
+            GridPane.setConstraints(rightX, 0, 4);
+            grid.getChildren().add(rightX);
+
+            final javafx.scene.control.TextField rightY = new javafx.scene.control.TextField();
+            rightY.setPromptText("请输入右下y值：");
+            GridPane.setConstraints(rightY, 0, 5);
+            grid.getChildren().add(rightY);
+
+            final javafx.scene.control.TextField step = new javafx.scene.control.TextField();
+            step.setPromptText("请输入步长值：");
+            GridPane.setConstraints(step, 0, 6);
+            grid.getChildren().add(step);
+
+            Button button = new Button("确定");
+            GridPane.setConstraints(button, 0, 7);
+            grid.getChildren().add(button);
+            kmeansStage.setScene(kmeansScene);
+            kmeansStage.show();
+            button.setOnAction(event1 -> {
+
+                FileChooser fileChooser = new FileChooser();
+                configureOpenFileChooser(fileChooser,2);
+                java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
+                LinkedHashMap<String, List<String[]>> kmeansFileData = new LinkedHashMap<>();
+                initChooserData(fileList, kmeansFileData, "");
+                String[][] kmeasMap =  map2Array(kmeansFileData,1,"");
+                double[][] doubleMap = string2Double(kmeasMap);
+                Kmeans kmeans = new Kmeans();
+                Double[] result =   kmeans.computeKmeans(doubleMap,Integer.valueOf(kTimes.getText()));
+                int row = (Integer.valueOf(rightX.getText())-Integer.valueOf(leftX.getText()))/Integer.valueOf(step.getText());
+                int col = (Integer.valueOf(rightY.getText())-Integer.valueOf(leftY.getText()))/Integer.valueOf(step.getText());
+                PictureAPI pictureAPI = new PictureAPI();
+                try {
+                    Stage chartStage = new Stage();
+                    chartStage.setScene(pictureAPI.getRectangleResult(result,row,col));
+                    chartStage.show();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+
+                }
+         /*    //   stage.close();
+                javafx.scene.control.TextArea jta = new javafx.scene.control.TextArea();
+                for(int i=0;i<result.length;i++){
+                    jta.appendText("计算元组: "+fileList.get(i).getName()+"的类别为："+result[i]);
+                    jta.appendText("\r\n");
+                }
+                //实例化文本框
+                jta.setWrapText(true);
+                jta.setFont(new javafx.scene.text.Font("Arial", 18));
+                jta.setPrefSize(900,250);
+
+                Stage textStage = new Stage();
+                GridPane textgrid = new GridPane();
+                textgrid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+                textgrid.setVgap(1);
+                textgrid.setHgap(1);
+                Scene textScene = new Scene(grid, 950, 290);
+                GridPane.setConstraints(jta, 0, 0);
+                grid.getChildren().add(jta);
+                textStage.setScene(textScene);
+                textStage.setResizable(false);
+                textStage.show();*/
+            });
         });
 
         ((VBox) scene.getRoot()).getChildren().addAll(menuBar, trianBox, testBox);
         stage.setScene(scene);
         stage.show();
     }
-
-
 
 
 
@@ -590,11 +708,12 @@ public class MianFrame extends Application {
         fileChooser.setInitialDirectory(
                 new File(System.getProperty("user.home"))
         );
+        if(type==1|type==2)
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("csv文件,", "*.csv"),
                 new FileChooser.ExtensionFilter("txt文件,", "*.txt")
         );
-        if(type==1)
+        if(type==1|type==3)
             fileChooser.getExtensionFilters().add( new FileChooser.ExtensionFilter("zyz文件,", "*.zyz"));
     }
 
@@ -680,7 +799,7 @@ public class MianFrame extends Application {
      *
      * @param fileList
      */
-    private boolean initChooserData(List<File> fileList, HashMap<String, List<String[]>> fileData, String dirName) {
+    private boolean initChooserData(List<File> fileList, LinkedHashMap<String, List<String[]>> fileData, String dirName) {
 
         if (fileList.get(0).getName().endsWith(".csv") | fileList.get(0).getName().endsWith(".txt") | fileList.get(0).getName().endsWith(".CSV") | fileList.get(0).getName().endsWith(".TXT")) {
             for (int i = 0; i < fileList.size(); i++) {
@@ -902,6 +1021,33 @@ public class MianFrame extends Application {
         return data;
     }
 
+
+    /**
+     * pca表格数据导出
+     *
+     * @param type 1为训练集，其他为测试集
+     * @return 表格数据
+     */
+    public double[][] doubleDataOut(int type) {
+        double[][] data;
+        if (type == 1) {
+            data = new double[trianTableVales.length][trianTableVales[0].length - 4];
+            for (int i = 0; i < data.length; i++)
+                for (int j = 4; j < trianTableVales[0].length; j++) {
+                    if (trianTableVales[i][j] != null)
+                        data[i][j - 4] = Double.parseDouble(trianTableVales[i][j]);
+                }
+        } else {
+            data = new double[testTableVales.length][testTableVales[0].length - 4];
+            for (int i = 0; i < data.length; i++)
+                for (int j = 4; j < testTableVales[0].length; j++) {
+                    if (testTableVales[i][j] != null && testTableVales[i][j] != "")
+                        data[i][j - 4] = Double.parseDouble(testTableVales[i][j]);
+                }
+        }
+        return data;
+    }
+
     /**
      * 算法结果导入表格
      *
@@ -916,5 +1062,20 @@ public class MianFrame extends Application {
             initTable(columnName, data, 2);
         }
     }
+
+    /**
+     * string数组转kmeans算法的double数组
+     * @param kmeasMap
+     * @return
+     */
+    private double[][] string2Double(String[][] kmeasMap) {
+        double[][] map = new double[kmeasMap.length][kmeasMap[0].length-4];
+        for(int i=0;i<kmeasMap.length;i++)
+            for(int j=4;j<kmeasMap[i].length;j++){
+                map[i][j-4] = Double.valueOf(kmeasMap[i][j]);
+            }
+        return map;
+    }
+
 
 }

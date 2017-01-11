@@ -1,4 +1,6 @@
 package algorithm;
+import la.matrix.DenseMatrix;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,17 +47,30 @@ public class algorithmAPI {
         return result;
     }
 
+    public Double[][] getPCAResult(Double[][] data){
+        double[][] ddata = new double[data.length][data[0].length];
+        for(int i=0;i<data.length;i++)
+            for(int j=0;j<data[i].length;j++){
+                ddata[i][j] = data[i][j];
+            }
 
-    public Double[][] getPCAResult(Double[][] data) {
-        PCA callPCA = new PCA();
-        result = double2Double(callPCA.computePCA(Double2double(data)).getArray());
+
+        la.matrix.Matrix X = new DenseMatrix(ddata);
+        int r = 3;
+        la.matrix.Matrix R = ml.subspace.PCA.run(X, r);
+        Double[][] result = new Double[R.getData().length][R.getData()[0].length];
+        for(int i=0;i<R.getData().length;i++)
+            for(int j=0;j<R.getData()[i].length;j++){
+                result[i][j] = R.getData()[i][j];
+            }
         return result;
     }
+
 
     /**
      *  返回类型 key = [1.0, 2.0, 3.0, 3.0] String ；value = type 即聚类类别
      */
-    public Integer[] getKemeansResult(Double[][] data, int k ) {
+    public Double[] getKemeansResult(Double[][] data, int k ) {
         Kmeans callKmeans = new Kmeans();
         return callKmeans.computeKmeans(Double2double(data),k);
     }

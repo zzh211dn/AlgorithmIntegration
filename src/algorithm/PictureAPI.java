@@ -51,7 +51,7 @@ public class PictureAPI {
         }
         catch (Exception e)
         {
-            System.out.print(e.toString());
+          e.printStackTrace();
         }
         return null;
     }

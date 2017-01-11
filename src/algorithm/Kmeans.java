@@ -21,7 +21,7 @@ public class Kmeans {
     *
     * */
 
-    public Integer[] computeKmeans(double[][] DATA,int k) {
+    public Double[] computeKmeans(double[][] DATA,int k) {
 
         final BasicMLDataSet set = new BasicMLDataSet();
         LinkedHashMap<String,Integer> linkedHashMap = new LinkedHashMap<String,Integer>();
@@ -50,11 +50,11 @@ public class Kmeans {
 
         System.out.println();
         Set<Map.Entry<String, Integer>> entry1= linkedHashMap.entrySet();
-        Integer[] result = new Integer[linkedHashMap.size()];
+        Double[] result = new Double[linkedHashMap.size()];
         i=0;
         for(Map.Entry<String,Integer> en:entry1)
         {
-            result[i] = en.getValue();
+            result[i] = en.getValue().doubleValue();
             System.out.println(en.getKey()+"----cluster:"+ result[i]);
             i++;
 

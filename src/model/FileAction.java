@@ -1,10 +1,7 @@
 package model;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * 文件读写类
@@ -20,7 +17,7 @@ public final class FileAction {
      * @param fileData 数据存储Map
      * @throws IOException
      */
-    public void readCSVData(File file, HashMap<String, List<String[]>> fileData, String dirName) throws IOException {
+    public void readCSVData(File file, LinkedHashMap<String, List<String[]>> fileData, String dirName) throws IOException {
         BufferedReader read = new BufferedReader(new FileReader(file));
         String line;
         String[] name = {"", dirName};
@@ -40,7 +37,7 @@ public final class FileAction {
      * @return
      * @throws IOException
      */
-    public List<String[]> readZYZData(File file) throws IOException {
+    public  List<String[]>readZYZData(File file) throws IOException {
         List<String[]> zyzData = new LinkedList<>();
         BufferedReader read = new BufferedReader(new FileReader(file));
         String line;
@@ -50,6 +47,13 @@ public final class FileAction {
         }
         return zyzData;
     }
+
+    /**
+     * 读取PCA结果文件
+     * @param file
+     * @return
+     * @throws IOException
+     */
     public ArrayList<Double[][]>openPCAFile(File file) throws IOException {
         ArrayList<Double[][]> picList = new ArrayList<>();
         BufferedReader read = new BufferedReader(new FileReader(file));
