@@ -259,54 +259,94 @@ public class MianFrame extends Application {
          *PCA方法调用
          */
         addPCA.setOnAction(event -> {
-            trianResult = algorithmAPI.getPCAResult(dataOut(1));
-            testResult = algorithmAPI.getPCAResult(dataOut(2));
-            trianTableVales = resultForm(trianResult, 1);
-            testTableVales = resultForm(testResult, 2);
-            Stage pcaStage = new Stage();
-            Scene pcaScence = new Scene(new Group(), width / 2, high / 2);
-            GridPane grid = new GridPane();
-            grid.setVgap(2);
-            grid.setHgap(4);
-            Label trianLabel = new Label("训练集: ");
-            Button addTrian = new Button("添加");
-            Label testLabel = new Label("测试集: ");
-            Button addTest = new Button("添加");
 
-            String[] pcaTrianColumnNames = initPCAColumnNames(trianResult);
-            DefaultTableModel pacaTrianTableModel = new DefaultTableModel(trianResult, pcaTrianColumnNames);
-            JTable pcaTrianTable = new JTable(pacaTrianTableModel);
-            pcaTrianTable.setRowHeight(50);
-            pcaTrianTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            Stage lStage = new Stage();
+            GridPane lgrid = new GridPane();
+            lgrid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+            lgrid.setVgap(3);
+            lgrid.setHgap(1);
+            Scene lScene = new Scene(lgrid, 200, 100);
 
-            initColumn(pcaTrianTable);
-            JScrollPane pcaTrianScroll = new JScrollPane(pcaTrianTable);
-            pcaTrianScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            SwingNode pcaTrianSwingNode = new SwingNode();
-            pcaTrianSwingNode.setContent(pcaTrianScroll);
+            final Label pcaLabel = new Label("请输入主成分个数");
+            GridPane.setConstraints(pcaLabel, 0, 0);
+            lgrid.getChildren().add(pcaLabel);
 
-            String[] pcaTestColumnNames = initPCAColumnNames(testResult);
-            DefaultTableModel pacaTestTableModel = new DefaultTableModel(testResult, pcaTestColumnNames);
-            JTable pcaTestTable = new JTable(pacaTestTableModel);
-            pcaTestTable.setRowHeight(50);
-            pcaTestTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            final javafx.scene.control.TextField kPca = new javafx.scene.control.TextField();
+            kPca.setPromptText("请输入主成分个数");
+            GridPane.setConstraints(kPca, 0, 1);
+            lgrid.getChildren().add(kPca);
 
-            initColumn(pcaTestTable);
-            JScrollPane pcaTestScroll = new JScrollPane(pcaTestTable);
-            pcaTestScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            SwingNode pcaTestSwingNode = new SwingNode();
-            pcaTestSwingNode.setContent(pcaTestScroll);
+            Button button = new Button("确定");
+            GridPane.setConstraints(button, 0, 2);
+            lgrid.getChildren().add(button);
+            lStage.setScene(lScene);
+            lStage.show();
 
-            grid.add(trianLabel, 0, 0);
-            grid.add(addTrian, 1, 0);
-            grid.add(pcaTrianSwingNode, 0, 2);
-            grid.add(testLabel, 0, 3);
-            grid.add(addTest, 1, 3);
-            grid.add(pcaTestSwingNode, 0, 4);
-            Group root = (Group) pcaScence.getRoot();
-            root.getChildren().add(grid);
-            pcaStage.setScene(pcaScence);
-            pcaStage.show();
+            button.setOnAction(event1 -> {
+                lStage.close();
+                Double[][]   trianPcaResult = algorithmAPI.getPCAResult(dataOut(1), Integer.valueOf(kPca.getText()));
+                Double[][]   testPcaResult = algorithmAPI.getPCAResult(dataOut(2),Integer.valueOf(kPca.getText()));
+               String[][] trianPcaString = addInf(trianPcaResult,0);
+                String[][] testPcaString = addInf(testPcaResult,1);
+                Stage pcaStage = new Stage();
+                Scene pcaScence = new Scene(new VBox(),width,high);
+
+
+                String[] pcaTrianColumnNames = initPCAColumnNames(  trianPcaString);
+                DefaultTableModel pcaTrianTableModel = new DefaultTableModel( trianPcaString, pcaTrianColumnNames);
+                JTable pcaTrianTable = new JTable(pcaTrianTableModel);
+                pcaTrianTable.setRowHeight(50);
+                pcaTrianTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+                String[] pcaTestColumnNames = initPCAColumnNames(testPcaString);
+                DefaultTableModel pacaTestTableModel = new DefaultTableModel(testPcaString, pcaTestColumnNames);
+                JTable pcaTestTable = new JTable(pacaTestTableModel);
+                pcaTestTable.setRowHeight(50);
+                pcaTestTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+
+                Button trianPcaAddButton = new Button("保存");
+                HBox trianPcaLabelBox = new HBox();
+                Label trianPcaLabel = new Label("  训练集   ");
+                trianPcaLabel.setFont(new javafx.scene.text.Font("Arial", 20));
+                trianPcaLabelBox.getChildren().addAll(trianPcaLabel, trianPcaAddButton);
+                trianPcaLabelBox.setSpacing(5);
+                trianPcaLabelBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+
+
+                initColumn(pcaTrianTable);
+                JScrollPane trianPcaScroll = new JScrollPane(pcaTrianTable);
+                trianPcaScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                SwingNode trianPcaSwingNode = new SwingNode();
+                trianPcaSwingNode.setContent(trianPcaScroll);
+                VBox trianPcaBox = new VBox();
+                trianPcaBox.getChildren().addAll(trianPcaLabelBox, trianPcaSwingNode);
+
+                Button testPcaAddButton = new Button("保存");
+                HBox testPcaLabelBox = new HBox();
+                Label testPcaLabel = new Label("  测试集   ");
+                testPcaLabel.setFont(new javafx.scene.text.Font("Arial", 20));
+                testPcaLabelBox.getChildren().addAll(testPcaLabel, trianPcaAddButton);
+                testPcaLabelBox.setSpacing(5);
+                testPcaLabelBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+
+                initColumn(pcaTestTable);
+                JScrollPane testPcaScroll = new JScrollPane(pcaTestTable);
+                testPcaScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                SwingNode testPcaSwingNode = new SwingNode();
+                testPcaSwingNode.setContent(testPcaScroll);
+                VBox testPcaBox = new VBox();
+                testPcaBox.getChildren().addAll(testPcaLabelBox, testPcaSwingNode);
+
+                ((VBox) pcaScence.getRoot()).getChildren().addAll(trianPcaBox, testPcaBox);
+                pcaStage.setScene(pcaScence);
+                pcaStage.show();
+                pcaStage.show();
+            });
+
+
+
+
         });
 
         /**
@@ -895,13 +935,13 @@ public class MianFrame extends Application {
      * @param pcaResult
      * @return
      */
-    private String[] initPCAColumnNames(Double[][] pcaResult) {
-        String[] initColumnName = new String[pcaResult[0].length + 4];
+    private String[] initPCAColumnNames(String[][] pcaResult) {
+        String[] initColumnName = new String[pcaResult[0].length ];
         initColumnName[0] = "序号";
         initColumnName[1] = "文件名";
         initColumnName[2] = "实际值";
         initColumnName[3] = "目标值";
-        for (int i = 4; i < pcaResult[0].length + 4; i++) {
+        for (int i = 4; i < pcaResult[0].length ; i++) {
             initColumnName[i] = i - 3 + "";
         }
         return initColumnName;
@@ -1077,5 +1117,25 @@ public class MianFrame extends Application {
         return map;
     }
 
+    private String[][] addInf(Double[][] data,int type){
+        String[][] addData = new String[data.length][data[0].length+4];
+        if(type==0)
+        for(int i=0;i<data.length;i++)
+            for(int j=0;j<5;j++)
+                if(trianTableVales[i][j]!=null)
+                addData[i][j] = trianTableVales[i][j];
+        else
+            for(int l=0;l<data.length-1;l++)
+                for(int m=0;m<5;m++) {
+                    System.out.println(l+","+m);
+                    if (testTableVales[l][m] != null)
+                        addData[l][m] = testTableVales[l][m];
+                }
+        for(int i=0;i<data.length;i++)
+            for(int j=0;j<data[i].length;j++)
+                addData[i][j+4] = data[i][j]+"";
+
+        return  addData;
+    }
 
 }

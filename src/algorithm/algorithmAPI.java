@@ -47,7 +47,7 @@ public class algorithmAPI {
         return result;
     }
 
-    public Double[][] getPCAResult(Double[][] data){
+    public Double[][] getPCAResult(Double[][] data,int r){
         double[][] ddata = new double[data.length][data[0].length];
         for(int i=0;i<data.length;i++)
             for(int j=0;j<data[i].length;j++){
@@ -56,7 +56,6 @@ public class algorithmAPI {
 
 
         la.matrix.Matrix X = new DenseMatrix(ddata);
-        int r = 3;
         la.matrix.Matrix R = ml.subspace.PCA.run(X, r);
         Double[][] result = new Double[R.getData().length][R.getData()[0].length];
         for(int i=0;i<R.getData().length;i++)
