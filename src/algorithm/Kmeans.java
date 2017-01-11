@@ -60,8 +60,8 @@ public class Kmeans {
 
         }
 
-
-
+        System.out.println("DATA=========="+DATA.length);
+        System.out.println("result=========="+result.length);
         return result;
     }
 
