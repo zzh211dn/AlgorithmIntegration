@@ -61,6 +61,17 @@ public class SVM {
 
         svm = new org.encog.ml.svm.SVM(trainData[0].length,svm_type, kernel_type);
 
+        System.out.println("=========================mine");
+        for(int i = 0;i<trainData.length;i++)
+        {
+            for (int j = 0;j<trainData[0].length;j++)
+            {
+                System.out.print(trainData[i][j]+",");
+            }
+            System.out.println();
+        }
+
+
         // create training data
         MLDataSet trainingSet = new BasicMLDataSet(trainData,trainlabel);
 
@@ -73,13 +84,12 @@ public class SVM {
 
     public Double[][] computeSVM(double[][] testData)
     {
-        double[][] dataTotest = new double[testData.length][testData[0].length];
         double[][] TLabel = new double[testData.length][1];
-        for(int i=0;i<dataTotest.length;i++){
+        for(int i=0;i<testData.length;i++){
             TLabel[i][0] = Math.random();
         }
 
-        MLDataSet testSet = new BasicMLDataSet(dataTotest,TLabel);
+        MLDataSet testSet = new BasicMLDataSet(testData,TLabel);
         // test the SVM
         System.out.println("SVM Results:");
         int index = 0;
@@ -92,7 +102,7 @@ public class SVM {
             result.add(output.getData(0));
             index++;
         }
-
+        System.out.println(content);
         Double[][] returnResult = new Double[result.size()][1];
         for(int i = 0;i<result.size();i++)
         {

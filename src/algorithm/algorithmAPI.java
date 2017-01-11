@@ -20,7 +20,7 @@ public class algorithmAPI {
             for (int j = 0; j < result[0].length; j++) {
 
                 result[i][j] = Double.parseDouble(String.format("%.4f", doubleData[i][j]));
-                System.out.print(result[i][j] + " ");
+//                System.out.print(result[i][j] + " ");
             }
         }
         return result;
@@ -31,7 +31,7 @@ public class algorithmAPI {
         double[][] result = new double[doubleData.length][doubleData[0].length];
         for(int i = 0;i<result.length;i++) {
             for (int j = 0; j < result[0].length; j++) {
-                System.out.print(doubleData[i][j]+ " ");
+//                System.out.print(doubleData[i][j]+ " ");
                 result[i][j] = Double.parseDouble(String.format("%.4f", doubleData[i][j]));
               //  System.out.print(result[i][j] + " ");
             }
@@ -41,6 +41,7 @@ public class algorithmAPI {
 
     public Double[][] getSVMResult(Double[][] trainData,Double[][] trainlabel,int svm_type,int kener_type ,Double[][] testData)
     {
+
         SVM svm = new SVM();
         svm.trainSVM(Double2double(trainData),Double2double(trainlabel),svm_type,kener_type);
         result = svm.computeSVM((Double2double(testData)));
