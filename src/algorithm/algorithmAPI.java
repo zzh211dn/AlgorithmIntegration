@@ -1,5 +1,6 @@
 package algorithm;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -54,7 +55,7 @@ public class algorithmAPI {
     /**
      *  返回类型 key = [1.0, 2.0, 3.0, 3.0] String ；value = type 即聚类类别
      */
-    public TreeMap<String,Integer> getKemeansResult(Double[][] data,int k ) {
+    public Integer[] getKemeansResult(Double[][] data, int k ) {
         Kmeans callKmeans = new Kmeans();
         return callKmeans.computeKmeans(Double2double(data),k);
     }

@@ -17,11 +17,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 
+import static javafx.application.Application.launch;
+
 
 public class RectanglePicture {
     int rownum = 8;
     int colnum = 5;
-    private Double [][] fileType;
+    private Double [] fileType;
 
     public HashMap<Integer,Float[]> hashMap = new HashMap<Integer, Float[]>();
     public HashSet<Float> hashSetR = new HashSet<Float>();
@@ -78,7 +80,7 @@ public class RectanglePicture {
                 double w = (scene.getWidth()-50) / colnum;
                 Rectangle r = new Rectangle(25+ w*j, 25+h*i,w ,h);
 
-                Float[] rgbColor = getRandom(Integer.valueOf(fileType[i+ j][0].toString()));
+                Float[] rgbColor = getRandom(Integer.valueOf(fileType[i+ j].toString()));
                 Color color = new Color(rgbColor[0], rgbColor[1], rgbColor[2], 0.9);//RGB颜色，参数4最后为透明性
                 r.setFill(color);
                 root.getChildren().add(r);
@@ -90,7 +92,7 @@ public class RectanglePicture {
 //        stage.show();
     }
 
-    public void drawRectangle(Double [][] datas, int row, int col)
+    public void drawRectangle(Double [] datas, int row, int col)
     {
         colnum = col;
         rownum = row;
@@ -99,9 +101,9 @@ public class RectanglePicture {
 
     public static void main(String[] args) {
 //        launch(args);
-//        Random random = new Random();
-//        Float temp = random.nextFloat();
-//        System.out.println(temp);
+        Random random = new Random();
+        Float temp = random.nextFloat();
+        System.out.println(temp);
 
     }
 }

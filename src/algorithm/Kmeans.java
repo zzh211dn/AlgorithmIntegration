@@ -21,14 +21,15 @@ public class Kmeans {
     *
     * */
 
-    public TreeMap computeKmeans(double[][] DATA,int k) {
+    public Integer[] computeKmeans(double[][] DATA,int k) {
 
         final BasicMLDataSet set = new BasicMLDataSet();
-        TreeMap<String,Integer> treeMap = new TreeMap<String,Integer>();
+        LinkedHashMap<String,Integer> linkedHashMap = new LinkedHashMap<String,Integer>();
         for (final double[] element : DATA) {
             set.add(new BasicMLData(element));
-            treeMap.put(Arrays.toString(element),0);
+            linkedHashMap.put(Arrays.toString(element),0);
         }
+
 
         final KMeansClustering kmeans = new KMeansClustering(k, set);
 
@@ -41,21 +42,27 @@ public class Kmeans {
                     ds.getInputSize(), ds.getIdealSize());
             for (int j = 0; j < ds.getRecordCount(); j++) {
                 ds.getRecord(j, pair);
-                treeMap.put(Arrays.toString(pair.getInputArray()),i);
+                linkedHashMap.put(Arrays.toString(pair.getInputArray()),i);
             }
             i++;
         }
         Encog.getInstance().shutdown();
 
         System.out.println();
-        Set<Map.Entry<String, Integer>> entry = treeMap.entrySet();
-        for(Map.Entry<String,Integer> en:entry)
+        Set<Map.Entry<String, Integer>> entry1= linkedHashMap.entrySet();
+        Integer[] result = new Integer[linkedHashMap.size()];
+        i=0;
+        for(Map.Entry<String,Integer> en:entry1)
         {
-            System.out.println(en.getKey()+"----cluster:"+en.getValue());
+            result[i] = en.getValue();
+            System.out.println(en.getKey()+"----cluster:"+ result[i]);
+            i++;
+
         }
 
 
-        return treeMap;
+
+        return result;
     }
 
     public static void main(String[] args) {

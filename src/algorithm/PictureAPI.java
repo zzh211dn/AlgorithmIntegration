@@ -4,6 +4,7 @@ import frame.Charting;
 import frame.PrintScatterChart;
 import frame.RectanglePicture;
 import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -40,12 +41,19 @@ public class PictureAPI {
      * @param row 需要生成的行数
      * @param  col 需要生成的列数
      * */
-    public Scene getRectangleResult(Double [][] datas,int row,int col)
+    public Scene getRectangleResult(Double [] datas,int row,int col)
     {
-        RectanglePicture rectanglePicture = new RectanglePicture();
-         rectanglePicture.drawRectangle(datas,row,col);
-        Scene sceneRect= rectanglePicture.start();
-        return sceneRect;
+        try {
+            RectanglePicture rectanglePicture = new RectanglePicture();
+            rectanglePicture.drawRectangle(datas,row,col);
+            Scene sceneRect= rectanglePicture.start();
+            return sceneRect;
+        }
+        catch (Exception e)
+        {
+            System.out.print(e.toString());
+        }
+        return null;
     }
 
 
@@ -67,19 +75,24 @@ public class PictureAPI {
 
         Random r = new Random();
         ArrayList<Double[][]> arrayList = new ArrayList<>();
+        Double[] datass = new Double[25];
         for(int m = 0;m<3;m++) {
             Double[][] datas = new Double[25][3];
+
             for (int i = 0; i < datas.length; i++) {
                 for (int j = 0; j < datas[0].length; j++) {
                     datas[i][j] = r.nextDouble();
-                    System.out.print(datas[i][j]+"    ");
+//                    System.out.print(datas[i][j]+"    ");
                 }
-                System.out.println();
+                datass[i] =  r.nextDouble();
+//                System.out.println();
             }
             arrayList.add(datas);
         }
-//        System.out.println("next");
-        new PictureAPI().getScatterResult(arrayList);
+        Stage chartStage = new Stage();
+        chartStage.setScene(new PictureAPI().getChatingResult(arrayList));
+        chartStage.show();
+//        new PictureAPI().getRectangleResult(datass,5,5);
 
     }
 }
