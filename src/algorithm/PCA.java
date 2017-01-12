@@ -5,7 +5,7 @@ import java.util.Date;
 
 import Jama.Matrix;
 
-public class Pca {
+public class PCA {
     /**
      * 将原始数据标准化
      * */
@@ -222,7 +222,7 @@ public class Pca {
                 {226.1,5.0,162.3,2,3,5,11,22,1.1,1.2,226.1,5.0,162.3,2,3,5,11,22,1.1,1.2},
                 {231.9,5.1,164.3,5,8,0,12,32,1.1,1.2,231.9,5.1,164.3,5,8,0,12,32,1.1,1.2},
                 {239.0,0.7,167.6,6,8,7,14,25,1.1,1.2,239.0,0.7,167.6,6,8,7,14,25,1.1,1.2}};
-        Pca test = new Pca();
+        PCA test = new PCA();
         Matrix C=test.computePCA(data);
         C.print(0,3);
         double[][] c = C.getArray();

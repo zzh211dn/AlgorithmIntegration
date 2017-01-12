@@ -77,8 +77,16 @@ public class SVM {
 
         // train the SVM
         final SVMTrain train = new SVMTrain(svm, trainingSet);
-        train.iteration();
-        train.finishTraining();
+
+        int epoch = 1;
+        do {
+            train.iteration();
+            System.out.println("Epoch #" + epoch + " Error:" + train.getError());
+            epoch++;
+        } while(train.getError() > 0.1);
+
+        //train.iteration();
+        //train.finishTraining();
     }
 
 
