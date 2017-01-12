@@ -1,4 +1,5 @@
 package algorithm;
+import algorithm.PLSpackage.PLS_method;
 import la.matrix.DenseMatrix;
 
 import java.util.ArrayList;
@@ -78,6 +79,12 @@ public class algorithmAPI {
     public Double[] getKemeansResult(Double[][] data, int k ) {
         Kmeans callKmeans = new Kmeans();
         return callKmeans.computeKmeans(Double2double(data),k);
+    }
+
+
+    public Double[][] getPLSResult(Double[][] X,Double[][] Y,int factors){
+        PLS_method pls = new PLS_method(Double2double(X),Double2double(Y),X[0].length-Y[0].length);
+        return double2Double(pls.getW());
     }
 
     /**

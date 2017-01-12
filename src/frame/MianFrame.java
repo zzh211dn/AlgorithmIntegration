@@ -285,10 +285,10 @@ public class MianFrame extends Application {
             button.setOnAction(event1 -> {
                 lStage.close();
                 Double[][]  pcaResult = algorithmAPI.getPCAResult(dataOut(3), Integer.valueOf(kPca.getText()));
-                Double[][]  trianPcaResult = separPcaData(pcaResult,1);
-                Double[][]  testPcaResult = separPcaData(pcaResult,2);
+                Double[][]  trianPcaResult = separData(pcaResult,1);
+                Double[][]  testPcaResult = separData(pcaResult,2);
 
-               String[][] trianPcaString = addInf(trianPcaResult,0);
+                String[][] trianPcaString = addInf(trianPcaResult,0);
                 String[][] testPcaString = addInf(testPcaResult,1);
                 Stage pcaStage = new Stage();
                 Scene pcaScence = new Scene(new VBox(),width,high);
@@ -674,12 +674,131 @@ public class MianFrame extends Application {
                 initTable(testColumnNames, testTableVales, 2);
 
             });
-
-
-
-
         });
 
+        /**
+         * PLS方法调用
+         */
+        addPLS.setOnAction(event -> {
+            Stage textStage = new Stage();
+            GridPane grid = new GridPane();
+            grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+            grid.setVgap(4);
+            grid.setHgap(1);
+            Scene textScene = new Scene(grid, 200,250);
+
+            final Label plsLabel = new Label("请输入Y的开始序列：");
+            GridPane.setConstraints(plsLabel, 0, 0);
+            grid.getChildren().add(plsLabel);
+
+            final javafx.scene.control.TextField leftY = new javafx.scene.control.TextField();
+            leftY.setPromptText("请输入Y的开始序列号：");
+            GridPane.setConstraints(leftY, 0, 1);
+            grid.getChildren().add(leftY);
+
+            final javafx.scene.control.TextField rightY = new javafx.scene.control.TextField();
+            rightY.setPromptText("请输入Y的结束序列号：");
+            GridPane.setConstraints(rightY, 0, 2);
+            grid.getChildren().add(rightY);
+
+            Button button = new Button("确定");
+            GridPane.setConstraints(button, 0, 3);
+            grid.getChildren().add(button);
+            textStage.setScene(textScene);
+            textStage.show();
+
+            button.setOnAction(event1 -> {
+                Double[][] X = dataOut(3);
+                int yLength =Integer.valueOf(rightY.getText())- Integer.valueOf(leftY.getText());
+                Double[][] Y = gePlsY(X,Integer.valueOf(leftY.getText()),Integer.valueOf(rightY.getText()));
+                Double[][] plsResult =  algorithmAPI.getPLSResult(X,Y,X[0].length-yLength);
+
+                Double[][]  trianplsResult = separData(plsResult,1);
+                Double[][]  testplsResult = separData(plsResult,2);
+
+                String[][] trianPlsString = addInf(trianplsResult,0);
+                String[][] testPlsString = addInf(testplsResult,1);
+                Stage plsStage = new Stage();
+                Scene plsScence = new Scene(new VBox(),width,high);
+
+
+                String[] plsTrianColumnNames = initPCAColumnNames( trianPlsString);
+                DefaultTableModel plsTrianTableModel = new DefaultTableModel( trianPlsString, plsTrianColumnNames);
+                JTable plsTrianTable = new JTable(plsTrianTableModel);
+                plsTrianTable.setRowHeight(50);
+                plsTrianTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+                String[] plsTestColumnNames = initPCAColumnNames(testPlsString);
+                DefaultTableModel plsTestTableModel = new DefaultTableModel(testPlsString, plsTestColumnNames);
+                JTable plsTestTable = new JTable(plsTestTableModel);
+                plsTestTable.setRowHeight(50);
+                plsTestTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+
+                Button trianPlsAddButton = new Button("保存");
+                HBox trianPlsLabelBox = new HBox();
+                Label trianPlsLabel = new Label("  训练集   ");
+                trianPlsLabel.setFont(new javafx.scene.text.Font("Arial", 20));
+                trianPlsLabelBox.getChildren().addAll(trianPlsLabel, trianPlsAddButton);
+                trianPlsLabelBox.setSpacing(5);
+                trianPlsLabelBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+
+
+                initColumn(plsTrianTable);
+                JScrollPane trianPlsScroll = new JScrollPane(plsTrianTable);
+                trianPlsScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                SwingNode trianPlsSwingNode = new SwingNode();
+                trianPlsSwingNode.setContent(trianPlsScroll);
+                VBox trianPlsBox = new VBox();
+                trianPlsBox.getChildren().addAll(trianPlsLabelBox, trianPlsSwingNode);
+
+                Button testPlsAddButton = new Button("保存");
+                HBox testPlsLabelBox = new HBox();
+                Label testPlsLabel = new Label("  测试集   ");
+                testPlsLabel.setFont(new javafx.scene.text.Font("Arial", 20));
+                testPlsLabelBox.getChildren().addAll(testPlsLabel, testPlsAddButton);
+                testPlsLabelBox.setSpacing(5);
+                testPlsLabelBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+
+                initColumn(plsTestTable);
+                JScrollPane testPlsScroll = new JScrollPane(plsTestTable);
+                testPlsScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                SwingNode testPlsSwingNode = new SwingNode();
+                testPlsSwingNode.setContent(testPlsScroll);
+                VBox testPlsBox = new VBox();
+                testPlsBox.getChildren().addAll(testPlsLabelBox, testPlsSwingNode);
+
+                ((VBox) plsScence.getRoot()).getChildren().addAll(trianPlsBox, testPlsBox);
+                plsStage.setScene(plsScence);
+                plsStage.show();
+
+                trianPlsAddButton.setOnAction(event2 -> {
+                    FileChooser fileSaveChooser = new FileChooser();
+
+                    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+                            "zyz 文件 (*.zyz)", "*.zyz");
+                    fileSaveChooser.getExtensionFilters().add(extFilter);
+                    File file = fileSaveChooser.showSaveDialog(stage);
+                    if (file != null) {
+                        fileAction.saveData(file, trianPlsString);
+                    }
+                });
+
+                testPlsAddButton.setOnAction(event2 -> {
+                    FileChooser fileSaveChooser = new FileChooser();
+
+                    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+                            "zyz 文件 (*.zyz)", "*.zyz");
+                    fileSaveChooser.getExtensionFilters().add(extFilter);
+                    File file = fileSaveChooser.showSaveDialog(stage);
+                    if (file != null) {
+                        fileAction.saveData(file, testPlsString);
+                    }
+
+            });
+        });
+
+        });
         /**
          * kmeans方法调用
          */
@@ -745,8 +864,9 @@ public class MianFrame extends Application {
                 int row = (Integer.valueOf(rightX.getText())-Integer.valueOf(leftX.getText()))/Integer.valueOf(step.getText());
                 int col = (Integer.valueOf(rightY.getText())-Integer.valueOf(leftY.getText()))/Integer.valueOf(step.getText());
                 PictureAPI pictureAPI = new PictureAPI();
+                Stage chartStage = null;
                 try {
-                    Stage chartStage = new Stage();
+                    chartStage = new Stage();
                     chartStage.setScene(pictureAPI.getRectangleResult(result,row+1,col+1));
                     chartStage.show();
                 }
@@ -764,14 +884,18 @@ public class MianFrame extends Application {
                 //实例化文本框
                 jta.setWrapText(true);
                 jta.setFont(new javafx.scene.text.Font("Arial", 18));
-                jta.setPrefSize(900,250);
+                jta.setPrefSize(500,250);
 
                 Stage textStage = new Stage();
                 GridPane textgrid = new GridPane();
                 textgrid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
                 textgrid.setVgap(1);
                 textgrid.setHgap(1);
-                Scene textScene = new Scene(textgrid, 950, 290);
+                Scene textScene = new Scene(textgrid, 550, 290);
+                System.out.println(chartStage.getX());
+                System.out.println(chartStage.getHeight());
+                textStage.setX(chartStage.getX());
+                textStage.setY((chartStage.getY()+chartStage.getHeight())/2);
                 GridPane.setConstraints(jta, 0, 0);
                 textgrid.getChildren().add(jta);
                 textStage.setScene(textScene);
@@ -1036,7 +1160,7 @@ public class MianFrame extends Application {
     }
 
     /**
-     * 生成PCA结果列标签
+     * 生成PCA和PLS结果列标签
      *
      * @param pcaResult
      * @return
@@ -1266,7 +1390,15 @@ public class MianFrame extends Application {
         return  addData;
     }
 
-    private  Double[][] separPcaData(Double[][] data,int type){
+    private Double[][] gePlsY(Double[][] X,int start,int end){
+        Double[][] Y = new Double[X.length][end-start+1];
+        for(int i=0;i<Y.length;i++)
+            for(int j=start;j<=end;j++)
+                Y[i][j-start] = X[i][j];
+        return Y;
+    }
+
+    private  Double[][] separData(Double[][] data,int type){
         if(type==1){
             Double[][] result = new Double[trianTableVales.length][data[0].length];
             for(int i=0;i<result.length;i++)
