@@ -68,16 +68,6 @@ public class SVM {
 
         svm = new org.encog.ml.svm.SVM(trainData[0].length,svm_type, kernel_type);
 
-        System.out.println("=========================mine");
-        for(int i = 0;i<trainData.length;i++)
-        {
-            for (int j = 0;j<trainData[0].length;j++)
-            {
-                System.out.print(trainData[i][j]+",");
-            }
-            System.out.println();
-        }
-
 
         // create training data
         MLDataSet trainingSet = new BasicMLDataSet(trainData,trainlabel);
