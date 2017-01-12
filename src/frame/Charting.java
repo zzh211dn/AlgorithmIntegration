@@ -31,8 +31,9 @@ public class Charting {
     public static ArrayList<Double [][]> thisDatas = new ArrayList<>();
     public void drawChat(ArrayList<Double [][]> datas)
     {
-            thisDatas = datas;
+        thisDatas = datas;
     }
+    public ArrayList<Double> averageList = new ArrayList<Double>();
 
     @FXML
     private LineChart<Number, Number> chart;
@@ -49,7 +50,9 @@ public class Charting {
 
         for(int i = 0;i<datas.length;i++)
         {
-            tempSeries.getData().add(new XYChart.Data<Number, Number>(datas[i][0],datas[i][1]));// System.currentTimeMillis() - startTime,valueSlider.getValue()
+//            System.out.println(i+"==="+averageList.get(i)+datas[i][1]/thisDatas.size());
+            averageList.set(i,averageList.get(i)+datas[i][1]/thisDatas.size());
+            tempSeries.getData().add(new XYChart.Data<Number, Number>(datas[i][0],datas[i][1]));
         }
 
     }
@@ -69,17 +72,40 @@ public class Charting {
         return scene;
     }
 
+    int nodeSize = 0;
+
     @FXML
     void initialize() {
         //Set chart to format dates on the X axis
 //        ((StableTicksAxis) chart.getXAxis()).setAutoRangePadding();//设置间隔
         ((StableTicksAxis) chart.getXAxis()).setForceZeroInRange(false);//强制设置X轴不为0开头
+
+        nodeSize = thisDatas.get(0).length;
+        for(int j= 0;j<nodeSize;j++)
+        {
+            averageList.add(j,0.0);
+        }
+
+        Double[][] averag = new Double[nodeSize][2];
         for(int m = 0;m<thisDatas.size();m++) {
             XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
             series.setName("Date"+ m);
             addSample(series,thisDatas.get(m));
             chart.getData().add(series);
         }
+
+        for(int j= 0;j<nodeSize;j++)
+        {
+            averag[j][0] = thisDatas.get(0)[j][0];
+            averag[j][1] = averageList.get(j);
+        }
+
+        XYChart.Series<Number, Number> averagseries = new XYChart.Series<Number, Number>();
+        averagseries.setName("averagLine");
+        addSample(averagseries,averag);
+        chart.getData().add(averagseries);
+
+
         chart.setOnMouseMoved( new EventHandler<MouseEvent>() {
             public void handle( MouseEvent mouseEvent ) {
                 double xStart = chart.getXAxis().getLocalToParentTransform().getTx();

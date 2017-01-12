@@ -71,7 +71,8 @@ public class RectanglePicture {
     public Scene start() {
         Group root = new Group();
         Scene scene = new Scene(root, 500, 500, Color.WHITE);
-        System.out.println("fileType"+fileType.length);
+//        System.out.println("fileType"+fileType.length);
+        int id=0;
         for(int i = 0;i<rownum;i++)
         {
             for(int j = 0;j<colnum;j++)
@@ -79,11 +80,11 @@ public class RectanglePicture {
                 double h = (scene.getHeight()-50) /rownum;
                 double w = (scene.getWidth()-50) / colnum;
                 Rectangle r = new Rectangle(25+ w*j, 25+h*i,w ,h);
-                System.out.println("第"+(i+j)+"个文件：type = "+fileType[i+ j]);
-                Float[] rgbColor = getRandom(Integer.valueOf(fileType[i+ j].intValue()));
+                Float[] rgbColor = getRandom(Integer.valueOf(fileType[id].intValue()));
                 Color color = new Color(rgbColor[0], rgbColor[1], rgbColor[2], 0.9);//RGB颜色，参数4最后为透明性
                 r.setFill(color);
                 root.getChildren().add(r);
+                id++;
             }
         }
         return scene;
@@ -102,7 +103,7 @@ public class RectanglePicture {
     public static void main(String[] args) {
 //        launch(args);
         Double d = 1.0;
-        System.out.println( Integer.valueOf(d.intValue()));
+//        System.out.println( Integer.valueOf(d.intValue()));
 
     }
 }

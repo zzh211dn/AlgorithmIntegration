@@ -602,7 +602,6 @@ public class MianFrame extends Application {
             catch (Exception e)
             {
               e.printStackTrace();
-
             }
         });
 
@@ -892,8 +891,8 @@ public class MianFrame extends Application {
                 textgrid.setVgap(1);
                 textgrid.setHgap(1);
                 Scene textScene = new Scene(textgrid, 550, 290);
-                System.out.println(chartStage.getX());
-                System.out.println(chartStage.getHeight());
+//                System.out.println(chartStage.getX());
+//                System.out.println(chartStage.getHeight());
                 textStage.setX(chartStage.getX());
                 textStage.setY((chartStage.getY()+chartStage.getHeight())/2);
                 GridPane.setConstraints(jta, 0, 0);

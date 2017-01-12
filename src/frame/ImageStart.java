@@ -36,7 +36,7 @@ public class ImageStart extends Application {
         primaryStage.show();
         Platform.runLater(new Runnable() {
             public void run() {
-              try{Thread.sleep(10000);}
+              try{Thread.sleep(5000);}
               catch (Exception e)
               {
                   System.out.println(e.toString());
