@@ -12,7 +12,7 @@ import java.util.TreeMap;
  */
 public class algorithmAPI {
     public Double[][] result ;
-
+    public String Error = "";
     public Double[][] double2Double(double[][] doubleData)
     {
         Double[][] result = new Double[doubleData.length][doubleData[0].length];
@@ -39,12 +39,17 @@ public class algorithmAPI {
         return result;
     }
 
-    public Double[][] getSVMResult(Double[][] trainData,Double[][] trainlabel,int svm_type,int kener_type ,Double[][] testData)
+    public ArrayList<Double[][]> getSVMResult(Double[][] trainData,Double[][] trainlabel,int svm_type,int kener_type ,Double[][] testData)
     {
-
+        ArrayList result = new ArrayList<Double[][]>();
+        Double[][] trianResult,testResult;
         SVM svm = new SVM();
         svm.trainSVM(Double2double(trainData),Double2double(trainlabel),svm_type,kener_type);
-        result = svm.computeSVM((Double2double(testData)));
+        trianResult = svm.computeSVM((Double2double(trainData)));
+        testResult = svm.computeSVM((Double2double(testData)));
+        Error = svm.getError();
+        result.add(0,trianResult);
+        result.add(1,testResult);
         return result;
     }
 
@@ -83,11 +88,17 @@ public class algorithmAPI {
      * @param  hiddenLayer    隐藏层，默认40
      * @param  iterateTimes    迭代次数，默认1000；
      */
-    public Double[][] getBPNNResult(Double[][] trainData,Double[][] lable,Double[][] testData,int hiddenLayer,int iterateTimes)
+    public ArrayList<Double[][]> getBPNNResult(Double[][] trainData,Double[][] lable,Double[][] testData,int hiddenLayer,int iterateTimes)
     {
+        ArrayList result = new ArrayList<Double[][]>();
+        Double[][] trianResult,testResult;
         BPNN bpnn = new BPNN();
         bpnn.trainBPNN(Double2double(trainData),Double2double(lable),hiddenLayer,iterateTimes);
-        result = bpnn.computeBPNN(Double2double(testData));
+        trianResult = bpnn.computeBPNN(Double2double(trainData));
+        testResult = bpnn.computeBPNN(Double2double(testData));
+        Error = bpnn.getError();
+        result.add(0,trianResult);
+        result.add(1,testResult);
         return result;
     }
     /**
@@ -100,6 +111,7 @@ public class algorithmAPI {
      */
     public Double[][] getKNNResult(Double[][] datas, Double[][] testDatas, Double[][] Label, int k)
     {
+        result = new Double[testDatas.length][1];
         KNN knn = new KNN();
         ArrayList<ArrayList<Double>> trainData = knn.Double2List(datas);
         ArrayList<String> trainLabel = knn.Double2StringList(Label);

@@ -284,8 +284,10 @@ public class MianFrame extends Application {
 
             button.setOnAction(event1 -> {
                 lStage.close();
-                Double[][]   trianPcaResult = algorithmAPI.getPCAResult(dataOut(1), Integer.valueOf(kPca.getText()));
-                Double[][]   testPcaResult = algorithmAPI.getPCAResult(dataOut(2),Integer.valueOf(kPca.getText()));
+                Double[][]  pcaResult = algorithmAPI.getPCAResult(dataOut(3), Integer.valueOf(kPca.getText()));
+                Double[][]  trianPcaResult = separPcaData(pcaResult,1);
+                Double[][]  testPcaResult = separPcaData(pcaResult,2);
+
                String[][] trianPcaString = addInf(trianPcaResult,0);
                 String[][] testPcaString = addInf(testPcaResult,1);
                 Stage pcaStage = new Stage();
@@ -376,6 +378,7 @@ public class MianFrame extends Application {
          * SVM方法调用
          */
         addSVM.setOnAction(event -> {
+
             Stage svmStage = new Stage();
             svmStage.setTitle("选择支持向量机类型：");
             final javafx.scene.control.Button button = new Button("确定");
@@ -401,13 +404,32 @@ public class MianFrame extends Application {
             coreComboBox.setValue("Linear");
 
             button.setOnAction(event1 -> {
-                testResult = algorithmAPI.getSVMResult(dataOut(1), getLabel(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, dataOut(2));
-                trianResult = algorithmAPI.getSVMResult(dataOut(1), getLabel(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, dataOut(1));
+                javafx.scene.control.TextArea jta = new javafx.scene.control.TextArea();
+
+                testResult = algorithmAPI.getSVMResult(dataOut(1), getLabel(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, dataOut(2)).get(0);
+                trianResult = algorithmAPI.getSVMResult(dataOut(1), getLabel(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, dataOut(1)).get(1);
+                String error  = algorithmAPI.Error;
                 trianTableVales = resultForm(trianResult, 1);
                 initTable(trianColumnNames, trianTableVales, 1);
                 testTableVales = resultForm(testResult, 2);
                 initTable(testColumnNames, testTableVales, 2);
                 svmStage.close();
+                //实例化文本框
+                jta.setWrapText(true);
+                jta.setFont(new javafx.scene.text.Font("Arial", 18));
+                jta.setPrefSize(500,50);
+                jta.appendText(error);
+                Stage errorStage = new Stage();
+                GridPane grid = new GridPane();
+                grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+                grid.setVgap(1);
+                grid.setHgap(1);
+                Scene errorScene = new Scene(grid, 550, 90);
+                GridPane.setConstraints(jta, 0, 0);
+                grid.getChildren().add(jta);
+                errorStage.setScene(errorScene);
+                errorStage.setResizable(false);
+                errorStage.show();
 
             });
 
@@ -456,13 +478,32 @@ public class MianFrame extends Application {
             bpnnStage.show();
 
             button.setOnAction(event1 -> {
-                trianResult = algorithmAPI.getBPNNResult(dataOut(1), getLabel(), dataOut(1), Integer.valueOf(hiddenLayer.getText()), Integer.valueOf(iterateTimes.getText()));
-                testResult = algorithmAPI.getBPNNResult(dataOut(1), getLabel(), dataOut(2), Integer.valueOf(hiddenLayer.getText()), Integer.valueOf(iterateTimes.getText()));
+                javafx.scene.control.TextArea jta = new javafx.scene.control.TextArea();
+                trianResult = algorithmAPI.getBPNNResult(dataOut(1), getLabel(), dataOut(1), Integer.valueOf(hiddenLayer.getText()), Integer.valueOf(iterateTimes.getText())).get(0);
+                testResult = algorithmAPI.getBPNNResult(dataOut(1), getLabel(), dataOut(2), Integer.valueOf(hiddenLayer.getText()), Integer.valueOf(iterateTimes.getText())).get(1);
+                String error = algorithmAPI.Error;
                 trianTableVales = resultForm(trianResult, 1);
                 initTable(trianColumnNames, trianTableVales, 1);
                 testTableVales = resultForm(testResult, 2);
                 initTable(testColumnNames, testTableVales, 2);
                 bpnnStage.close();
+
+                //实例化文本框
+                jta.setWrapText(true);
+                jta.setFont(new javafx.scene.text.Font("Arial", 18));
+                jta.setPrefSize(500,50);
+                jta.appendText(error);
+                Stage errorStage = new Stage();
+                GridPane errorGrid = new GridPane();
+                errorGrid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+                errorGrid.setVgap(1);
+                errorGrid.setHgap(1);
+                Scene errorScene = new Scene(errorGrid, 550, 90);
+                GridPane.setConstraints(jta, 0, 0);
+                errorGrid.getChildren().add(jta);
+                errorStage.setScene(errorScene);
+                errorStage.setResizable(false);
+                errorStage.show();
             });
         });
 
@@ -595,6 +636,48 @@ public class MianFrame extends Application {
          */
         addRectangle.setOnAction(event -> {
          
+        });
+        /**
+         * knn方法调用
+         */
+        addKNN.setOnAction(event -> {
+
+            Stage knnStage = new Stage();
+            GridPane grid = new GridPane();
+            grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+            grid.setVgap(3);
+            grid.setHgap(1);
+            Scene knnScene = new Scene(grid, 200, 100);
+
+            final Label knnLabel = new Label("请输入k值：");
+            GridPane.setConstraints(knnLabel, 0, 0);
+            grid.getChildren().add(knnLabel);
+
+            final javafx.scene.control.TextField kTimes = new javafx.scene.control.TextField();
+            kTimes.setPromptText("请输入k");
+            GridPane.setConstraints(kTimes, 0, 1);
+            grid.getChildren().add(kTimes);
+
+            Button button = new Button("确定");
+            GridPane.setConstraints(button, 0, 2);
+            grid.getChildren().add(button);
+            knnStage.setScene(knnScene);
+            knnStage.show();
+
+            button.setOnAction(event1 -> {
+                knnStage.close();
+                trianResult =  algorithmAPI.getKNNResult(dataOut(1),dataOut(1), getLabel(),Integer.valueOf(kTimes.getText()));
+                testResult =  algorithmAPI.getKNNResult(dataOut(1),dataOut(2), getLabel(),Integer.valueOf(kTimes.getText()));
+                trianTableVales = resultForm(trianResult, 1);
+                initTable(trianColumnNames, trianTableVales, 1);
+                testTableVales = resultForm(testResult, 2);
+                initTable(testColumnNames, testTableVales, 2);
+
+            });
+
+
+
+
         });
 
         /**
@@ -1073,12 +1156,26 @@ public class MianFrame extends Application {
                     if (trianTableVales[i][j] != null)
                         data[i][j - 4] = Double.parseDouble(trianTableVales[i][j]);
                 }
-        } else {
+        }
+        else if(type==2){
             data = new Double[testTableVales.length][testTableVales[0].length - 4];
             for (int i = 0; i < data.length; i++)
                 for (int j = 4; j < testTableVales[0].length; j++) {
                     if (testTableVales[i][j] != null && testTableVales[i][j] != "")
                         data[i][j - 4] = Double.parseDouble(testTableVales[i][j]);
+                }
+        }
+        else {
+            data = new Double[trianTableVales.length+testTableVales.length][testTableVales[0].length - 4];
+            for(int i=0;i<trianTableVales.length;i++)
+                for (int j = 4; j < trianTableVales[0].length; j++) {
+                    if (trianTableVales[i][j] != null)
+                        data[i][j - 4] = Double.parseDouble(trianTableVales[i][j]);
+                }
+            for (int i = trianTableVales.length; i < data.length; i++)
+                for (int j = 4; j < testTableVales[0].length; j++) {
+                    if (testTableVales[i-trianTableVales.length][j] != null && testTableVales[i-trianTableVales.length][j] != "")
+                        data[i][j - 4] = Double.parseDouble(testTableVales[i-trianTableVales.length][j]);
                 }
         }
         return data;
@@ -1140,20 +1237,15 @@ public class MianFrame extends Application {
         return map;
     }
 
+    /**
+     * PCA数据格式化
+     * @param data
+     * @param type
+     * @return
+     */
     private String[][] addInf(Double[][] data,int type){
         String[][] addData = new String[data.length][data[0].length+4];
-      /*  if(type==0)
-        for(int i=0;i<data.length;i++)
-            for(int j=0;j<5;j++)
-                if(trianTableVales[i][j]!=null)
-                addData[i][j] = trianTableVales[i][j];
-        else
-            for(int l=0;l<data.length;l++)
-                for(int m=0;m<5;m++) {
-                    System.out.println(l+","+m);
-                    if (testTableVales[l][m] != null)
-                        addData[l][m] = testTableVales[l][m];
-                }*/
+
         if(type==0) {
             for (int i = 0; i < trianTableVales.length; i++)
                 for (int j = 0; j < 5; j++)
@@ -1172,6 +1264,22 @@ public class MianFrame extends Application {
                 addData[i][j+4] = data[i][j]+"";
 
         return  addData;
+    }
+
+    private  Double[][] separPcaData(Double[][] data,int type){
+        if(type==1){
+            Double[][] result = new Double[trianTableVales.length][data[0].length];
+            for(int i=0;i<result.length;i++)
+                for(int j=0;j<data[i].length;j++)
+                    result[i][j] = data[i][j];
+            return result;
+        }else {
+            Double[][] result = new Double[testTableVales.length][data[0].length];
+            for(int i=trianTableVales.length;i<data.length;i++)
+                for(int j=0;j<data[i].length;j++)
+                    result[i-trianTableVales.length][j] = data[i][j];
+            return result;
+        }
     }
 
 }

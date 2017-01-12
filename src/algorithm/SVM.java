@@ -16,6 +16,13 @@ import java.util.ArrayList;
  * Created by fish123 on 2016/12/14.
  */
 public class SVM {
+
+
+    public String getError() {
+        return Error;
+    }
+
+    String  Error ="";
     org.encog.ml.svm.SVM svm;
     public void trainSVM(double[][] trainData,double[][] trainlabel,int SVMtype,int kenelType){
         org.encog.ml.svm.SVMType svm_type;
@@ -77,13 +84,12 @@ public class SVM {
 
         // train the SVM
         final SVMTrain train = new SVMTrain(svm, trainingSet);
-
         int epoch = 1;
         do {
             train.iteration();
-            System.out.println("Epoch #" + epoch + " Error:" + train.getError());
+            Error="迭代次数:" + epoch + " 错误率:" + train.getError();
             epoch++;
-        } while(train.getError() > 0.1);
+        } while(train.getError() > 0.1&&epoch<=5000);
 
         //train.iteration();
         //train.finishTraining();

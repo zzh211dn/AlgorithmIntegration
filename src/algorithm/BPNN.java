@@ -25,6 +25,11 @@ import static org.encog.util.simple.EncogUtility.formatNeuralData;
  */
 public class BPNN {
 
+    public String getError() {
+        return Error;
+    }
+
+    String Error = "";
     public void trainToError(MLTrain train, double error, int maxIteration) {
         int epoch = 1;
 //        System.out.println("Beginning training...");
@@ -33,7 +38,7 @@ public class BPNN {
             train.iteration();
             ++epoch;
         } while(train.getError() > error && !train.isTrainingDone() && epoch< maxIteration);
-//        res = ("Iteration #" + Format.formatInteger(epoch) + " Error:" + Format.formatPercent(train.getError()) + " Target Error: " + Format.formatPercent(error));
+        Error = ("迭代次数:" + Format.formatInteger(epoch) + " 错误率:" + Format.formatPercent(train.getError()) + " Target Error: " + Format.formatPercent(error));
         train.finishTraining();
 //        return res;
     }
