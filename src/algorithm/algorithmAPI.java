@@ -61,7 +61,6 @@ public class algorithmAPI {
                 ddata[i][j] = data[i][j];
             }
 
-
         la.matrix.Matrix X = new DenseMatrix(ddata);
         la.matrix.Matrix R = ml.subspace.PCA.run(X, r);
         Double[][] result = new Double[R.getData().length][R.getData()[0].length];

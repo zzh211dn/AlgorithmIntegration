@@ -29,9 +29,11 @@ public class Charting {
         Application.launch();
     }
     public static ArrayList<Double [][]> thisDatas = new ArrayList<>();
-    public void drawChat(ArrayList<Double [][]> datas)
+    public static String[] fileNameList ;
+    public void drawChat(ArrayList<Double [][]> datas,String[] fileListName)
     {
         thisDatas = datas;
+        fileNameList = fileListName;
     }
     public ArrayList<Double> averageList = new ArrayList<Double>();
 
@@ -89,7 +91,7 @@ public class Charting {
         Double[][] averag = new Double[nodeSize][2];
         for(int m = 0;m<thisDatas.size();m++) {
             XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
-            series.setName("Date"+ m);
+            series.setName(fileNameList[m]);
             addSample(series,thisDatas.get(m));
             chart.getData().add(series);
         }

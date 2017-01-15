@@ -19,12 +19,12 @@ public class PictureAPI {
      * datas.get(i)[j][0]为横坐标，datas.get(i)[j][1]为纵坐标
      *
      * */
-    public Scene getChatingResult(ArrayList<Double [][]> datas1)
+    public Scene getChatingResult(ArrayList<Double [][]> datas1,String[] fileListName)
     {
 
         try {
             Charting charting = new Charting();
-            charting.drawChat(datas1);
+            charting.drawChat(datas1,fileListName);
             Scene sceneChart = charting.start();
             return sceneChart;
         }
@@ -68,8 +68,6 @@ public class PictureAPI {
         app.setVisible(true);
     }
 
-
-
     //test
     public static void main(String[] args) {
 
@@ -89,9 +87,9 @@ public class PictureAPI {
             }
             arrayList.add(datas);
         }
-        Stage chartStage = new Stage();
-        chartStage.setScene(new PictureAPI().getChatingResult(arrayList));
-        chartStage.show();
+//        Stage chartStage = new Stage();
+//        chartStage.setScene(new PictureAPI().getChatingResult(arrayList));
+//        chartStage.show();
 //        new PictureAPI().getRectangleResult(datass,5,5);
 
     }

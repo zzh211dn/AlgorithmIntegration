@@ -287,6 +287,32 @@ public class MianFrame extends Application {
                 Double[][]  pcaResult = algorithmAPI.getPCAResult(dataOut(3), Integer.valueOf(kPca.getText()));
                 Double[][]  trianPcaResult = separData(pcaResult,1);
                 Double[][]  testPcaResult = separData(pcaResult,2);
+//
+//                Double[][]  ScattertrianPcaResult = new Double[trianPcaResult.length][3];
+//                ArrayList<Double[][]> ScattertPcaResult =new ArrayList<Double[][]>();
+//
+//                Double[][] label = getLabel();
+//                Double temp = label[0][0];
+//                int temprow = 0;
+//                for(int i =0;i<trianPcaResult.length;i++)
+//                {
+//                    if(temp.intValue()!=label[i][0])
+//                    {
+//                        temprow = i;
+//                        ScattertPcaResult.add(ScattertrianPcaResult);
+//                        ScattertrianPcaResult = new Double[trianPcaResult.length][3];
+//                        temp=label[i][0];
+//                    }
+//
+//                    for(int j = 0;j<3;j++)
+//                    {
+//                        ScattertrianPcaResult[i-temprow][j] = trianPcaResult[i][j];
+//                    }
+//
+//                }
+//                ScattertPcaResult.add(ScattertrianPcaResult);
+//                getScatterPicture(ScattertPcaResult);
+
 
                 String[][] trianPcaString = addInf(trianPcaResult,0);
                 String[][] testPcaString = addInf(testPcaResult,1);
@@ -358,7 +384,6 @@ public class MianFrame extends Application {
 
                 testPcaAddButton.setOnAction(event2 -> {
                     FileChooser fileSaveChooser = new FileChooser();
-
                     FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
                             "zyz 文件 (*.zyz)", "*.zyz");
                     fileSaveChooser.getExtensionFilters().add(extFilter);
@@ -368,10 +393,6 @@ public class MianFrame extends Application {
                     }
                 });
             });
-
-
-
-
         });
 
         /**
@@ -576,32 +597,32 @@ public class MianFrame extends Application {
         /**
          * 二维画图调用
          */
-//        addChating.setOnAction(event -> {
-//            PictureAPI pictureAPI = new PictureAPI();
-//            FileChooser fileChooser = new FileChooser();
-//            configureOpenFileChooser(fileChooser,2);
-//            java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
-//            HashMap<String, List<String[]>> picFileData = new HashMap<>();
-//            initChooserData(fileList, picFileData, "");
-//            ArrayList<Double[][]> picMap =  picMap(picFileData);
-//            pictureAPI.getChatingResult(picMap);
-//        });
+
         addChating.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
             configureOpenFileChooser(fileChooser,2);
             java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
             LinkedHashMap<String, List<String[]>> picFileData = new LinkedHashMap<>();
             initChooserData(fileList, picFileData, "");
+            String[] fileListName = new String[fileList.size()];
+            for(int i = 0;i<fileList.size();i++)
+            {
+                String name = fileList.get(i).getName();
+//                if(name.contains("-"))
+//                    name = name.split("-")[-1];
+                fileListName[i] = name;
+
+            }
             ArrayList<Double[][]> picMap =  picMap(picFileData);
             PictureAPI pictureAPI = new PictureAPI();
             try {
                 Stage chartStage = new Stage();
-                chartStage.setScene(pictureAPI.getChatingResult(picMap));
+                chartStage.setScene(pictureAPI.getChatingResult(picMap,fileListName));
                 chartStage.show();
             }
             catch (Exception e)
             {
-              e.printStackTrace();
+                e.printStackTrace();
             }
         });
 
@@ -618,23 +639,15 @@ public class MianFrame extends Application {
             LinkedHashMap<String, List<String[]>> picFileData = new LinkedHashMap<>();
             initChooserData(fileList, picFileData, "");
             ArrayList<Double[][]> picMap =  picMap(picFileData);
-            PictureAPI pictureAPI = new PictureAPI();
-            try {
-               pictureAPI.getScatterResult(picMap);
-
-            }
-            catch (Exception e)
-            {
-              e.printStackTrace();
-
-            }
+            getScatterPicture(picMap);
         });
+
 
         /**
          * 矩阵画图调用
          */
         addRectangle.setOnAction(event -> {
-         
+
         });
         /**
          * knn方法调用
@@ -794,8 +807,8 @@ public class MianFrame extends Application {
                         fileAction.saveData(file, testPlsString);
                     }
 
+                });
             });
-        });
 
         });
         /**
@@ -907,8 +920,22 @@ public class MianFrame extends Application {
         stage.setScene(scene);
         stage.show();
     }
+    /**
+     * 画散点图
+     * */
+    public void getScatterPicture( ArrayList<Double[][]> picMap)
+    {
+        PictureAPI pictureAPI = new PictureAPI();
+        try {
+            pictureAPI.getScatterResult(picMap);
 
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
 
+        }
+    }
 
     /**
      * 表格初始化方法
@@ -978,10 +1005,10 @@ public class MianFrame extends Application {
                 new File(System.getProperty("user.home"))
         );
         if(type==1|type==2)
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("csv文件,", "*.csv"),
-                new FileChooser.ExtensionFilter("txt文件,", "*.txt")
-        );
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("csv文件,", "*.csv"),
+                    new FileChooser.ExtensionFilter("txt文件,", "*.txt")
+            );
         if(type==1|type==3)
             fileChooser.getExtensionFilters().add( new FileChooser.ExtensionFilter("zyz文件,", "*.zyz"));
     }
