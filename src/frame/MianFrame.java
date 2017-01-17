@@ -441,7 +441,7 @@ public class MianFrame extends Application {
             Stage svmStage = new Stage();
             svmStage.setTitle("选择支持向量机类型：");
             final javafx.scene.control.Button button = new Button("确定");
-            Scene svmScene = new Scene(new Group(), 450, 90);
+            Scene svmScene = new Scene(new Group(), 550, 100);
             final ComboBox svmComboBox = new ComboBox();
             svmComboBox.getItems().addAll(
                     " SupportVectorClassification",
