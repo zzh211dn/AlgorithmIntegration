@@ -291,6 +291,7 @@ public class MianFrame extends Application {
 
                 Double[][] label = getLabel();
                 Double temp = label[0][0];
+                String lableName = temp.intValue()+"";
                 int m = 0;
                 for(;m<label.length;m++)
                 {
@@ -298,17 +299,19 @@ public class MianFrame extends Application {
                         break;
                 }
                 Double[][]  ScattertrianPcaResult = new Double[m][3];
+                Double[][]  ScattertrianPcaResult2D = new Double[m][2];
                 ArrayList<Double[][]> ScattertPcaResult =new ArrayList<Double[][]>();
-
-
-                int temprow = 0;
+                ArrayList<Double[][]> ScattertPcaResult2D =new ArrayList<Double[][]>();
+                                int temprow = 0;
                 for(int i =0;i<trianPcaResult.length;i++)
                 {
                     if(temp.intValue()!=label[i][0])
                     {
                         temprow = i;
                         ScattertPcaResult.add(ScattertrianPcaResult);
+                        ScattertPcaResult2D.add(ScattertrianPcaResult2D);
                         temp=label[i][0];
+                        lableName = lableName+","+ temp.intValue();
                         int mm = m ;
                         for(;m<label.length;m++)
                         {
@@ -316,6 +319,7 @@ public class MianFrame extends Application {
                                 break;
                         }
                         ScattertrianPcaResult = new Double[m-mm][3];
+                        ScattertrianPcaResult2D = new Double[m-mm][2];
 
                     }
 
@@ -323,10 +327,29 @@ public class MianFrame extends Application {
                     {
                         ScattertrianPcaResult[i-temprow][j] = trianPcaResult[i][j];
                     }
+                    for(int j = 0;j<2;j++)
+                    {
+                        ScattertrianPcaResult2D[i-temprow][j] = trianPcaResult[i][j];
+                    }
 
                 }
                 ScattertPcaResult.add(ScattertrianPcaResult);
+                ScattertPcaResult2D.add(ScattertrianPcaResult2D);
                 getScatterPicture(ScattertPcaResult);
+
+                String[] lableName1 = lableName.split(",");
+
+                PictureAPI pictureAPI = new PictureAPI();
+                try {
+                    Stage chartStage = new Stage();
+                    chartStage.setScene(pictureAPI.getScatter2DResult(ScattertPcaResult2D,lableName1));
+                    chartStage.show();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
 
 
                 String[][] trianPcaString = addInf(trianPcaResult,0);

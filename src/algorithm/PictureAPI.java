@@ -3,6 +3,7 @@ package algorithm;
 import frame.Charting;
 import frame.PrintScatterChart;
 import frame.RectanglePicture;
+import frame.Scatter2D;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -31,6 +32,24 @@ public class PictureAPI {
         catch (Exception e)
         {
             System.out.print(e.toString());
+        }
+        return null;
+    }
+
+
+
+    public Scene getScatter2DResult(ArrayList<Double [][]> datas1,String[] fileListName)
+    {
+
+        try {
+            Scatter2D charting2D = new Scatter2D();
+            charting2D.drawChat(datas1,fileListName);
+            Scene sceneChart = charting2D.start();
+            return sceneChart;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
         }
         return null;
     }

@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.TimeZone;
 
-public class Charting {
+public class Scatter2D {
     public static void main( String[] args ) {
         Application.launch();
     }
@@ -35,10 +36,10 @@ public class Charting {
         thisDatas = datas;
         fileNameList = fileListName;
     }
-    public ArrayList<Double> averageList = new ArrayList<Double>();
+//    public ArrayList<Double> averageList = new ArrayList<Double>();
 
     @FXML
-    private LineChart<Number, Number> chart ;
+    private ScatterChart<Number, Number> chart ;
 
     @FXML
     private Label outputLabel;
@@ -53,7 +54,7 @@ public class Charting {
         for(int i = 0;i<datas.length;i++)
         {
 //            System.out.println(i+"==="+averageList.get(i)+datas[i][1]/thisDatas.size());
-            averageList.set(i,averageList.get(i)+datas[i][1]/thisDatas.size());
+//            averageList.set(i,averageList.get(i)+datas[i][1]/thisDatas.size());
             tempSeries.getData().add(new XYChart.Data<Number, Number>(datas[i][0],datas[i][1]));
         }
 
@@ -65,9 +66,9 @@ public class Charting {
         chart.getYAxis().setAutoRanging( true );
     }
 
-    //    @Override
+    //   C:\Users\syxya\IdeaProjects\AlgorithmIntegration\src\Scatter2DCharting.fxml
     public Scene start() throws Exception {
-        FXMLLoader loader = new FXMLLoader( getClass().getResource("../Charting.fxml") );
+        FXMLLoader loader = new FXMLLoader( getClass().getResource("../Scatter2DCharting.fxml") );
         Region contentRootRegion = (Region) loader.load();
         StackPane root = JFXUtil.createScalePane( contentRootRegion, 960, 540, false );//调整框架大小
         Scene scene = new Scene( root, root.getPrefWidth(), root.getPrefHeight() );
@@ -82,17 +83,17 @@ public class Charting {
 //        ((StableTicksAxis) chart.getXAxis()).setAutoRangePadding();//设置间隔
         ((StableTicksAxis) chart.getXAxis()).setForceZeroInRange(false);//强制设置X轴不为0开头
         boolean f = false;
-        chart.setCreateSymbols(f);
-        nodeSize = thisDatas.get(0).length;
-        for(int j= 0;j<nodeSize;j++)
-        {
-            averageList.add(j,0.0);
-        }
+//        chart.setCreateSymbols(f);
+//        nodeSize = thisDatas.get(0).length;
+//        for(int j= 0;j<nodeSize;j++)
+//        {
+//            averageList.add(j,0.0);
+//        }
 
         Double[][] averag = new Double[nodeSize][2];
         for(int m = 0;m<thisDatas.size();m++) {
             XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
-            series.setName(fileNameList[m]);
+            series.setName("文件夹"+fileNameList[m]);
             addSample(series,thisDatas.get(m));
             chart.getData().add(series);
         }
@@ -100,7 +101,7 @@ public class Charting {
         for(int j= 0;j<nodeSize;j++)
         {
             averag[j][0] = thisDatas.get(0)[j][0];
-            averag[j][1] = averageList.get(j);
+//            averag[j][1] = averageList.get(j);
         }
 
         XYChart.Series<Number, Number> averagseries = new XYChart.Series<Number, Number>();

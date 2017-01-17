@@ -62,7 +62,7 @@ public class PrintScatterChart extends JFrame {
      */
     public PrintScatterChart(String title) {
         super(title);
-        addWindowListener(new ExitOnClose());
+//        addWindowListener(new ExitOnClose());
     }
 
     public void getDataSet(ArrayList<Double [][]> datas)
