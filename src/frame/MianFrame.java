@@ -473,6 +473,35 @@ public class MianFrame extends Application {
                 testTableVales = resultForm(testResult, 2);
                 initTable(testColumnNames, testTableVales, 2);
                 svmStage.close();
+
+                ArrayList<Double [][]> datas = new ArrayList<Double[][]>();
+                Double[][] rowlable = getLabel();
+                String[] name = new String[]{"实际值","目标值"};
+                Double[][] trainres = new Double[trianResult.length][2];
+                Double[][] lable = new Double[rowlable.length][2];
+                for(int i = 0;i<rowlable.length;i++)
+                {
+                    lable[i][0] = Double.parseDouble(i+"");
+                    trainres[i][0] = Double.parseDouble(i+"");
+                    lable[i][1] = rowlable[i][0];
+                    trainres[i][1] = trianResult[i][0];
+
+                }
+                datas.add(lable);
+                datas.add(trainres);
+                PictureAPI pictureAPI = new PictureAPI();
+                Stage chartStage = null;
+                try {
+                    chartStage = new Stage();
+                    chartStage.setScene(pictureAPI.getScatter2DResult(datas,name));
+                    chartStage.show();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+
+                }
+
                 //实例化文本框
                 jta.setWrapText(true);
                 jta.setFont(new javafx.scene.text.Font("Arial", 18));
@@ -489,6 +518,10 @@ public class MianFrame extends Application {
                 errorStage.setScene(errorScene);
                 errorStage.setResizable(false);
                 errorStage.show();
+
+
+
+
 
             });
 
