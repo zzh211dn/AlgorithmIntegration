@@ -287,31 +287,46 @@ public class MianFrame extends Application {
                 Double[][]  pcaResult = algorithmAPI.getPCAResult(dataOut(3), Integer.valueOf(kPca.getText()));
                 Double[][]  trianPcaResult = separData(pcaResult,1);
                 Double[][]  testPcaResult = separData(pcaResult,2);
-//
-//                Double[][]  ScattertrianPcaResult = new Double[trianPcaResult.length][3];
-//                ArrayList<Double[][]> ScattertPcaResult =new ArrayList<Double[][]>();
-//
-//                Double[][] label = getLabel();
-//                Double temp = label[0][0];
-//                int temprow = 0;
-//                for(int i =0;i<trianPcaResult.length;i++)
-//                {
-//                    if(temp.intValue()!=label[i][0])
-//                    {
-//                        temprow = i;
-//                        ScattertPcaResult.add(ScattertrianPcaResult);
-//                        ScattertrianPcaResult = new Double[trianPcaResult.length][3];
-//                        temp=label[i][0];
-//                    }
-//
-//                    for(int j = 0;j<3;j++)
-//                    {
-//                        ScattertrianPcaResult[i-temprow][j] = trianPcaResult[i][j];
-//                    }
-//
-//                }
-//                ScattertPcaResult.add(ScattertrianPcaResult);
-//                getScatterPicture(ScattertPcaResult);
+
+
+                Double[][] label = getLabel();
+                Double temp = label[0][0];
+                int m = 0;
+                for(;m<label.length;m++)
+                {
+                    if(temp.intValue()!=label[m][0])
+                        break;
+                }
+                Double[][]  ScattertrianPcaResult = new Double[m][3];
+                ArrayList<Double[][]> ScattertPcaResult =new ArrayList<Double[][]>();
+
+
+                int temprow = 0;
+                for(int i =0;i<trianPcaResult.length;i++)
+                {
+                    if(temp.intValue()!=label[i][0])
+                    {
+                        temprow = i;
+                        ScattertPcaResult.add(ScattertrianPcaResult);
+                        temp=label[i][0];
+                        int mm = m ;
+                        for(;m<label.length;m++)
+                        {
+                            if(temp.intValue()!=label[m][0])
+                                break;
+                        }
+                        ScattertrianPcaResult = new Double[m-mm][3];
+
+                    }
+
+                    for(int j = 0;j<3;j++)
+                    {
+                        ScattertrianPcaResult[i-temprow][j] = trianPcaResult[i][j];
+                    }
+
+                }
+                ScattertPcaResult.add(ScattertrianPcaResult);
+                getScatterPicture(ScattertPcaResult);
 
 
                 String[][] trianPcaString = addInf(trianPcaResult,0);
