@@ -2,6 +2,7 @@ package algorithm;
 import algorithm.PLSpackage.PLS_method;
 import la.matrix.DenseMatrix;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,15 +41,17 @@ public class algorithmAPI {
         return result;
     }
 
-    public ArrayList<Double[][]> getSVMResult(Double[][] trainData,Double[][] trainlabel,int svm_type,int kener_type ,Double[][] testData)
-    {
+    public ArrayList<Double[][]> getSVMResult(String trainPath, int SVMtype, int kenelType, String c, String g,String k) throws IOException {
         ArrayList result = new ArrayList<Double[][]>();
         Double[][] trianResult,testResult;
-        SVM svm = new SVM();
-        svm.trainSVM(Double2double(trainData),Double2double(trainlabel),svm_type,kener_type);
-        trianResult = svm.computeSVM((Double2double(trainData)));
-        testResult = svm.computeSVM((Double2double(testData)));
-        Error = svm.getError();
+        SVM3 svm = new SVM3();
+        svm.trainSVM(trainPath,SVMtype,kenelType,  c, g,k);
+        String  trainTest = trainPath+"\\trainFile";
+        trianResult = svm.computeSVM(trainTest,1);
+        Error = "模型训练准确率"+svm.accuracy+"\n"+"========================================"+"\n"+svm.crossAccuary+"\n"+"========================================";
+        String testPath = trainPath+"\\testFile" ;
+        testResult = svm.computeSVM(testPath,2);
+        //Error = svm.getError();
         result.add(0,trianResult);
         result.add(1,testResult);
         return result;

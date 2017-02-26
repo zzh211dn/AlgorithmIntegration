@@ -77,9 +77,10 @@ public class SVM {
         int epoch = 1;
         do {
             train.iteration();
+            System.out.println("迭代次数:" + epoch + " 错误率:" + train.getError());
             Error="迭代次数:" + epoch + " 错误率:" + train.getError();
             epoch++;
-        } while(train.getError() > 0.1&&epoch<=5000);
+        } while(train.getError() > 0.1&&epoch<=12000);
 
         //train.iteration();
         //train.finishTraining();

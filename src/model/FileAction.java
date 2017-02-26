@@ -60,11 +60,47 @@ public final class FileAction {
         String line;
         while ((line = read.readLine()) != null) {
             String[] subLine = line.split(",");
-          //  picList.add(subLine);
+            //  picList.add(subLine);
         }
 
 
         return picList;
+    }
+
+    public void wirteTempSVM(Double[][] trainData,Double[][] label,Double[][] testData,File file){
+        try {
+            File testFile = new File(file.getPath()+"\\testFile");
+            File trainFile = new File(file.getPath()+"\\trainFile");
+            FileWriter trainOut = new FileWriter(trainFile, false);
+            for (int i = 0; i < trainData.length; i++) {
+                trainOut.write(label[i][0]+" ");
+                for (int j = 0; j < trainData[i].length; j++) {
+                    trainOut.write(j+1+":"+trainData[i][j]);
+                    if(j!=trainData[i].length-1)
+                        trainOut.write(" ");
+                    else
+                        trainOut.write(System.getProperty("line.separator"));
+                }
+            }
+            trainOut.close();
+
+            FileWriter testOut = new FileWriter(testFile, false);
+            for (int i = 0; i < testData.length; i++) {
+                testOut.write(i+" ");
+                for (int j = 0; j <testData[i].length; j++) {
+                    testOut.write(j+1+":"+testData[i][j]);
+                    if(j!=testData[i].length-1)
+                        testOut.write(" ");
+                    else
+                        testOut.write(System.getProperty("line.separator"));
+                }
+            }
+            testOut.close();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     /**

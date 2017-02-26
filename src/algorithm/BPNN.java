@@ -37,6 +37,7 @@ public class BPNN {
         do {
             train.iteration();
             ++epoch;
+            System.out.println( ("迭代次数:" + Format.formatInteger(epoch) + " 错误率:" + Format.formatPercent(train.getError()) + " Target Error: " + Format.formatPercent(error)));
         } while(train.getError() > error && !train.isTrainingDone() && epoch< maxIteration);
         Error = ("迭代次数:" + Format.formatInteger(epoch) + " 错误率:" + Format.formatPercent(train.getError()) + " Target Error: " + Format.formatPercent(error));
         train.finishTraining();
@@ -47,7 +48,7 @@ public class BPNN {
     public BasicNetwork network= new BasicNetwork();
     public void trainBPNN(double[][] feature,double[][] lable,int hiddenLayer,int iterateTimes)
     {
-        network.addLayer(new BasicLayer(new ActivationLinear(), true,feature[0].length));
+        network.addLayer(new BasicLayer(new ActivationSigmoid(), true,feature[0].length));
         network.addLayer(new BasicLayer(new ActivationSigmoid(), true,Integer.valueOf(hiddenLayer)));
         network.addLayer(new BasicLayer(new ActivationLinear(), true,1));
         network.getStructure().finalizeStructure();

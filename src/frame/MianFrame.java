@@ -62,7 +62,7 @@ public class MianFrame extends Application {
     algorithmAPI algorithmAPI = new algorithmAPI();
     double width;
     double high;
-
+    java.util.List<File> fileList;
     public static void main(String[] args) {
         launch(args);
     }
@@ -95,8 +95,8 @@ public class MianFrame extends Application {
         javafx.scene.control.Menu menuPic  = new javafx.scene.control.Menu("画图");
 
         //添加画图
-        javafx.scene.control.MenuItem addChating = new javafx.scene.control.MenuItem("绘制二维图");
-        javafx.scene.control.MenuItem addRectangle = new javafx.scene.control.MenuItem("绘制矩阵图");
+        javafx.scene.control.MenuItem addChating = new javafx.scene.control.MenuItem("绘制波形图");
+        javafx.scene.control.MenuItem addRectangle = new javafx.scene.control.MenuItem("绘制降维图");
         javafx.scene.control.MenuItem addScatter = new javafx.scene.control.MenuItem("绘制三维图");
         menuPic.getItems().addAll(addChating,addRectangle,addScatter);
 
@@ -152,7 +152,7 @@ public class MianFrame extends Application {
             String dirName = "";
             FileChooser fileChooser = new FileChooser();
             configureOpenFileChooser(fileChooser,1);
-            java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
+            fileList = fileChooser.showOpenMultipleDialog(stage);
 
             if (fileList != null)
                 dirName = fileList.get(0).getParentFile().getAbsolutePath();
@@ -178,7 +178,7 @@ public class MianFrame extends Application {
             zyzData = new LinkedList<>();
             FileChooser fileChooser = new FileChooser();
             configureOpenFileChooser(fileChooser,1);
-            java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
+            fileList = fileChooser.showOpenMultipleDialog(stage);
             testFileData = new LinkedHashMap<>();
             if (initChooserData(fileList, testFileData, "")) {
                 testTableVales = map2Array(testFileData, 2, "");
@@ -200,7 +200,7 @@ public class MianFrame extends Application {
             String dirName = "";
             FileChooser fileChooser = new FileChooser();
             configureOpenFileChooser(fileChooser,1);
-            java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
+            fileList = fileChooser.showOpenMultipleDialog(stage);
             if (fileList != null)
                 dirName = fileList.get(0).getParentFile().getAbsolutePath();
             initLabel(dirName);
@@ -223,7 +223,7 @@ public class MianFrame extends Application {
         testAddButton.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
             configureOpenFileChooser(fileChooser,1);
-            java.util.List<File> fileList = fileChooser.showOpenMultipleDialog(stage);
+            fileList = fileChooser.showOpenMultipleDialog(stage);
             String dirName = fileChooser.getInitialDirectory().getAbsolutePath();
             initLabel(dirName);
             if (testFileData == null)
@@ -441,7 +441,7 @@ public class MianFrame extends Application {
             Stage svmStage = new Stage();
             svmStage.setTitle("选择支持向量机类型：");
             final javafx.scene.control.Button button = new Button("确定");
-            Scene svmScene = new Scene(new Group(), 550, 100);
+            Scene svmScene = new Scene(new Group(), 450, 160);
             final ComboBox svmComboBox = new ComboBox();
             svmComboBox.getItems().addAll(
                     " SupportVectorClassification",
@@ -461,13 +461,34 @@ public class MianFrame extends Application {
                     "Precomputed"
             );
             coreComboBox.setValue("Linear");
+            final javafx.scene.control.TextField cTime = new javafx.scene.control.TextField();
+            cTime.setPromptText("请输入c值");
+            cTime.deselect();
+
+            final javafx.scene.control.TextField gammaTime = new javafx.scene.control.TextField();
+            gammaTime.setPromptText("请输入gamma值");
+            gammaTime.deselect();
+
+            final javafx.scene.control.TextField kTime = new javafx.scene.control.TextField();
+            kTime.setPromptText("请输入k值");
+            kTime.deselect();
 
             button.setOnAction(event1 -> {
                 javafx.scene.control.TextArea jta = new javafx.scene.control.TextArea();
+                fileAction.wirteTempSVM(dataOut(1),getLabel(),dataOut(2),fileList.get(0).getParentFile());
+                ArrayList<Double[][]> result = null;
+                try {
+                    result = algorithmAPI.getSVMResult(fileList.get(0).getParentFile().getPath(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1,cTime.getText(),gammaTime.getText(),kTime.getText());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                trianResult = result.get(0);
+                testResult =result.get(1);
 
-                testResult = algorithmAPI.getSVMResult(dataOut(1), getLabel(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, dataOut(2)).get(0);
-                trianResult = algorithmAPI.getSVMResult(dataOut(1), getLabel(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, dataOut(1)).get(1);
                 String error  = algorithmAPI.Error;
+                String compare = compareSvm(trianResult);
+                error+=System.getProperty("line.separator");
+                error += compare;
                 trianTableVales = resultForm(trianResult, 1);
                 initTable(trianColumnNames, trianTableVales, 1);
                 testTableVales = resultForm(testResult, 2);
@@ -502,38 +523,45 @@ public class MianFrame extends Application {
 
                 }
 
+
+
+
+
+
                 //实例化文本框
                 jta.setWrapText(true);
                 jta.setFont(new javafx.scene.text.Font("Arial", 18));
-                jta.setPrefSize(500,50);
+                jta.setPrefSize(800,500);
                 jta.appendText(error);
                 Stage errorStage = new Stage();
                 GridPane grid = new GridPane();
                 grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
                 grid.setVgap(1);
                 grid.setHgap(1);
-                Scene errorScene = new Scene(grid, 550, 90);
+                Scene errorScene = new Scene(grid, 850, 500);
                 GridPane.setConstraints(jta, 0, 0);
                 grid.getChildren().add(jta);
                 errorStage.setScene(errorScene);
                 errorStage.setResizable(false);
                 errorStage.show();
 
-
-
-
-
             });
 
             GridPane grid = new GridPane();
             grid.setVgap(2);
-            grid.setHgap(4);
+            grid.setHgap(6);
 
             grid.add(new Label("请选择支持向量机类型: "), 1, 0);
             grid.add(svmComboBox, 2, 0);
             grid.add(new Label("请选择核函数类型: "), 1, 2);
             grid.add(coreComboBox, 2, 2);
-            grid.add(button, 3, 4);
+            grid.add(new Label("请输入C值: "), 1, 3);
+            grid.add(cTime,2,3);
+            grid.add(new Label("请输入gamma值: "), 1, 4);
+            grid.add(gammaTime,2,4);
+            grid.add(new Label("请输入k折: "), 1, 5);
+            grid.add(kTime,2,5);
+            grid.add(button, 3, 6);
 
             Group root = (Group) svmScene.getRoot();
             root.getChildren().add(grid);
@@ -571,8 +599,11 @@ public class MianFrame extends Application {
 
             button.setOnAction(event1 -> {
                 javafx.scene.control.TextArea jta = new javafx.scene.control.TextArea();
-                trianResult = algorithmAPI.getBPNNResult(dataOut(1), getLabel(), dataOut(1), Integer.valueOf(hiddenLayer.getText()), Integer.valueOf(iterateTimes.getText())).get(0);
-                testResult = algorithmAPI.getBPNNResult(dataOut(1), getLabel(), dataOut(2), Integer.valueOf(hiddenLayer.getText()), Integer.valueOf(iterateTimes.getText())).get(1);
+                Double[][] A =   dataOut(1);
+                Double[][] B =  dataOut(2);
+                ArrayList<Double[][]> result = algorithmAPI.getBPNNResult(dataOut(1), getLabel(), dataOut(2), Integer.valueOf(hiddenLayer.getText()), Integer.valueOf(iterateTimes.getText()));
+                trianResult = result.get(0);
+                testResult =result.get(1);
                 String error = algorithmAPI.Error;
                 trianTableVales = resultForm(trianResult, 1);
                 initTable(trianColumnNames, trianTableVales, 1);
@@ -666,7 +697,7 @@ public class MianFrame extends Application {
         });
 
         /**
-         * 二维画图调用
+         * 波形画图调用
          */
 
         addChating.setOnAction(event -> {
@@ -715,9 +746,126 @@ public class MianFrame extends Application {
 
 
         /**
-         * 矩阵画图调用
+         * pca画图调用
          */
         addRectangle.setOnAction(event -> {
+
+            Stage ppcaStage = new Stage();
+            GridPane grid = new GridPane();
+            grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+            grid.setVgap(4);
+            grid.setHgap(2);
+            Scene ppcaScene = new Scene(grid, 400, 100);
+
+            final Label p3Label = new Label("请输入3维画图值：");
+            GridPane.setConstraints(p3Label, 0, 0);
+            grid.getChildren().add(p3Label);
+
+            final javafx.scene.control.TextField x3Times = new javafx.scene.control.TextField();
+            x3Times.setPromptText("请输入x值");
+            GridPane.setConstraints(x3Times, 1, 0);
+            grid.getChildren().add(x3Times);
+
+            final javafx.scene.control.TextField y3Times = new javafx.scene.control.TextField();
+            y3Times.setPromptText("请输入y值");
+            GridPane.setConstraints(y3Times, 2, 0);
+            grid.getChildren().add(y3Times);
+
+            final javafx.scene.control.TextField z3Times = new javafx.scene.control.TextField();
+            z3Times.setPromptText("请输入z值");
+            GridPane.setConstraints(z3Times, 3, 0);
+            grid.getChildren().add(z3Times);
+
+            final Label p2Label = new Label("请输入2维画图值：");
+            GridPane.setConstraints(p2Label, 0, 1);
+            grid.getChildren().add(p2Label);
+
+            final javafx.scene.control.TextField x2Times = new javafx.scene.control.TextField();
+            x2Times.setPromptText("请输入x值");
+            GridPane.setConstraints(x2Times, 1, 1);
+            grid.getChildren().add(x2Times);
+
+            final javafx.scene.control.TextField y2Times = new javafx.scene.control.TextField();
+            y2Times.setPromptText("请输入y值");
+            GridPane.setConstraints(y2Times, 2, 1);
+            grid.getChildren().add(y2Times);
+
+
+            Button button = new Button("确定");
+            GridPane.setConstraints(button, 0, 3);
+            grid.getChildren().add(button);
+            ppcaStage.setScene(ppcaScene);
+            ppcaStage.show();
+            button.setOnAction(event1 -> {
+                ppcaStage.close();
+
+                int[] sanweiList={Integer.valueOf(x3Times.getText()),Integer.valueOf(y3Times.getText()),Integer.valueOf(z3Times.getText())};
+                int[] erweiList={Integer.valueOf(x2Times.getText()),Integer.valueOf(y2Times.getText())};
+
+                Double[][] label = getLabel();
+                Double temp = label[0][0];
+                String lableName = temp.intValue()+"";
+                int m = 0;
+                Double[][] trainTemp=dataOut(1);
+                for(;m<label.length;m++)
+                {
+                    if(temp.intValue()!=label[m][0])
+                        break;
+                }
+                Double[][]  ScattertrianPcaResult = new Double[m][3];
+                Double[][]  ScattertrianPcaResult2D = new Double[m][2];
+                ArrayList<Double[][]> ScattertPcaResult =new ArrayList<Double[][]>();
+                ArrayList<Double[][]> ScattertPcaResult2D =new ArrayList<Double[][]>();
+                int temprow = 0;
+                for(int i =0;i<trainTemp.length;i++)
+                {
+                    if(temp.intValue()!=label[i][0])
+                    {
+                        temprow = i;
+                        ScattertPcaResult.add(ScattertrianPcaResult);
+                        ScattertPcaResult2D.add(ScattertrianPcaResult2D);
+                        temp=label[i][0];
+                        lableName = lableName+","+ temp.intValue();
+                        int mm = m ;
+                        for(;m<label.length;m++)
+                        {
+                            if(temp.intValue()!=label[m][0])
+                                break;
+                        }
+                        ScattertrianPcaResult = new Double[m-mm][3];
+                        ScattertrianPcaResult2D = new Double[m-mm][2];
+
+                    }
+
+                    for(int j = 0;j<3;j++)
+                    {
+                        ScattertrianPcaResult[i-temprow][j] = trainTemp[i][sanweiList[j]];
+                    }
+                    for(int j = 0;j<2;j++)
+                    {
+                        ScattertrianPcaResult2D[i-temprow][j] = trainTemp[i][erweiList[j]];
+                    }
+
+                }
+                ScattertPcaResult.add(ScattertrianPcaResult);
+                ScattertPcaResult2D.add(ScattertrianPcaResult2D);
+                getScatterPicture(ScattertPcaResult);
+
+                String[] lableName1 = lableName.split(",");
+
+                PictureAPI pictureAPI = new PictureAPI();
+                try {
+                    Stage chartStage = new Stage();
+                    chartStage.setScene(pictureAPI.getScatter2DResult(ScattertPcaResult2D,lableName1));
+                    chartStage.show();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+            });
+
 
         });
         /**
@@ -1493,6 +1641,49 @@ public class MianFrame extends Application {
             for(int j=start;j<=end;j++)
                 Y[i][j-start] = X[i][j];
         return Y;
+    }
+
+    private String compareSvm(Double[][] trianResult){
+        String result ="";
+        Double[][] label = getLabel();
+        HashSet<Double> set = new HashSet<>();
+        for(int i=0;i<label.length;i++){
+            set.add(label[i][0]);
+        }
+        ArrayList<Integer> list = new ArrayList<>();
+        Iterator ite = set.iterator();
+        while (ite.hasNext()){
+            list.add(((Double)ite.next()).intValue());
+        }
+        Collections.sort(list);
+        int maxLabel = list.get(list.size()-1);
+        int[][] compare = new int[maxLabel][maxLabel];
+        for(int i=0;i<compare.length;i++)
+            for(int j=0;j<compare.length;j++){
+                compare[i][j]=0;
+            }
+        for(int i=0;i<trianResult.length;i++){
+            compare[label[i][0].intValue()-1][label[i][0].intValue()-1]++;
+        }
+        result+="       ";
+        for(int i=0;i<list.size();i++){
+            result+=list.get(i);
+            if(i!=list.size()-1)
+                result+="   ";
+            else
+                result+=System.getProperty("line.separator");
+        }
+        for(int i=0;i<compare.length;i++){
+            result+=list.get(i)+"   ";
+            for(int j=0;j<compare.length;j++){
+                result+=compare[i][j];
+                if(j!=list.size()-1)
+                    result+="   ";
+                else
+                    result+=System.getProperty("line.separator");
+            }
+        }
+        return  result;
     }
 
     private  Double[][] separData(Double[][] data,int type){
