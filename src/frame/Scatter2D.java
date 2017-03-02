@@ -98,16 +98,16 @@ public class Scatter2D {
             chart.getData().add(series);
         }
 
-        for(int j= 0;j<nodeSize;j++)
-        {
-            averag[j][0] = thisDatas.get(0)[j][0];
-//            averag[j][1] = averageList.get(j);
-        }
+//        for(int j= 0;j<nodeSize;j++)
+//        {
+//            averag[j][0] = thisDatas.get(0)[j][0];
+////            averag[j][1] = averageList.get(j);
+//        }
 
-        XYChart.Series<Number, Number> averagseries = new XYChart.Series<Number, Number>();
-        averagseries.setName("averagLine");
-        addSample(averagseries,averag);
-        chart.getData().add(averagseries);
+//        XYChart.Series<Number, Number> averagseries = new XYChart.Series<Number, Number>();
+//        averagseries.setName("averagLine");
+//        addSample(averagseries,averag);
+//        chart.getData().add(averagseries);
 
 
         chart.setOnMouseMoved( new EventHandler<MouseEvent>() {

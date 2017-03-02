@@ -5,6 +5,7 @@ package frame;
  */
 
 import algorithm.Kmeans;
+import algorithm.PCA;
 import algorithm.PictureAPI;
 import algorithm.algorithmAPI;
 import com.smooth.gui.SmoothGUI;
@@ -24,6 +25,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import la.matrix.Matrix;
 import model.FileAction;
 
 import javax.swing.*;
@@ -113,7 +115,8 @@ public class MianFrame extends Application {
         javafx.scene.control.MenuItem addPLS = new javafx.scene.control.MenuItem("偏最小二乘");
         javafx.scene.control.MenuItem addPCA = new javafx.scene.control.MenuItem("主成分分析");
         javafx.scene.control.MenuItem addMAD = new javafx.scene.control.MenuItem("马氏距离");
-        menuAnal.getItems().addAll(addPCA, addPLS, addMAD);
+        javafx.scene.control.MenuItem addXLoading = new javafx.scene.control.MenuItem("XLoading");
+        menuAnal.getItems().addAll(addPCA,addXLoading, addPLS, addMAD);
         //添加分类算法子菜单
         javafx.scene.control.MenuItem addSVM = new javafx.scene.control.MenuItem("支持向量机");
         javafx.scene.control.MenuItem addKNN = new javafx.scene.control.MenuItem("最近邻");
@@ -262,10 +265,10 @@ public class MianFrame extends Application {
 
             Stage lStage = new Stage();
             GridPane lgrid = new GridPane();
-            lgrid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+            lgrid.setPadding(new javafx.geometry.Insets(20, 20, 20, 20));
             lgrid.setVgap(3);
             lgrid.setHgap(1);
-            Scene lScene = new Scene(lgrid, 200, 100);
+            Scene lScene = new Scene(lgrid, 350, 180);
 
             final Label pcaLabel = new Label("请输入主成分个数");
             GridPane.setConstraints(pcaLabel, 0, 0);
@@ -302,7 +305,7 @@ public class MianFrame extends Application {
                 Double[][]  ScattertrianPcaResult2D = new Double[m][2];
                 ArrayList<Double[][]> ScattertPcaResult =new ArrayList<Double[][]>();
                 ArrayList<Double[][]> ScattertPcaResult2D =new ArrayList<Double[][]>();
-                                int temprow = 0;
+                int temprow = 0;
                 for(int i =0;i<trianPcaResult.length;i++)
                 {
                     if(temp.intValue()!=label[i][0])
@@ -434,6 +437,28 @@ public class MianFrame extends Application {
         });
 
         /**
+         * XLoading方法调用
+         */
+        addXLoading.setOnAction(event -> {
+                    if(PCA.xloading!=null) {
+                        Matrix[] var11 = PCA.xloading;
+                        algorithmAPI xloading = new algorithmAPI();
+                        xloading.getXLoading(var11);
+                    }
+                    else
+                    {
+                        Alert _alert = new Alert(Alert.AlertType.CONFIRMATION,"请先运行PCA方法");
+                        _alert.show();
+                    }
+                }
+        );
+
+
+
+
+
+
+        /**
          * SVM方法调用
          */
         addSVM.setOnAction(event -> {
@@ -441,7 +466,7 @@ public class MianFrame extends Application {
             Stage svmStage = new Stage();
             svmStage.setTitle("选择支持向量机类型：");
             final javafx.scene.control.Button button = new Button("确定");
-            Scene svmScene = new Scene(new Group(), 450, 160);
+            Scene svmScene = new Scene(new Group(), 550, 200);
             final ComboBox svmComboBox = new ComboBox();
             svmComboBox.getItems().addAll(
                     " SupportVectorClassification",
@@ -524,10 +549,6 @@ public class MianFrame extends Application {
                 }
 
 
-
-
-
-
                 //实例化文本框
                 jta.setWrapText(true);
                 jta.setFont(new javafx.scene.text.Font("Arial", 18));
@@ -559,7 +580,7 @@ public class MianFrame extends Application {
             grid.add(cTime,2,3);
             grid.add(new Label("请输入gamma值: "), 1, 4);
             grid.add(gammaTime,2,4);
-            grid.add(new Label("请输入k折: "), 1, 5);
+            grid.add(new Label("请输入k值: "), 1, 5);
             grid.add(kTime,2,5);
             grid.add(button, 3, 6);
 
@@ -885,7 +906,7 @@ public class MianFrame extends Application {
             grid.getChildren().add(knnLabel);
 
             final javafx.scene.control.TextField kTimes = new javafx.scene.control.TextField();
-            kTimes.setPromptText("请输入k");
+            kTimes.setPromptText("请输入k值");
             GridPane.setConstraints(kTimes, 0, 1);
             grid.getChildren().add(kTimes);
 
@@ -1040,7 +1061,7 @@ public class MianFrame extends Application {
             grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
             grid.setVgap(8);
             grid.setHgap(1);
-            Scene kmeansScene = new Scene(grid, 200,250);
+            Scene kmeansScene = new Scene(grid, 500,300);
 
             final Label kmeansLabel = new Label("请输入k值：");
             GridPane.setConstraints(kmeansLabel, 0, 0);
