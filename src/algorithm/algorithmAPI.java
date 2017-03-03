@@ -81,6 +81,11 @@ public class algorithmAPI {
         return result;
     }
 
+
+    /**
+     * XLoading 值
+     * @param var11
+     */
     public void getXLoading( Matrix[] var11 )
     {
         int vectorCol = var11[0].getColumnDimension();

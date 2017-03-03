@@ -5,6 +5,7 @@ package frame;
  */
 
 import algorithm.Kmeans;
+import algorithm.PCA;
 import algorithm.PictureAPI;
 import algorithm.algorithmAPI;
 import com.smooth.gui.SmoothGUI;
@@ -24,6 +25,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import la.matrix.Matrix;
 import model.FileAction;
 
 import javax.swing.*;
@@ -120,7 +122,8 @@ public class MianFrame extends Application {
         javafx.scene.control.MenuItem addPLS = new javafx.scene.control.MenuItem("偏最小二乘");
         javafx.scene.control.MenuItem addPCA = new javafx.scene.control.MenuItem("主成分分析");
         javafx.scene.control.MenuItem addMAD = new javafx.scene.control.MenuItem("马氏距离");
-        menuAnal.getItems().addAll(addPCA, addPLS, addMAD);
+        javafx.scene.control.MenuItem addXLoading = new javafx.scene.control.MenuItem("XLoading");
+        menuAnal.getItems().addAll(addPCA,addXLoading, addPLS, addMAD);
         //添加分类算法子菜单
         javafx.scene.control.MenuItem addSVM = new javafx.scene.control.MenuItem("支持向量机");
         javafx.scene.control.MenuItem addKNN = new javafx.scene.control.MenuItem("最近邻");
@@ -552,6 +555,26 @@ public class MianFrame extends Application {
             });
         });
 
+
+        /**
+         * XLoading方法调用
+         */
+        addXLoading.setOnAction(event -> {
+                    if(PCA.xloading!=null) {
+                        Matrix[] var11 = PCA.xloading;
+                        algorithmAPI xloading = new algorithmAPI();
+                        xloading.getXLoading(var11);
+                    }
+                    else
+                    {
+                        Alert _alert = new Alert(Alert.AlertType.CONFIRMATION,"请先运行PCA方法");
+                        _alert.show();
+                    }
+                }
+        );
+
+
+
         /**
          * SVM方法调用
          */
@@ -560,7 +583,7 @@ public class MianFrame extends Application {
             Stage svmStage = new Stage();
             svmStage.setTitle("选择支持向量机类型：");
             final javafx.scene.control.Button button = new Button("确定");
-            Scene svmScene = new Scene(new Group(), 450, 160);
+            Scene svmScene = new Scene(new Group(), 550, 200);
             final ComboBox svmComboBox = new ComboBox();
             svmComboBox.getItems().addAll(
                     " SupportVectorClassification",
