@@ -39,26 +39,31 @@ import java.util.List;
 public class MianFrame extends Application {
 
 
-    private JTable trianTable, testTable;
-    private DefaultTableModel trianTableModel, testTableModel;
-    private JScrollPane trianScroll, testScroll;
-    private SwingNode trianSwingNode, testSwingNode;
+    private JTable trianTable, testTable,validationTable;
+    private DefaultTableModel trianTableModel, testTableModel,validationTableModel;
+    private JScrollPane trianScroll, testScroll,validationScroll;
+    private SwingNode trianSwingNode, testSwingNode,validationSwingNode;
     VBox trianBox = new VBox();
     VBox testBox = new VBox();
+    VBox validationBox = new VBox();
     HBox trianLabelBox;
     HBox testLabelBox;
-    Label trianLabel, testLabel;
-    String[] trianColumnNames, testColumnNames;
-    String[][] trianTableVales, testTableVales;
+    HBox validationLabelBox;
+    Label trianLabel, testLabel,validationLabel;
+    String[] trianColumnNames, testColumnNames,validationColumnNames;
+    String[][] trianTableVales, testTableVales,validationTableVales;
     List<String[]> zyzData;
     Double[][] testResult;
     Double[][] trianResult;
+    Double[][] validationResult;
     private LinkedHashMap<String, List<String[]>> trianFileData;
     private LinkedHashMap<String, List<String[]>> testFileData;
+    private LinkedHashMap<String, List<String[]>> validationFileData;
     FileAction fileAction = new FileAction();
     Button trianAddButton = new Button("添加");
     Button testAddButton = new Button("添加");
-    static HashMap<String, String> dataDir;
+    Button validationAddButton = new Button("添加");
+    static HashMap<String, String> dataDir = new HashMap<>();
     algorithmAPI algorithmAPI = new algorithmAPI();
     double width;
     double high;
@@ -108,7 +113,9 @@ public class MianFrame extends Application {
         javafx.scene.control.MenuItem addTestSet = new javafx.scene.control.MenuItem("打开测试集");
         javafx.scene.control.MenuItem saveTrainSet = new javafx.scene.control.MenuItem("保存训练集");
         javafx.scene.control.MenuItem saveTestSet = new javafx.scene.control.MenuItem("保存测试集");
-        menuFile.getItems().addAll(addTrainSet, addTestSet, saveTrainSet, saveTestSet);
+        javafx.scene.control.MenuItem addValidationSet = new javafx.scene.control.MenuItem("打开验证集");
+        javafx.scene.control.MenuItem saveValidationSet = new javafx.scene.control.MenuItem("保存验证集");
+        menuFile.getItems().addAll(addTrainSet, addTestSet,addValidationSet, saveTrainSet, saveTestSet,saveValidationSet);
         //添加分析算法子菜单
         javafx.scene.control.MenuItem addPLS = new javafx.scene.control.MenuItem("偏最小二乘");
         javafx.scene.control.MenuItem addPCA = new javafx.scene.control.MenuItem("主成分分析");
@@ -147,7 +154,7 @@ public class MianFrame extends Application {
          * 打开训练集
          */
         addTrainSet.setOnAction((ActionEvent t) -> {
-            dataDir = new HashMap<>();
+
             zyzData = new LinkedList<>();
             String dirName = "";
             FileChooser fileChooser = new FileChooser();
@@ -190,6 +197,33 @@ public class MianFrame extends Application {
                 testAddButton.setDisable(true);
             }
             initTable(testColumnNames, testTableVales, 2);
+            vbox.setVisible(true);
+        });
+
+        /**
+         * 打开验证集
+         */
+        addValidationSet.setOnAction((ActionEvent t) -> {
+            zyzData = new LinkedList<>();
+            String dirName = "";
+            FileChooser fileChooser = new FileChooser();
+            configureOpenFileChooser(fileChooser,1);
+            fileList = fileChooser.showOpenMultipleDialog(stage);
+
+            if (fileList != null)
+                dirName = fileList.get(0).getParentFile().getAbsolutePath();
+            initLabel(dirName);
+            validationFileData = new LinkedHashMap<>();
+            if (initChooserData(fileList, validationFileData, dirName)) {
+                validationTableVales = map2Array(validationFileData, 1, dirName);
+                validationColumnNames = initCSVColumnNames(validationFileData);
+                validationAddButton.setDisable(false);
+            } else {
+                validationTableVales = array2Array(zyzData);
+                validationColumnNames = initZYZColumnNames(zyzData);
+                validationAddButton.setDisable(true);
+            }
+            initTable(validationColumnNames, validationTableVales, 3);
             vbox.setVisible(true);
         });
 
@@ -239,9 +273,31 @@ public class MianFrame extends Application {
 
             initTable(testColumnNames, testTableVales, 2);
         });
+        /**
+         * 添加验证集
+         */
+        validationAddButton.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+            configureOpenFileChooser(fileChooser,1);
+            fileList = fileChooser.showOpenMultipleDialog(stage);
+            String dirName = fileChooser.getInitialDirectory().getAbsolutePath();
+            initLabel(dirName);
+            if (validationFileData == null)
+                validationFileData = new LinkedHashMap<>();
+            if (initChooserData(fileList, validationFileData, "")) {
+                validationTableVales = map2Array(validationFileData, 1, "");
+                validationColumnNames = initCSVColumnNames(validationFileData);
+            } else {
+                validationTableVales = array2Array(zyzData);
+                validationColumnNames = initZYZColumnNames(zyzData);
+
+            }
+
+            initTable(validationColumnNames, validationTableVales, 3);
+        });
 
         /**
-         * 保存测试集
+         * 保存训练集
          */
         saveTrainSet.setOnAction(event -> {
             FileChooser fileSaveChooser = new FileChooser();
@@ -252,6 +308,34 @@ public class MianFrame extends Application {
             File file = fileSaveChooser.showSaveDialog(stage);
             if (file != null) {
                 fileAction.saveData(file, trianTableVales);
+            }
+        });
+        /**
+         * 保存测试集
+         */
+        saveTestSet.setOnAction(event -> {
+            FileChooser fileSaveChooser = new FileChooser();
+
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+                    "zyz 文件 (*.zyz)", "*.zyz");
+            fileSaveChooser.getExtensionFilters().add(extFilter);
+            File file = fileSaveChooser.showSaveDialog(stage);
+            if (file != null) {
+                fileAction.saveData(file, testTableVales);
+            }
+        });
+        /**
+         * 保存验证集
+         */
+        saveTrainSet.setOnAction(event -> {
+            FileChooser fileSaveChooser = new FileChooser();
+
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+                    "zyz 文件 (*.zyz)", "*.zyz");
+            fileSaveChooser.getExtensionFilters().add(extFilter);
+            File file = fileSaveChooser.showSaveDialog(stage);
+            if (file != null) {
+                fileAction.saveData(file, validationTableVales);
             }
         });
 
@@ -284,10 +368,10 @@ public class MianFrame extends Application {
 
             button.setOnAction(event1 -> {
                 lStage.close();
-                Double[][]  pcaResult = algorithmAPI.getPCAResult(dataOut(3), Integer.valueOf(kPca.getText()));
+                Double[][]  pcaResult = algorithmAPI.getPCAResult(dataOut(4), Integer.valueOf(kPca.getText()));
                 Double[][]  trianPcaResult = separData(pcaResult,1);
                 Double[][]  testPcaResult = separData(pcaResult,2);
-
+                Double[][]  validationPcaResult = separData(pcaResult,3);
 
                 Double[][] label = getLabel();
                 Double temp = label[0][0];
@@ -354,6 +438,7 @@ public class MianFrame extends Application {
 
                 String[][] trianPcaString = addInf(trianPcaResult,0);
                 String[][] testPcaString = addInf(testPcaResult,1);
+                String[][] validationPcaString = addInf(validationPcaResult,2);
                 Stage pcaStage = new Stage();
                 Scene pcaScence = new Scene(new VBox(),width,high);
 
@@ -369,6 +454,13 @@ public class MianFrame extends Application {
                 JTable pcaTestTable = new JTable(pacaTestTableModel);
                 pcaTestTable.setRowHeight(50);
                 pcaTestTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+                String[] pcaValidationColumnNames = initPCAColumnNames(validationPcaString);
+                DefaultTableModel pacaValidationTableModel = new DefaultTableModel(validationPcaString, pcaValidationColumnNames);
+                JTable pcaValidationTable = new JTable(pacaValidationTableModel);
+                pcaValidationTable.setRowHeight(50);
+                pcaValidationTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
 
 
                 Button trianPcaAddButton = new Button("保存");
@@ -404,7 +496,24 @@ public class MianFrame extends Application {
                 VBox testPcaBox = new VBox();
                 testPcaBox.getChildren().addAll(testPcaLabelBox, testPcaSwingNode);
 
-                ((VBox) pcaScence.getRoot()).getChildren().addAll(trianPcaBox, testPcaBox);
+                Button validationPcaAddButton = new Button("保存");
+                HBox validationPcaLabelBox = new HBox();
+                Label validationPcaLabel = new Label("  测试集   ");
+                validationPcaLabel.setFont(new javafx.scene.text.Font("Arial", 20));
+                validationPcaLabelBox.getChildren().addAll(validationPcaLabel, validationPcaAddButton);
+                validationPcaLabelBox.setSpacing(5);
+                validationPcaLabelBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+
+                initColumn(pcaValidationTable);
+                JScrollPane validationPcaScroll = new JScrollPane(pcaValidationTable);
+                validationPcaScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                SwingNode validationPcaSwingNode = new SwingNode();
+                validationPcaSwingNode.setContent(validationPcaScroll);
+                VBox validationPcaBox = new VBox();
+                validationPcaBox.getChildren().addAll(validationPcaLabelBox, validationPcaSwingNode);
+
+
+                ((VBox) pcaScence.getRoot()).getChildren().addAll(trianPcaBox, testPcaBox, validationPcaBox);
                 pcaStage.setScene(pcaScence);
                 pcaStage.show();
 
@@ -428,6 +537,16 @@ public class MianFrame extends Application {
                     File file = fileSaveChooser.showSaveDialog(stage);
                     if (file != null) {
                         fileAction.saveData(file, testPcaString);
+                    }
+                });
+                validationPcaAddButton.setOnAction(event2 -> {
+                    FileChooser fileSaveChooser = new FileChooser();
+                    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+                            "zyz 文件 (*.zyz)", "*.zyz");
+                    fileSaveChooser.getExtensionFilters().add(extFilter);
+                    File file = fileSaveChooser.showSaveDialog(stage);
+                    if (file != null) {
+                        fileAction.saveData(file, validationPcaString);
                     }
                 });
             });
@@ -475,7 +594,7 @@ public class MianFrame extends Application {
 
             button.setOnAction(event1 -> {
                 javafx.scene.control.TextArea jta = new javafx.scene.control.TextArea();
-                fileAction.wirteTempSVM(dataOut(1),getLabel(),dataOut(2),fileList.get(0).getParentFile());
+                fileAction.wirteTempSVM(dataOut(1),getLabel(),dataOut(2),dataOut(6),fileList.get(0).getParentFile());
                 ArrayList<Double[][]> result = null;
                 try {
                     result = algorithmAPI.getSVMResult(fileList.get(0).getParentFile().getPath(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1,cTime.getText(),gammaTime.getText(),kTime.getText());
@@ -484,6 +603,7 @@ public class MianFrame extends Application {
                 }
                 trianResult = result.get(0);
                 testResult =result.get(1);
+                validationResult = result.get(2);
 
                 String error  = algorithmAPI.Error;
                 String compare = compareSvm(trianResult);
@@ -493,6 +613,8 @@ public class MianFrame extends Application {
                 initTable(trianColumnNames, trianTableVales, 1);
                 testTableVales = resultForm(testResult, 2);
                 initTable(testColumnNames, testTableVales, 2);
+                validationTableVales = resultForm(validationResult, 3);
+                initTable(validationColumnNames, validationTableVales, 3);
                 svmStage.close();
 
                 ArrayList<Double [][]> datas = new ArrayList<Double[][]>();
@@ -522,11 +644,6 @@ public class MianFrame extends Application {
                     e.printStackTrace();
 
                 }
-
-
-
-
-
 
                 //实例化文本框
                 jta.setWrapText(true);
@@ -601,14 +718,17 @@ public class MianFrame extends Application {
                 javafx.scene.control.TextArea jta = new javafx.scene.control.TextArea();
                 Double[][] A =   dataOut(1);
                 Double[][] B =  dataOut(2);
-                ArrayList<Double[][]> result = algorithmAPI.getBPNNResult(dataOut(1), getLabel(), dataOut(2), Integer.valueOf(hiddenLayer.getText()), Integer.valueOf(iterateTimes.getText()));
+                ArrayList<Double[][]> result = algorithmAPI.getBPNNResult(dataOut(1), getLabel(), dataOut(2),dataOut(6), Integer.valueOf(hiddenLayer.getText()), Integer.valueOf(iterateTimes.getText()));
                 trianResult = result.get(0);
                 testResult =result.get(1);
+                validationResult = result.get(2);
                 String error = algorithmAPI.Error;
                 trianTableVales = resultForm(trianResult, 1);
                 initTable(trianColumnNames, trianTableVales, 1);
                 testTableVales = resultForm(testResult, 2);
                 initTable(testColumnNames, testTableVales, 2);
+                validationTableVales = resultForm(validationResult, 3);
+                initTable(validationColumnNames, validationTableVales, 3);
                 bpnnStage.close();
 
                 //实例化文本框
@@ -899,10 +1019,13 @@ public class MianFrame extends Application {
                 knnStage.close();
                 trianResult =  algorithmAPI.getKNNResult(dataOut(1),dataOut(1), getLabel(),Integer.valueOf(kTimes.getText()));
                 testResult =  algorithmAPI.getKNNResult(dataOut(1),dataOut(2), getLabel(),Integer.valueOf(kTimes.getText()));
+                validationResult =  algorithmAPI.getKNNResult(dataOut(1),dataOut(6), getLabel(),Integer.valueOf(kTimes.getText()));
                 trianTableVales = resultForm(trianResult, 1);
                 initTable(trianColumnNames, trianTableVales, 1);
                 testTableVales = resultForm(testResult, 2);
                 initTable(testColumnNames, testTableVales, 2);
+                validationTableVales = resultForm( validationResult, 3);
+                initTable( validationColumnNames,  validationTableVales, 3);
 
             });
         });
@@ -1135,7 +1258,7 @@ public class MianFrame extends Application {
             });
         });
 
-        ((VBox) scene.getRoot()).getChildren().addAll(menuBar, trianBox, testBox);
+        ((VBox) scene.getRoot()).getChildren().addAll(menuBar, trianBox, testBox,validationBox);
         stage.setScene(scene);
         stage.show();
     }
@@ -1187,7 +1310,8 @@ public class MianFrame extends Application {
             trianSwingNode = new SwingNode();
             trianSwingNode.setContent(trianScroll);
             trianBox.getChildren().addAll(trianLabelBox, trianSwingNode);
-        } else {
+        } else if(type == 2)
+        {
             if (testBox.getChildren().size() != 0)
                 testBox.getChildren().clear();
             testLabelBox = new HBox();
@@ -1209,6 +1333,29 @@ public class MianFrame extends Application {
 
             testSwingNode.setContent(testScroll);
             testBox.getChildren().addAll(testLabelBox, testSwingNode);
+        }
+        else {
+            if (validationBox.getChildren().size() != 0)
+                validationBox.getChildren().clear();
+            validationLabelBox = new HBox();
+            validationLabel = new Label("   验证集   ");
+            validationLabel.setFont(new javafx.scene.text.Font("Arial", 20));
+            validationLabelBox.getChildren().addAll(validationLabel, validationAddButton);
+            validationLabelBox.setSpacing(5);
+            validationLabelBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+            validationTableModel = new DefaultTableModel(tableVales, columnNames);
+            validationTable = new JTable(validationTableModel);
+            validationTable.setRowHeight(50);
+            validationTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+            initColumn(validationTable);
+            validationScroll = new JScrollPane();
+            validationScroll.setViewportView(validationTable);
+            validationScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            validationSwingNode = new SwingNode();
+
+            validationSwingNode.setContent(validationScroll);
+            validationBox.getChildren().addAll(validationLabelBox, validationSwingNode);
         }
     }
 
@@ -1260,7 +1407,6 @@ public class MianFrame extends Application {
                 if (listIte.hasNext()) {
                     String[] data = (String[]) listIte.next();
                     tableData[i][j] = data[1];
-
                 }
             }
             i++;
@@ -1497,55 +1643,106 @@ public class MianFrame extends Application {
 
 
     private String[][] resultForm(Double[][] result, int type) {
-        String[][] data;
-        if (type == 1) {
-            data = trianTableVales;
-            for (int i = 0; i < data.length; i++)
-                data[i][3] = result[i][0] + "";
-        } else {
-            data = testTableVales;
-            for (int i = 0; i < data.length; i++)
-                data[i][3] = result[i][0] + "";
+        String[][] data=null;
+        switch (type){
+            case 1:
+                data = trianTableVales;
+                break;
+            case 2:
+                data = testTableVales;
+                break;
+            case 3:
+                data = validationTableVales;
         }
+        for (int i = 0; i < data.length; i++)
+            data[i][3] = result[i][0] + "";
+
         return data;
     }
 
     /**
      * 表格数据导出
      *
-     * @param type 1为训练集，其他为测试集
+     * @param type 1为训练集，2为测试集,3为训练集和测试集，4为全部，5为测试集和验证集,6为验证集
      * @return 表格数据
      */
     public Double[][] dataOut(int type) {
-        Double[][] data;
-        if (type == 1) {
-            data = new Double[trianTableVales.length][trianTableVales[0].length - 4];
-            for (int i = 0; i < data.length; i++)
-                for (int j = 4; j < trianTableVales[0].length; j++) {
-                    if (trianTableVales[i][j] != null)
-                        data[i][j - 4] = Double.parseDouble(trianTableVales[i][j]);
-                }
-        }
-        else if(type==2){
-            data = new Double[testTableVales.length][testTableVales[0].length - 4];
-            for (int i = 0; i < data.length; i++)
-                for (int j = 4; j < testTableVales[0].length; j++) {
-                    if (testTableVales[i][j] != null && testTableVales[i][j] != "")
-                        data[i][j - 4] = Double.parseDouble(testTableVales[i][j]);
-                }
-        }
-        else {
-            data = new Double[trianTableVales.length+testTableVales.length][testTableVales[0].length - 4];
-            for(int i=0;i<trianTableVales.length;i++)
-                for (int j = 4; j < trianTableVales[0].length; j++) {
-                    if (trianTableVales[i][j] != null)
-                        data[i][j - 4] = Double.parseDouble(trianTableVales[i][j]);
-                }
-            for (int i = trianTableVales.length; i < data.length; i++)
-                for (int j = 4; j < testTableVales[0].length; j++) {
-                    if (testTableVales[i-trianTableVales.length][j] != null && testTableVales[i-trianTableVales.length][j] != "")
-                        data[i][j - 4] = Double.parseDouble(testTableVales[i-trianTableVales.length][j]);
-                }
+        Double[][] data = null;
+        switch (type){
+            case 1: {
+                data = new Double[trianTableVales.length][trianTableVales[0].length - 4];
+                for (int i = 0; i < data.length; i++)
+                    for (int j = 4; j < trianTableVales[0].length; j++) {
+                        if (trianTableVales[i][j] != null)
+                            data[i][j - 4] = Double.parseDouble(trianTableVales[i][j]);
+                    }
+                break;
+            }
+            case 2:{
+                data = new Double[testTableVales.length][testTableVales[0].length - 4];
+                for (int i = 0; i < data.length; i++)
+                    for (int j = 4; j < testTableVales[0].length; j++) {
+                        if (testTableVales[i][j] != null && testTableVales[i][j] != "")
+                            data[i][j - 4] = Double.parseDouble(testTableVales[i][j]);
+                    }
+                break;
+            }
+            case 3:{
+                data = new Double[trianTableVales.length + testTableVales.length][testTableVales[0].length - 4];
+                for (int i = 0; i < trianTableVales.length; i++)
+                    for (int j = 4; j < trianTableVales[0].length; j++) {
+                        if (trianTableVales[i][j] != null)
+                            data[i][j - 4] = Double.parseDouble(trianTableVales[i][j]);
+                    }
+                for (int i = trianTableVales.length; i < data.length; i++)
+                    for (int j = 4; j < testTableVales[0].length; j++) {
+                        if (testTableVales[i - trianTableVales.length][j] != null && testTableVales[i - trianTableVales.length][j] != "")
+                            data[i][j - 4] = Double.parseDouble(testTableVales[i - trianTableVales.length][j]);
+                    }
+                break;
+            }
+            case 4:{
+                data = new Double[trianTableVales.length + testTableVales.length + validationTableVales.length][testTableVales[0].length - 4];
+                for (int i = 0; i < trianTableVales.length; i++)
+                    for (int j = 4; j < trianTableVales[0].length; j++) {
+                        if (trianTableVales[i][j] != null)
+                            data[i][j - 4] = Double.parseDouble(trianTableVales[i][j]);
+                    }
+                for (int i = trianTableVales.length; i < testTableVales.length+trianTableVales.length; i++)
+                    for (int j = 4; j < testTableVales[0].length; j++) {
+                        if (testTableVales[i - trianTableVales.length][j] != null && testTableVales[i - trianTableVales.length][j] != "")
+                            data[i][j - 4] = Double.parseDouble(testTableVales[i - trianTableVales.length][j]);
+                    }
+                for (int i = trianTableVales.length + testTableVales.length; i < data.length; i++)
+                    for (int j = 4; j < validationTableVales[0].length; j++) {
+                        if (validationTableVales[i - trianTableVales.length - testTableVales.length][j] != null && validationTableVales[i - trianTableVales.length - testTableVales.length][j] != "")
+                            data[i][j - 4] = Double.parseDouble(validationTableVales[i - trianTableVales.length - testTableVales.length][j]);
+                    }
+                break;
+            }
+            case 5:{
+                data = new Double[testTableVales.length+validationTableVales.length][testTableVales[0].length - 4];
+                for (int i = 0; i < testTableVales.length; i++)
+                    for (int j = 4; j < testTableVales[0].length; j++) {
+                        if (testTableVales[i][j] != null)
+                            data[i][j - 4] = Double.parseDouble(testTableVales[i][j]);
+                    }
+                for (int i = testTableVales.length; i < data.length; i++)
+                    for (int j = 4; j < validationTableVales[0].length; j++) {
+                        if (validationTableVales[i - testTableVales.length][j] != null && validationTableVales[i - testTableVales.length][j] != "")
+                            data[i][j - 4] = Double.parseDouble(validationTableVales[i - testTableVales.length][j]);
+                    }
+                break;
+            }
+            case 6:{
+                data = new Double[validationTableVales.length][validationTableVales[0].length - 4];
+                for (int i = 0; i < data.length; i++)
+                    for (int j = 4; j < validationTableVales[0].length; j++) {
+                        if (validationTableVales[i][j] != null &&validationTableVales[i][j] != "")
+                            data[i][j - 4] = Double.parseDouble(validationTableVales[i][j]);
+                    }
+            }
+
         }
         return data;
     }
@@ -1621,11 +1818,17 @@ public class MianFrame extends Application {
                     if (trianTableVales[i][j] != null)
                         addData[i][j] = trianTableVales[i][j];
         }
-        else{
+        else if(type==1){
             for (int i = 0; i < testTableVales.length; i++)
                 for (int j = 0; j < 5; j++)
                     if (testTableVales[i][j] != null)
                         addData[i][j] = testTableVales[i][j];
+        }
+        else {
+            for (int i = 0; i < validationTableVales.length; i++)
+                for (int j = 0; j < 5; j++)
+                    if (validationTableVales[i][j] != null)
+                        addData[i][j] = validationTableVales[i][j];
         }
 
         for(int i=0;i<data.length;i++)
@@ -1693,12 +1896,20 @@ public class MianFrame extends Application {
                 for(int j=0;j<data[i].length;j++)
                     result[i][j] = data[i][j];
             return result;
-        }else {
+        }else if(type==2){
             Double[][] result = new Double[testTableVales.length][data[0].length];
-            for(int i=trianTableVales.length;i<data.length;i++)
+            for(int i=trianTableVales.length;i<data.length-validationTableVales.length;i++)
                 for(int j=0;j<data[i].length;j++)
                     result[i-trianTableVales.length][j] = data[i][j];
             return result;
+        }
+        else {
+            Double[][] result = new Double[validationTableVales.length][data[0].length];
+            for(int i=trianTableVales.length+testTableVales.length;i<data.length;i++)
+                for(int j=0;j<data[i].length;j++)
+                    result[i-trianTableVales.length-testTableVales.length][j] = data[i][j];
+            return result;
+
         }
     }
 

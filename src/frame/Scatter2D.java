@@ -93,7 +93,7 @@ public class Scatter2D {
         Double[][] averag = new Double[nodeSize][2];
         for(int m = 0;m<thisDatas.size();m++) {
             XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
-            series.setName("文件夹"+fileNameList[m]);
+            series.setName("标签："+fileNameList[m]);
             addSample(series,thisDatas.get(m));
             chart.getData().add(series);
         }

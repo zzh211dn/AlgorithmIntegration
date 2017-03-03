@@ -67,10 +67,11 @@ public final class FileAction {
         return picList;
     }
 
-    public void wirteTempSVM(Double[][] trainData,Double[][] label,Double[][] testData,File file){
+    public void wirteTempSVM(Double[][] trainData,Double[][] label,Double[][] testData,Double[][] validationData,File file){
         try {
             File testFile = new File(file.getPath()+"\\testFile");
             File trainFile = new File(file.getPath()+"\\trainFile");
+            File validationFile = new File(file.getPath()+"\\validationFile");
             FileWriter trainOut = new FileWriter(trainFile, false);
             for (int i = 0; i < trainData.length; i++) {
                 trainOut.write(label[i][0]+" ");
@@ -96,6 +97,20 @@ public final class FileAction {
                 }
             }
             testOut.close();
+
+            FileWriter validationOut = new FileWriter(validationFile, false);
+            for (int i = 0; i < validationData.length; i++) {
+                validationOut.write(i+" ");
+                for (int j = 0; j <validationData[i].length; j++) {
+                    validationOut.write(j+1+":"+validationData[i][j]);
+                    if(j!=validationData[i].length-1)
+                        validationOut.write(" ");
+                    else
+                        validationOut.write(System.getProperty("line.separator"));
+                }
+            }
+            validationOut.close();
+
 
         }catch (Exception e){
             e.printStackTrace();

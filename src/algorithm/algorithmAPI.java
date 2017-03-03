@@ -43,17 +43,20 @@ public class algorithmAPI {
 
     public ArrayList<Double[][]> getSVMResult(String trainPath, int SVMtype, int kenelType, String c, String g,String k) throws IOException {
         ArrayList result = new ArrayList<Double[][]>();
-        Double[][] trianResult,testResult;
+        Double[][] trianResult,testResult,validationResult;
         SVM3 svm = new SVM3();
         svm.trainSVM(trainPath,SVMtype,kenelType,  c, g,k);
         String  trainTest = trainPath+"\\trainFile";
         trianResult = svm.computeSVM(trainTest,1);
         Error = "模型训练准确率"+svm.accuracy+"\n"+"========================================"+"\n"+svm.crossAccuary+"\n"+"========================================";
         String testPath = trainPath+"\\testFile" ;
-        testResult = svm.computeSVM(testPath,2);
+        String validationPath = trainPath+"\\ validationFile" ;
+        testResult = svm.computeSVM(testPath,1);
+        validationResult = svm.computeSVM(validationPath,2);
         //Error = svm.getError();
         result.add(0,trianResult);
         result.add(1,testResult);
+        result.add(2,validationResult);
         return result;
     }
 
@@ -61,6 +64,8 @@ public class algorithmAPI {
         double[][] ddata = new double[data.length][data[0].length];
         for(int i=0;i<data.length;i++)
             for(int j=0;j<data[i].length;j++){
+                if(data[i][j]==null)
+                    System.out.println("i:"+i+"j:"+j);
                 ddata[i][j] = data[i][j];
             }
 
@@ -97,17 +102,19 @@ public class algorithmAPI {
      * @param  hiddenLayer    隐藏层，默认40
      * @param  iterateTimes    迭代次数，默认1000；
      */
-    public ArrayList<Double[][]> getBPNNResult(Double[][] trainData,Double[][] lable,Double[][] testData,int hiddenLayer,int iterateTimes)
+    public ArrayList<Double[][]> getBPNNResult(Double[][] trainData,Double[][] lable,Double[][] testData,Double[][] validationData,int hiddenLayer,int iterateTimes)
     {
         ArrayList result = new ArrayList<Double[][]>();
-        Double[][] trianResult,testResult;
+        Double[][] trianResult,testResult,validationResult;
         BPNN bpnn = new BPNN();
         bpnn.trainBPNN(Double2double(trainData),Double2double(lable),hiddenLayer,iterateTimes);
         trianResult = bpnn.computeBPNN(Double2double(trainData));
         testResult = bpnn.computeBPNN(Double2double(testData));
+        validationResult = bpnn.computeBPNN(Double2double(validationData));
         Error = bpnn.getError();
         result.add(0,trianResult);
         result.add(1,testResult);
+        result.add(2,validationResult);
         return result;
     }
     /**
