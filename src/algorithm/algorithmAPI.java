@@ -1,6 +1,8 @@
 package algorithm;
 import algorithm.PLSpackage.PLS_method;
+import javafx.stage.Stage;
 import la.matrix.DenseMatrix;
+import la.matrix.Matrix;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -70,13 +72,60 @@ public class algorithmAPI {
             }
 
         la.matrix.Matrix X = new DenseMatrix(ddata);
-        la.matrix.Matrix R = ml.subspace.PCA.run(X, r);
+        la.matrix.Matrix R = new PCA(r).run(X, r);
         Double[][] result = new Double[R.getData().length][R.getData()[0].length];
         for(int i=0;i<R.getData().length;i++)
             for(int j=0;j<R.getData()[i].length;j++){
                 result[i][j] = R.getData()[i][j];
             }
         return result;
+    }
+
+    public void getXLoading( Matrix[] var11 )
+    {
+        int vectorCol = var11[0].getColumnDimension();
+        int vectorRow = var11[0].getRowDimension();
+        int lamdaCol =  var11[1].getColumnDimension();
+        int lamdaRow = var11[1].getRowDimension();
+        double[][] oneXloding = new double[vectorRow][2];
+        double[][] twoXloding = new double[vectorRow][2];
+        for(int i = 0;i<vectorRow;i++)
+        {
+            oneXloding[i][0] = i;
+            twoXloding[i][0] = var11[0].getData()[i][0]*Math.sqrt(var11[1].getData()[0][0]);
+        }
+
+        for(int i = 0;i<vectorRow;i++)
+        {
+            oneXloding[i][1] = var11[0].getData()[i][0]*Math.sqrt(var11[1].getData()[0][0]);
+            twoXloding[i][1] = var11[0].getData()[i][1]*Math.sqrt(var11[1].getData()[1][1]);
+        }
+
+        Double[][] oneXloding1 = double2Double(oneXloding);
+        Double[][] twoXloding1 = double2Double(twoXloding);
+        ArrayList oneXlodingAL = new ArrayList();
+        ArrayList twoXlodingAL = new ArrayList();
+        oneXlodingAL.add(oneXloding1);
+        twoXlodingAL.add(twoXloding1);
+
+
+        PictureAPI pictureAPI = new PictureAPI();
+        try {
+            Stage chartStage = new Stage();
+            chartStage.setScene(pictureAPI.getScatter2DResult(oneXlodingAL,new String[]{"oneXLoading"}));
+            chartStage.show();
+
+            Stage chartStage2 = new Stage();
+            chartStage2.setScene(pictureAPI.getScatter2DResult(twoXlodingAL,new String[]{"twoXLoading"}));
+            chartStage2.show();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+
+
     }
 
 
