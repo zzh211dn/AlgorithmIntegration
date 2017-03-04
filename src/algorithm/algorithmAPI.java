@@ -144,7 +144,7 @@ public class algorithmAPI {
 
 
     public Double[][] getPLSResult(Double[][] X,Double[][] Y,int factors){
-        PLS_method pls = new PLS_method(Double2double(X),Double2double(Y),X[0].length-Y[0].length);
+        PLS_method pls = new PLS_method(Double2double(X),Double2double(Y),factors);
         return double2Double(pls.getT());
     }
 

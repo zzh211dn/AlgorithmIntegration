@@ -1086,7 +1086,7 @@ public class MianFrame extends Application {
 
             button.setOnAction(event1 -> {
                 Double[][] X = dataOut(4);
-                int yLength =Integer.valueOf(rightY.getText())- Integer.valueOf(leftY.getText());
+                int yLength =Integer.valueOf(rightY.getText())- Integer.valueOf(leftY.getText())+1;
                 Double[][] Y = gePlsY(X,Integer.valueOf(leftY.getText()),Integer.valueOf(rightY.getText()));
                 Double[][] plsResult =  algorithmAPI.getPLSResult(X,Y,X[0].length-yLength);
 
