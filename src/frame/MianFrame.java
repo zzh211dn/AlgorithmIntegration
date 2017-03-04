@@ -280,23 +280,23 @@ public class MianFrame extends Application {
          * 添加验证集
          */
         validationAddButton.setOnAction(event -> {
+            String dirName = "";
             FileChooser fileChooser = new FileChooser();
             configureOpenFileChooser(fileChooser,1);
             fileList = fileChooser.showOpenMultipleDialog(stage);
-            String dirName = fileChooser.getInitialDirectory().getAbsolutePath();
+            if (fileList != null)
+                dirName = fileList.get(0).getParentFile().getAbsolutePath();
             initLabel(dirName);
-            if (validationFileData == null)
+            if ( validationFileData == null)
                 validationFileData = new LinkedHashMap<>();
-            if (initChooserData(fileList, validationFileData, "")) {
-                validationTableVales = map2Array(validationFileData, 1, "");
-                validationColumnNames = initCSVColumnNames(validationFileData);
+            if (initChooserData(fileList,  validationFileData, dirName)) {
+                validationTableVales = map2Array( validationFileData, 1, dirName);
+                validationColumnNames = initCSVColumnNames( validationFileData);
             } else {
                 validationTableVales = array2Array(zyzData);
                 validationColumnNames = initZYZColumnNames(zyzData);
-
             }
-
-            initTable(validationColumnNames, validationTableVales, 3);
+            initTable( validationColumnNames,  validationTableVales, 3);
         });
 
         /**
@@ -501,7 +501,7 @@ public class MianFrame extends Application {
 
                 Button validationPcaAddButton = new Button("保存");
                 HBox validationPcaLabelBox = new HBox();
-                Label validationPcaLabel = new Label("  测试集   ");
+                Label validationPcaLabel = new Label("  验证集   ");
                 validationPcaLabel.setFont(new javafx.scene.text.Font("Arial", 20));
                 validationPcaLabelBox.getChildren().addAll(validationPcaLabel, validationPcaAddButton);
                 validationPcaLabelBox.setSpacing(5);
@@ -1085,16 +1085,18 @@ public class MianFrame extends Application {
             textStage.show();
 
             button.setOnAction(event1 -> {
-                Double[][] X = dataOut(3);
+                Double[][] X = dataOut(4);
                 int yLength =Integer.valueOf(rightY.getText())- Integer.valueOf(leftY.getText());
                 Double[][] Y = gePlsY(X,Integer.valueOf(leftY.getText()),Integer.valueOf(rightY.getText()));
                 Double[][] plsResult =  algorithmAPI.getPLSResult(X,Y,X[0].length-yLength);
 
                 Double[][]  trianplsResult = separData(plsResult,1);
                 Double[][]  testplsResult = separData(plsResult,2);
+                Double[][]  validationplsResult = separData(plsResult,3);
 
                 String[][] trianPlsString = addInf(trianplsResult,0);
                 String[][] testPlsString = addInf(testplsResult,1);
+                String[][] validationPlsString = addInf(validationplsResult,2);
                 Stage plsStage = new Stage();
                 Scene plsScence = new Scene(new VBox(),width,high);
 
@@ -1110,6 +1112,12 @@ public class MianFrame extends Application {
                 JTable plsTestTable = new JTable(plsTestTableModel);
                 plsTestTable.setRowHeight(50);
                 plsTestTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+                String[] plsValidationColumnNames = initPCAColumnNames(validationPlsString);
+                DefaultTableModel plsValidationTableModel = new DefaultTableModel(validationPlsString, plsValidationColumnNames);
+                JTable plsValidationTable = new JTable(plsValidationTableModel);
+                plsValidationTable.setRowHeight(50);
+                plsValidationTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 
                 Button trianPlsAddButton = new Button("保存");
@@ -1145,7 +1153,23 @@ public class MianFrame extends Application {
                 VBox testPlsBox = new VBox();
                 testPlsBox.getChildren().addAll(testPlsLabelBox, testPlsSwingNode);
 
-                ((VBox) plsScence.getRoot()).getChildren().addAll(trianPlsBox, testPlsBox);
+                Button validationPlsAddButton = new Button("保存");
+                HBox validationPlsLabelBox = new HBox();
+                Label validationPlsLabel = new Label("  验证集   ");
+                validationPlsLabel.setFont(new javafx.scene.text.Font("Arial", 20));
+                validationPlsLabelBox.getChildren().addAll(validationPlsLabel, validationPlsAddButton);
+                validationPlsLabelBox.setSpacing(5);
+                validationPlsLabelBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+
+                initColumn(plsValidationTable);
+                JScrollPane validationPlsScroll = new JScrollPane(plsValidationTable);
+                validationPlsScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                SwingNode validationPlsSwingNode = new SwingNode();
+                validationPlsSwingNode.setContent(validationPlsScroll);
+                VBox validationPlsBox = new VBox();
+                validationPlsBox.getChildren().addAll(validationPlsLabelBox, validationPlsSwingNode);
+
+                ((VBox) plsScence.getRoot()).getChildren().addAll(trianPlsBox, testPlsBox, validationPlsBox);
                 plsStage.setScene(plsScence);
                 plsStage.show();
 
@@ -1170,6 +1194,18 @@ public class MianFrame extends Application {
                     File file = fileSaveChooser.showSaveDialog(stage);
                     if (file != null) {
                         fileAction.saveData(file, testPlsString);
+                    }
+
+                });
+                validationPlsAddButton.setOnAction(event2 -> {
+                    FileChooser fileSaveChooser = new FileChooser();
+
+                    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+                            "zyz 文件 (*.zyz)", "*.zyz");
+                    fileSaveChooser.getExtensionFilters().add(extFilter);
+                    File file = fileSaveChooser.showSaveDialog(stage);
+                    if (file != null) {
+                        fileAction.saveData(file, validationPlsString);
                     }
 
                 });
