@@ -9,6 +9,7 @@ import ml.utils.Printer;
 
 public class PCA extends DimensionalityReduction {
     public static Matrix[] xloading ;
+    public static Matrix E;
 
     public static void main(String[] args) {
         double[][] data = new double[][]{{0.0D, 2.0D, 3.0D, 4.0D}, {2.0D, 0.0D, 4.0D, 5.0D}, {3.0D, 4.1D, 5.0D, 6.0D}, {2.0D, 7.0D, 1.0D, 6.0D},{0.0D, 8.0D, 7.0D, 4.0D}};
@@ -30,6 +31,11 @@ public class PCA extends DimensionalityReduction {
         Printer.disp("Reduced Data:");
         Printer.disp(this.R);
     }
+
+    public static Matrix generate(Matrix T){
+        return T.mtimes(E);
+    }
+
 
     public static Matrix run(Matrix X, int r) {
         int n = Matlab.size(X, 1);
@@ -54,6 +60,7 @@ public class PCA extends DimensionalityReduction {
         Matrix[] var11=Matlab.eigs(var10, r, "lm");
         System.out.println(var11[0]);
         xloading = var11;
-        return X.mtimes(Matlab.eigs(var10, r, "lm")[0]);
+        E = Matlab.eigs(var10, r, "lm")[0];
+        return X.mtimes(E);
     }
 }

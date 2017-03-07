@@ -62,7 +62,8 @@ public class algorithmAPI {
         return result;
     }
 
-    public Double[][] getPCAResult(Double[][] data,int r){
+    public Double[][] getPCAResult(Double[][] data,int r,int type){
+        Matrix R;
         double[][] ddata = new double[data.length][data[0].length];
         for(int i=0;i<data.length;i++)
             for(int j=0;j<data[i].length;j++){
@@ -70,9 +71,12 @@ public class algorithmAPI {
                     System.out.println("i:"+i+"j:"+j);
                 ddata[i][j] = data[i][j];
             }
-
+        PCA pca =  new PCA(r);
         la.matrix.Matrix X = new DenseMatrix(ddata);
-        la.matrix.Matrix R = new PCA(r).run(X, r);
+        if(type==1)
+            R = pca.run(X, r);
+        else
+            R = pca.generate(X);
         Double[][] result = new Double[R.getData().length][R.getData()[0].length];
         for(int i=0;i<R.getData().length;i++)
             for(int j=0;j<R.getData()[i].length;j++){
