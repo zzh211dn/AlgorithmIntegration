@@ -19,6 +19,7 @@ import org.gillius.jfxutils.chart.ChartPanManager;
 import org.gillius.jfxutils.chart.JFXChartUtil;
 import org.gillius.jfxutils.chart.StableTicksAxis;
 
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Random;
@@ -67,7 +68,7 @@ public class Charting {
 
     //    @Override
     public Scene start() throws Exception {
-        FXMLLoader loader = new FXMLLoader( getClass().getResource("../Charting.fxml") );
+        FXMLLoader loader = new FXMLLoader( getClass().getResource("/Charting.fxml") );
         Region contentRootRegion = (Region) loader.load();
         StackPane root = JFXUtil.createScalePane( contentRootRegion, 960, 540, false );//调整框架大小
         Scene scene = new Scene( root, root.getPrefWidth(), root.getPrefHeight() );

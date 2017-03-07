@@ -11,10 +11,7 @@ import javafx.stage.StageStyle;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Exchanger;
 import java.util.concurrent.Future;
@@ -29,8 +26,8 @@ public class ImageStart extends Application {
 
         //Image image = new Image("http://docs.oracle.com/javafx/"
         //       + "javafx/images/javafx-documentation.png");
-
-        FileInputStream iis = new FileInputStream("src/black.png");
+        InputStream iis=this.getClass().getResourceAsStream("/black.png");
+//        FileInputStream iis = new FileInputStream("/src/black.png");
 
         Image image = new Image(iis);
         ImageView imageView = new ImageView();

@@ -68,7 +68,7 @@ public class Scatter2D {
 
     //   C:\Users\syxya\IdeaProjects\AlgorithmIntegration\src\Scatter2DCharting.fxml
     public Scene start() throws Exception {
-        FXMLLoader loader = new FXMLLoader( getClass().getResource("../Scatter2DCharting.fxml") );
+        FXMLLoader loader = new FXMLLoader( getClass().getResource("/Scatter2DCharting.fxml") );
         Region contentRootRegion = (Region) loader.load();
         StackPane root = JFXUtil.createScalePane( contentRootRegion, 960, 540, false );//调整框架大小
         Scene scene = new Scene( root, root.getPrefWidth(), root.getPrefHeight() );

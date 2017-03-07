@@ -55,13 +55,12 @@ public class Kmeans {
         for(Map.Entry<String,Integer> en:entry1)
         {
             result[i] = en.getValue().doubleValue();
-            System.out.println(en.getKey()+"----cluster:"+ result[i]);
+//            System.out.println(en.getKey()+"----cluster:"+ result[i]);
             i++;
 
         }
-
-        System.out.println("DATA=========="+DATA.length);
-        System.out.println("result=========="+result.length);
+//        System.out.println("DATA=========="+DATA.length);
+//        System.out.println("result=========="+result.length);
         return result;
     }
 

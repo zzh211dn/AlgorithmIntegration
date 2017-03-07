@@ -80,6 +80,7 @@ public class RectanglePicture {
                 double h = (scene.getHeight()-50) /rownum;
                 double w = (scene.getWidth()-50) / colnum;
                 Rectangle r = new Rectangle(25+ w*j, 25+h*i,w ,h);
+//                System.out.println(Integer.valueOf(fileType[id].intValue()));
                 Float[] rgbColor = getRandom(Integer.valueOf(fileType[id].intValue()));
                 Color color = new Color(rgbColor[0], rgbColor[1], rgbColor[2], 0.9);//RGB颜色，参数4最后为透明性
                 r.setFill(color);
@@ -98,6 +99,7 @@ public class RectanglePicture {
         colnum = col;
         rownum = row;
         fileType = datas;
+        System.out.println("fileType"+fileType.length);
     }
 
     public static void main(String[] args) {
