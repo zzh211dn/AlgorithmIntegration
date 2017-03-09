@@ -648,7 +648,14 @@ public class MianFrame extends Application {
             kTime.deselect();
 
             button.setOnAction(event1 -> {
-                javafx.scene.control.TextArea jta = new javafx.scene.control.TextArea();
+                if (svmComboBox.getSelectionModel().getSelectedIndex() <= 3) {
+
+                } else{
+
+                }
+
+
+                    javafx.scene.control.TextArea jta = new javafx.scene.control.TextArea();
                 fileAction.wirteTempSVM(dataOut(1), getLabel(), dataOut(2), dataOut(6), fileList.get(0).getParentFile());
                 ArrayList<Double[][]> result = null;
                 try {
@@ -661,9 +668,15 @@ public class MianFrame extends Application {
                 validationResult = result.get(2);
 
                 String error = algorithmAPI.Error;
-                String compare = compareSvm(trianResult);
+                String trianCompare = compareSvm(trianResult);
                 error += System.getProperty("line.separator");
-                error += compare;
+                error += "训练集：" + System.getProperty("line.separator");
+                error += trianCompare;
+                error += "-------------------------------------------------------------";
+                error += System.getProperty("line.separator");
+                error += "验证集：" + System.getProperty("line.separator");
+                String validationCompare = compareSvm(validationResult);
+                error += validationCompare;
                 trianTableVales = resultForm(trianResult, 1);
                 initTable(trianColumnNames, trianTableVales, 1);
                 testTableVales = resultForm(testResult, 2);
@@ -1917,6 +1930,8 @@ public class MianFrame extends Application {
 
     private String compareSvm(Double[][] trianResult) {
         String result = "";
+        String fileName = "错误文件名：" + System.getProperty("line.separator");
+        ;
         Double[][] label = getLabel();
         HashSet<Double> set = new HashSet<>();
         for (int i = 0; i < label.length; i++) {
@@ -1935,7 +1950,10 @@ public class MianFrame extends Application {
                 compare[i][j] = 0;
             }
         for (int i = 0; i < trianResult.length; i++) {
-            compare[label[i][0].intValue() - 1][label[i][0].intValue() - 1]++;
+            compare[trianResult[i][0].intValue() - 1][label[i][0].intValue() - 1]++;
+            if (trianResult[i][0].intValue() != label[i][0].intValue()) {
+                fileName += trianTableVales[i][1] + System.getProperty("line.separator");
+            }
         }
         result += "       ";
         for (int i = 0; i < list.size(); i++) {
@@ -1945,16 +1963,31 @@ public class MianFrame extends Application {
             else
                 result += System.getProperty("line.separator");
         }
+        for (int i = 0; i < list.size(); i++) {
+            if (i == 0)
+                result += "   ";
+            else
+                result += "—";
+            if (i != list.size() - 1)
+                result += "—";
+            if (i == list.size() - 1)
+                result += System.getProperty("line.separator");
+        }
         for (int i = 0; i < compare.length; i++) {
-            result += list.get(i) + "   ";
+            result += list.get(i) + " " + "|" + "   ";
             for (int j = 0; j < compare.length; j++) {
-                result += compare[i][j];
+                try {
+                    result += compare[i][j];
+                } catch (Exception e) {
+                    result += 0;
+                }
                 if (j != list.size() - 1)
                     result += "   ";
                 else
                     result += System.getProperty("line.separator");
             }
         }
+        result += System.getProperty("line.separator") + fileName;
         return result;
     }
 

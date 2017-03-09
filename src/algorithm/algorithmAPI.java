@@ -52,7 +52,10 @@ public class algorithmAPI {
         trianResult = svm.computeSVM(trainTest,1,trainPath+"\\trainResultFile");
         Error = "模型训练准确率"+svm.accuracy+"\n"+"========================================"+"\n"+svm.crossAccuary+"\n"+"========================================";
         String testPath = trainPath+"\\testFile" ;
-        String validationPath = trainPath+"\\validationFile" ;
+        String validationPath = trainPath+"\\" +
+                "" +
+                "" +
+                "validationFile" ;
         testResult = svm.computeSVM(testPath,1,trainPath+"\\testResultFile");
         validationResult = svm.computeSVM(validationPath,2,trainPath+"\\validationResultFile");
         //Error = svm.getError();
