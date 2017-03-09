@@ -49,12 +49,12 @@ public class algorithmAPI {
         SVM3 svm = new SVM3();
         svm.trainSVM(trainPath,SVMtype,kenelType,  c, g,k);
         String  trainTest = trainPath+"\\trainFile";
-        trianResult = svm.computeSVM(trainTest,1);
+        trianResult = svm.computeSVM(trainTest,1,trainPath+"\\trainResultFile");
         Error = "模型训练准确率"+svm.accuracy+"\n"+"========================================"+"\n"+svm.crossAccuary+"\n"+"========================================";
         String testPath = trainPath+"\\testFile" ;
-        String validationPath = trainPath+"\\ validationFile" ;
-        testResult = svm.computeSVM(testPath,1);
-        validationResult = svm.computeSVM(validationPath,2);
+        String validationPath = trainPath+"\\validationFile" ;
+        testResult = svm.computeSVM(testPath,1,trainPath+"\\testResultFile");
+        validationResult = svm.computeSVM(validationPath,2,trainPath+"\\validationResultFile");
         //Error = svm.getError();
         result.add(0,trianResult);
         result.add(1,testResult);

@@ -35,10 +35,10 @@ public class SVM3 {
         modelFile= svm_train.main(trainArgs);
     }
 
-    public Double[][] computeSVM(String path,int type) throws IOException {
-        String[] testArgs = {path, modelFile, "E:\\新建文件夹 (2)\\train-result1"};
+    public Double[][] computeSVM(String path,int type,String resultPath) throws IOException {
+        String[] testArgs = {path, modelFile, resultPath};
         accuracy = svm_predict.main(testArgs);
-        BufferedReader read = new BufferedReader(new FileReader( "E:\\新建文件夹 (2)\\train-result1"));
+        BufferedReader read = new BufferedReader(new FileReader( resultPath));
         String line  ="";
         ArrayList<Double> tempResult = new ArrayList<>();
         while ((line=read.readLine())!=null){
@@ -50,7 +50,7 @@ public class SVM3 {
             result[i][0] = tempResult.get(i);
         }
         File mFile = new File(modelFile);
-        File rFile = new File( "E:\\新建文件夹 (2)\\train-result1");
+        File rFile = new File(resultPath);
         if(type==2)
         mFile.delete();
         rFile.delete();
