@@ -65,9 +65,9 @@ public class PrintScatterChart extends JFrame {
 //        addWindowListener(new ExitOnClose());
     }
 
-    public void getDataSet(ArrayList<Double [][]> datas)
+    public void getDataSet(ArrayList<Double [][]> datas,String[] fileListName)
     {
-        getContentPane().add(createDemoPanel(datas));
+        getContentPane().add(createDemoPanel(datas,fileListName));
     }
 
     /**
@@ -77,10 +77,10 @@ public class PrintScatterChart extends JFrame {
      *
      * @return A panel containing the content for the demo.
      */
-    public static JPanel createDemoPanel(ArrayList<Double [][]> datas) {
+    public static JPanel createDemoPanel(ArrayList<Double [][]> datas,String[] fileListName) {
         DemoPanel content = new DemoPanel(new BorderLayout());
         content.setPreferredSize(OrsonChartsDemo.DEFAULT_CONTENT_SIZE);
-        XYZDataset dataset = ScatterPlot3d.createDataset(datas);
+        XYZDataset dataset = ScatterPlot3d.createDataset(datas,fileListName);
         Chart3D chart = ScatterPlot3d.createChart(dataset);
         Chart3DPanel chartPanel = new Chart3DPanel(chart);
         content.setChartPanel(chartPanel);

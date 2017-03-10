@@ -124,11 +124,11 @@ public class algorithmAPI {
         PictureAPI pictureAPI = new PictureAPI();
         try {
             Stage chartStage = new Stage();
-            chartStage.setScene(pictureAPI.getScatter2DResult(oneXlodingAL,new String[]{"oneXLoading"}));
+            chartStage.setScene(pictureAPI.getChatingResult(oneXlodingAL,new String[]{"oneXLoading"},new String[]{"PCA1",""}));
             chartStage.show();
 
             Stage chartStage2 = new Stage();
-            chartStage2.setScene(pictureAPI.getScatter2DResult(twoXlodingAL,new String[]{"twoXLoading"}));
+            chartStage2.setScene(pictureAPI.getScatter2DResult(twoXlodingAL,new String[]{"twoXLoading"},new String[]{"PCA1","PCA2"}));
             chartStage2.show();
         }
         catch (Exception e)

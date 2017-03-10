@@ -31,10 +31,12 @@ public class Charting {
     }
     public static ArrayList<Double [][]> thisDatas = new ArrayList<>();
     public static String[] fileNameList ;
-    public void drawChat(ArrayList<Double [][]> datas,String[] fileListName)
+    public static String[] XYLabel;
+    public void drawChat(ArrayList<Double [][]> datas,String[] fileListName,String[] XYLabel)
     {
         thisDatas = datas;
         fileNameList = fileListName;
+        this.XYLabel = XYLabel;
     }
     public ArrayList<Double> averageList = new ArrayList<Double>();
 
@@ -84,6 +86,9 @@ public class Charting {
         ((StableTicksAxis) chart.getXAxis()).setForceZeroInRange(false);//强制设置X轴不为0开头
         boolean f = false;
         chart.setCreateSymbols(f);
+        chart.getXAxis().setLabel(XYLabel[0]);
+        chart.getYAxis().setLabel(XYLabel[1]);
+
         nodeSize = thisDatas.get(0).length;
         for(int j= 0;j<nodeSize;j++)
         {

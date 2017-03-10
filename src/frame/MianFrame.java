@@ -413,12 +413,15 @@ public class MianFrame extends Application {
                     testPcaString = addInf(testPcaResult, 1);
                 }
 
-                Double[][] label = getLabel();
-                Double temp = label[0][0];
-                String lableName = temp.intValue() + "";
+                String[][] label = getFileName();
+
+
+                String temp = label[0][0].substring(0,label[0][0].lastIndexOf("-"));
+                String lableName = temp;
                 int m = 0;
                 for (; m < label.length; m++) {
-                    if (temp.intValue() != label[m][0])
+                    String a = label[m][0].substring(0,label[m][0].lastIndexOf("-"));
+                    if (temp.compareTo(a)!=0)
                         break;
                 }
                 Double[][] ScattertrianPcaResult = new Double[m][3];
@@ -427,15 +430,19 @@ public class MianFrame extends Application {
                 ArrayList<Double[][]> ScattertPcaResult2D = new ArrayList<Double[][]>();
                 int temprow = 0;
                 for (int i = 0; i < trianPcaResult.length; i++) {
-                    if (temp.intValue() != label[i][0]) {
+                    String a = label[i][0].substring(0,label[i][0].lastIndexOf("-"));
+                    if (temp.compareTo(a)!=0){
                         temprow = i;
                         ScattertPcaResult.add(ScattertrianPcaResult);
                         ScattertPcaResult2D.add(ScattertrianPcaResult2D);
-                        temp = label[i][0];
-                        lableName = lableName + "," + temp.intValue();
+                        temp = a;
+                        lableName = lableName + "," + temp;
+//                        System.out.println(lableName);
                         int mm = m;
                         for (; m < label.length; m++) {
-                            if (temp.intValue() != label[m][0])
+                            String b = label[m][0].substring(0,label[m][0].lastIndexOf("-"));
+//                            System.out.println("b:"+ b );
+                            if (temp.compareTo(b)!=0)
                                 break;
                         }
                         ScattertrianPcaResult = new Double[m - mm][3];
@@ -453,14 +460,14 @@ public class MianFrame extends Application {
                 }
                 ScattertPcaResult.add(ScattertrianPcaResult);
                 ScattertPcaResult2D.add(ScattertrianPcaResult2D);
-                getScatterPicture(ScattertPcaResult);
+
 
                 String[] lableName1 = lableName.split(",");
-
+                getScatterPicture(ScattertPcaResult,lableName1);
                 PictureAPI pictureAPI = new PictureAPI();
                 try {
                     Stage chartStage = new Stage();
-                    chartStage.setScene(pictureAPI.getScatter2DResult(ScattertPcaResult2D, lableName1));
+                    chartStage.setScene(pictureAPI.getScatter2DResult(ScattertPcaResult2D, lableName1,new String[]{"PCA1","PCA2"}));
                     chartStage.show();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -600,8 +607,8 @@ public class MianFrame extends Application {
                         algorithmAPI xloading = new algorithmAPI();
                         xloading.getXLoading(var11);
                     } else {
-                        Alert _alert = new Alert(Alert.AlertType.CONFIRMATION, "请先运行PCA方法");
-                        _alert.show();
+//                        Alert _alert = new Alert(Alert.AlertType.CONFIRMATION, "请先运行PCA方法");
+//                        _alert.show();
                     }
                 }
         );
@@ -703,7 +710,7 @@ public class MianFrame extends Application {
                 Stage chartStage = null;
                 try {
                     chartStage = new Stage();
-                    chartStage.setScene(pictureAPI.getScatter2DResult(datas, name));
+                    chartStage.setScene(pictureAPI.getScatter2DResult(datas, name,new String[]{"",""}));
                     chartStage.show();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -903,7 +910,7 @@ public class MianFrame extends Application {
             PictureAPI pictureAPI = new PictureAPI();
             try {
                 Stage chartStage = new Stage();
-                chartStage.setScene(pictureAPI.getChatingResult(picMap, fileListName));
+                chartStage.setScene(pictureAPI.getChatingResult(picMap, fileListName,new String[]{"wavenumber","wavelength"}));
                 chartStage.show();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -921,12 +928,12 @@ public class MianFrame extends Application {
             LinkedHashMap<String, List<String[]>> picFileData = new LinkedHashMap<>();
             initChooserData(fileList, picFileData, "");
             ArrayList<Double[][]> picMap = picMap(picFileData);
-            getScatterPicture(picMap);
+//          getScatterPicture(picMap);
         });
 
 
         /**
-         * pca画图调用
+         * 降维图调用
          */
         addRectangle.setOnAction(event -> {
 
@@ -982,31 +989,37 @@ public class MianFrame extends Application {
                 int[] sanweiList = {Integer.valueOf(x3Times.getText()), Integer.valueOf(y3Times.getText()), Integer.valueOf(z3Times.getText())};
                 int[] erweiList = {Integer.valueOf(x2Times.getText()), Integer.valueOf(y2Times.getText())};
 
-                Double[][] label = getLabel();
-                Double temp = label[0][0];
-                String lableName = temp.intValue() + "";
+                String[][] label = getFileName();
+                String temp = label[0][0].substring(0,label[0][0].lastIndexOf("-"));
+                String lableName = temp;
                 int m = 0;
-                Double[][] trainTemp = dataOut(1);
                 for (; m < label.length; m++) {
-                    if (temp.intValue() != label[m][0])
+                    String a = label[m][0].substring(0,label[m][0].lastIndexOf("-"));
+                    System.out.println("a:"+ a );
+                    if (temp.compareTo(a)!=0)
                         break;
                 }
+
+                Double[][] trainTemp = dataOut(1);
                 Double[][] ScattertrianPcaResult = new Double[m][3];
                 Double[][] ScattertrianPcaResult2D = new Double[m][2];
                 ArrayList<Double[][]> ScattertPcaResult = new ArrayList<Double[][]>();
                 ArrayList<Double[][]> ScattertPcaResult2D = new ArrayList<Double[][]>();
                 int temprow = 0;
                 for (int i = 0; i < trainTemp.length; i++) {
-                    if (temp.intValue() != label[i][0]) {
+                    String a = label[i][0].substring(0,label[i][0].lastIndexOf("-"));
+                    if (temp.compareTo(a)!=0){
                         temprow = i;
                         ScattertPcaResult.add(ScattertrianPcaResult);
                         ScattertPcaResult2D.add(ScattertrianPcaResult2D);
-                        temp = label[i][0];
-                        lableName = lableName + "," + temp.intValue();
+                        temp = a;
+                        lableName = lableName + "," + temp;
                         int mm = m;
                         for (; m < label.length; m++) {
-                            if (temp.intValue() != label[m][0])
+                            String b = label[m][0].substring(0, label[m][0].lastIndexOf("-"));
+                            if (temp.compareTo(b) != 0) {
                                 break;
+                            }
                         }
                         ScattertrianPcaResult = new Double[m - mm][3];
                         ScattertrianPcaResult2D = new Double[m - mm][2];
@@ -1023,14 +1036,12 @@ public class MianFrame extends Application {
                 }
                 ScattertPcaResult.add(ScattertrianPcaResult);
                 ScattertPcaResult2D.add(ScattertrianPcaResult2D);
-                getScatterPicture(ScattertPcaResult);
-
                 String[] lableName1 = lableName.split(",");
-
+                getScatterPicture(ScattertPcaResult,lableName1);
                 PictureAPI pictureAPI = new PictureAPI();
                 try {
                     Stage chartStage = new Stage();
-                    chartStage.setScene(pictureAPI.getScatter2DResult(ScattertPcaResult2D, lableName1));
+                    chartStage.setScene(pictureAPI.getScatter2DResult(ScattertPcaResult2D, lableName1,new String[]{"",""}));
                     chartStage.show();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1352,10 +1363,10 @@ public class MianFrame extends Application {
     /**
      * 画散点图
      */
-    public void getScatterPicture(ArrayList<Double[][]> picMap) {
+    public void getScatterPicture(ArrayList<Double[][]> picMap,String[] fileListName) {
         PictureAPI pictureAPI = new PictureAPI();
         try {
-            pictureAPI.getScatterResult(picMap);
+            pictureAPI.getScatterResult(picMap,fileListName);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1722,6 +1733,21 @@ public class MianFrame extends Application {
             label[i][0] = Double.valueOf(trianTableVales[i][2]);
         return label;
     }
+
+
+    /**
+     * 导出训练集文件名
+     *
+     * @return
+     */
+    public String[][] getFileName() {
+        String[][] fileNames;
+        fileNames = new String[trianTableVales.length][1];
+        for (int i = 0; i < trianTableVales.length; i++)
+            fileNames[i][0] = trianTableVales[i][1];
+        return fileNames;
+    }
+
 
 
     private String[][] resultForm(Double[][] result, int type) {

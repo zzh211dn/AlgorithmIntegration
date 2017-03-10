@@ -22,7 +22,7 @@ public class ScatterPlot3d {
         }
 
         public static Chart3D createChart(XYZDataset dataset) {
-            Chart3D chart = Chart3DFactory.createScatterChart("Chart", "", dataset, "X", "Y", "Z");
+            Chart3D chart = Chart3DFactory.createScatterChart("3D-Chart", "", dataset, "X", "Y", "Z");
             XYZPlot plot = (XYZPlot)chart.getPlot();
             plot.setDimensions(new Dimension3D(10.0D, 4.0D, 4.0D));
             plot.setLegendLabelGenerator(new StandardXYZLabelGenerator("%s (%2$,d)"));
@@ -33,11 +33,11 @@ public class ScatterPlot3d {
             return chart;
         }
 
-        public static XYZDataset<String> createDataset(ArrayList<Double [][]> datas) {
+        public static XYZDataset<String> createDataset(ArrayList<Double [][]> datas,String[] fileListName) {
             XYZSeriesCollection dataset = new XYZSeriesCollection();
             for(int i = 0;i<datas.size();i++)
             {
-                XYZSeries s1 = createRandomSeries("S"+i, datas.get(i).length,datas.get(i));
+                XYZSeries s1 = createRandomSeries(fileListName[i], datas.get(i).length,datas.get(i));
                 dataset.add(s1);
             }
             return dataset;

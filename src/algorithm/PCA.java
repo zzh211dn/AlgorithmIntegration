@@ -58,7 +58,6 @@ public class PCA extends DimensionalityReduction {
         Matrix var10 = var9.mtimes(X);
 
         Matrix[] var11=Matlab.eigs(var10, r, "lm");
-        System.out.println(var11[0]);
         xloading = var11;
         E = Matlab.eigs(var10, r, "lm")[0];
         return X.mtimes(E);

@@ -20,12 +20,12 @@ public class PictureAPI {
      * datas.get(i)[j][0]为横坐标，datas.get(i)[j][1]为纵坐标
      *
      * */
-    public Scene getChatingResult(ArrayList<Double [][]> datas1,String[] fileListName)
+    public Scene getChatingResult(ArrayList<Double [][]> datas1,String[] fileListName,String[] XYLabel)
     {
 
         try {
             Charting charting = new Charting();
-            charting.drawChat(datas1,fileListName);
+            charting.drawChat(datas1,fileListName,XYLabel);
             Scene sceneChart = charting.start();
             return sceneChart;
         }
@@ -38,12 +38,12 @@ public class PictureAPI {
 
 
 
-    public Scene getScatter2DResult(ArrayList<Double [][]> datas1,String[] fileListName)
+    public Scene getScatter2DResult(ArrayList<Double [][]> datas1,String[] fileListName,String[] XYLabel)
     {
 
         try {
             Scatter2D charting2D = new Scatter2D();
-            charting2D.drawChat(datas1,fileListName);
+            charting2D.drawChat(datas1,fileListName,XYLabel);
             Scene sceneChart = charting2D.start();
             return sceneChart;
         }
@@ -79,10 +79,10 @@ public class PictureAPI {
     /**
      * @param datas 输入一个三维数组，多个文件。
      * */
-    public void getScatterResult(ArrayList<Double [][]> datas)
+    public void getScatterResult(ArrayList<Double [][]> datas,String[] fileListName)
     {
         PrintScatterChart app = new PrintScatterChart("散点图");
-        app.getDataSet(datas);
+        app.getDataSet(datas,fileListName);
         app.pack();
         app.setVisible(true);
     }

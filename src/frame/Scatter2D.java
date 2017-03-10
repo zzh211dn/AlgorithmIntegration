@@ -31,10 +31,12 @@ public class Scatter2D {
     }
     public static ArrayList<Double [][]> thisDatas = new ArrayList<>();
     public static String[] fileNameList ;
-    public void drawChat(ArrayList<Double [][]> datas,String[] fileListName)
+    public static String[] XYLabel;
+    public void drawChat(ArrayList<Double [][]> datas,String[] fileListName,String[] XYLabel)
     {
         thisDatas = datas;
         fileNameList = fileListName;
+        this.XYLabel = XYLabel;
     }
 //    public ArrayList<Double> averageList = new ArrayList<Double>();
 
@@ -83,17 +85,12 @@ public class Scatter2D {
 //        ((StableTicksAxis) chart.getXAxis()).setAutoRangePadding();//设置间隔
         ((StableTicksAxis) chart.getXAxis()).setForceZeroInRange(false);//强制设置X轴不为0开头
         boolean f = false;
-//        chart.setCreateSymbols(f);
-//        nodeSize = thisDatas.get(0).length;
-//        for(int j= 0;j<nodeSize;j++)
-//        {
-//            averageList.add(j,0.0);
-//        }
-
+        chart.getXAxis().setLabel(XYLabel[0]);
+        chart.getYAxis().setLabel(XYLabel[1]);
         Double[][] averag = new Double[nodeSize][2];
         for(int m = 0;m<thisDatas.size();m++) {
             XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
-            series.setName("标签："+fileNameList[m]);
+            series.setName(fileNameList[m]);
             addSample(series,thisDatas.get(m));
             chart.getData().add(series);
         }
