@@ -2053,13 +2053,14 @@ public class MianFrame extends Application {
 
     private HashMap<String, Double[][]> trainOut() {
         HashMap<String, Double[][]> trainOut = new HashMap<>();
+        int length = 0;
         for (int i = 0; i < trianTableVales[0].length - 4; i++) {
-            int length = 0;
             Double[][] temp = new Double[trianTableVales.length][length + 1];
             for (int l = 0; l < trianTableVales.length; l++)
                 for (int k = 0; k <= length; k++)
                     temp[l][k] = Double.parseDouble(trianTableVales[l][k + 4]);
             trainOut.put(length + "", temp);
+            length++;
         }
         return trainOut;
     }
