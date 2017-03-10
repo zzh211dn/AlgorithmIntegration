@@ -107,8 +107,9 @@ public class MianFrame extends Application {
 
         //添加数据预处理菜单
         javafx.scene.control.MenuItem menuItemPre = new javafx.scene.control.MenuItem("数据预处理");
-        javafx.scene.control.MenuItem menuItemPre2 = new javafx.scene.control.MenuItem("分高归一化");
-        menuPre.getItems().addAll(menuItemPre,menuItemPre2);
+        javafx.scene.control.MenuItem menuItemPre2 = new javafx.scene.control.MenuItem("峰高归一化");
+        javafx.scene.control.MenuItem areaNormalization = new javafx.scene.control.MenuItem("峰面积归一化");
+        menuPre.getItems().addAll(menuItemPre,menuItemPre2,areaNormalization);
         //添加文件子菜单
         javafx.scene.control.MenuItem addTrainSet = new javafx.scene.control.MenuItem("打开训练集");
         javafx.scene.control.MenuItem addTestSet = new javafx.scene.control.MenuItem("打开测试集");
@@ -179,6 +180,69 @@ public class MianFrame extends Application {
             {
 
             }
+
+        });
+
+
+        /**
+         * 峰面积归一化
+         */
+        areaNormalization.setOnAction((ActionEvent t) -> {
+            Stage knnStage = new Stage();
+            GridPane grid = new GridPane();
+            grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+            grid.setVgap(4);
+            grid.setHgap(1);
+            Scene knnScene = new Scene(grid, 200, 100);
+
+            final javafx.scene.control.TextField x0 = new javafx.scene.control.TextField();
+            x0.setPromptText("请输入初始坐标");
+            GridPane.setConstraints(x0, 0, 0);
+            grid.getChildren().add(x0);
+
+            final javafx.scene.control.TextField xn = new javafx.scene.control.TextField();
+            xn.setPromptText("请输入结束坐标");
+            GridPane.setConstraints(xn, 0, 1);
+            grid.getChildren().add(xn);
+
+            final javafx.scene.control.TextField nTxt = new javafx.scene.control.TextField();
+            nTxt.setPromptText("请输入分组数");
+            GridPane.setConstraints(nTxt, 0, 2);
+            grid.getChildren().add(nTxt);
+
+            Button button = new Button("确定");
+            GridPane.setConstraints(button, 0, 3);
+            grid.getChildren().add(button);
+            knnStage.setScene(knnScene);
+            knnStage.show();
+
+            button.setOnAction(event -> {
+                String dirName = "";
+                FileChooser fileChooser = new FileChooser();
+                configureOpenFileChooser(fileChooser, 1);
+                fileList = fileChooser.showOpenMultipleDialog(stage);
+                if (fileList != null)
+                    dirName = fileList.get(0).getParentFile().getAbsolutePath();
+                LinkedHashMap<String, List<String[]>> FileData = new LinkedHashMap<>();
+                initChooserData(fileList, FileData, "");
+                String[] fileListName = new String[fileList.size()];
+                for (int i = 0; i < fileList.size(); i++) {
+                    String name = fileList.get(i).getName();
+                    fileListName[i] = name;
+                }
+                ArrayList<Double[][]> fileMap = picMap(FileData);
+                int start = Integer.valueOf(x0.getText());
+                int end = Integer.valueOf(xn.getText());
+                int n = Integer.valueOf(nTxt.getText());
+                if(algorithmAPI.getAreaNormalization(start,end,n,fileMap,dirName,fileListName))
+                {
+                    //Alert 完成
+                }
+                else
+                {
+
+                }
+            });
 
         });
 
@@ -778,8 +842,16 @@ public class MianFrame extends Application {
                     trianResult = result.get(0);
                     testResult = result.get(1);
                     validationResult = result.get(2);
+                    Double[][] label = getValidationLabel();
+                    double wrong = 0;
+                    for (int i = 0; i < validationResult.length; i++) {
+                      if (validationResult[i][0].intValue() != label[i][0].intValue()) {
+                           wrong++;
+                        }
+                    }
 
-                    String error = algorithmAPI.Error;
+
+                    String error = "模型训练误差:"+algorithmAPI.accuracy+"\n"+"========================================"+"\n"+"验证集误差："+wrong/validationResult.length+"\n"+"========================================"+"\n";
                     trianTableVales = resultForm(trianResult, 1);
                     initTable(trianColumnNames, trianTableVales, 1);
                     testTableVales = resultForm(testResult, 2);
@@ -1821,6 +1893,20 @@ public class MianFrame extends Application {
 
     /**
      * 导出训练集标签
+     *
+     * @return
+     */
+    public Double[][] getValidationLabel() {
+        Double[][] label;
+        label = new Double[validationTableVales.length][1];
+        for (int i = 0; i < validationTableVales.length; i++)
+            label[i][0] = Double.valueOf(validationTableVales[i][2]);
+        return label;
+    }
+
+
+    /**
+     * 导出验证标签
      *
      * @return
      */

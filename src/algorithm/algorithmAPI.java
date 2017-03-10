@@ -156,6 +156,23 @@ public class algorithmAPI {
         return true;
     }
 
+    /**
+     *  计算峰面积归一化
+     *  输入为读取的文件
+     */
+    public boolean getAreaNormalization(int start,int end,int n,ArrayList<Double[][]> datas1,String dirName,String[] fileListName)
+    {
+        AreaNormalization areaNormalization = new AreaNormalization();
+        boolean flag = true;
+        for(int i = 0;i<datas1.size();i++)
+        {
+            flag = areaNormalization.areaNormalize( start, end,n,datas1.get(i),dirName,fileListName[i]);
+            if (!flag)
+                return false;
+        }
+        return true;
+    }
+
 
 
 
