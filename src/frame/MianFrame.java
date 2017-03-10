@@ -14,8 +14,8 @@ import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.GridPane;
@@ -416,12 +416,12 @@ public class MianFrame extends Application {
                 String[][] label = getFileName();
 
 
-                String temp = label[0][0].substring(0,label[0][0].lastIndexOf("-"));
+                String temp = label[0][0].substring(0, label[0][0].lastIndexOf("-"));
                 String lableName = temp;
                 int m = 0;
                 for (; m < label.length; m++) {
-                    String a = label[m][0].substring(0,label[m][0].lastIndexOf("-"));
-                    if (temp.compareTo(a)!=0)
+                    String a = label[m][0].substring(0, label[m][0].lastIndexOf("-"));
+                    if (temp.compareTo(a) != 0)
                         break;
                 }
                 Double[][] ScattertrianPcaResult = new Double[m][3];
@@ -430,8 +430,8 @@ public class MianFrame extends Application {
                 ArrayList<Double[][]> ScattertPcaResult2D = new ArrayList<Double[][]>();
                 int temprow = 0;
                 for (int i = 0; i < trianPcaResult.length; i++) {
-                    String a = label[i][0].substring(0,label[i][0].lastIndexOf("-"));
-                    if (temp.compareTo(a)!=0){
+                    String a = label[i][0].substring(0, label[i][0].lastIndexOf("-"));
+                    if (temp.compareTo(a) != 0) {
                         temprow = i;
                         ScattertPcaResult.add(ScattertrianPcaResult);
                         ScattertPcaResult2D.add(ScattertrianPcaResult2D);
@@ -440,9 +440,9 @@ public class MianFrame extends Application {
 //                        System.out.println(lableName);
                         int mm = m;
                         for (; m < label.length; m++) {
-                            String b = label[m][0].substring(0,label[m][0].lastIndexOf("-"));
+                            String b = label[m][0].substring(0, label[m][0].lastIndexOf("-"));
 //                            System.out.println("b:"+ b );
-                            if (temp.compareTo(b)!=0)
+                            if (temp.compareTo(b) != 0)
                                 break;
                         }
                         ScattertrianPcaResult = new Double[m - mm][3];
@@ -463,11 +463,11 @@ public class MianFrame extends Application {
 
 
                 String[] lableName1 = lableName.split(",");
-                getScatterPicture(ScattertPcaResult,lableName1);
+                getScatterPicture(ScattertPcaResult, lableName1);
                 PictureAPI pictureAPI = new PictureAPI();
                 try {
                     Stage chartStage = new Stage();
-                    chartStage.setScene(pictureAPI.getScatter2DResult(ScattertPcaResult2D, lableName1,new String[]{"PCA1","PCA2"}));
+                    chartStage.setScene(pictureAPI.getScatter2DResult(ScattertPcaResult2D, lableName1, new String[]{"PCA1", "PCA2"}));
                     chartStage.show();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -654,85 +654,135 @@ public class MianFrame extends Application {
             kTime.setPromptText("请输入k值");
             kTime.deselect();
 
+            CheckBox picCb = new CheckBox("准确率图");
+
             button.setOnAction(event1 -> {
-                if (svmComboBox.getSelectionModel().getSelectedIndex() <= 3) {
-
-                } else{
-
-                }
-
-
+                if (svmComboBox.getSelectionModel().getSelectedIndex() <= 2) {
                     javafx.scene.control.TextArea jta = new javafx.scene.control.TextArea();
-                fileAction.wirteTempSVM(dataOut(1), getLabel(), dataOut(2), dataOut(6), fileList.get(0).getParentFile());
-                ArrayList<Double[][]> result = null;
-                try {
-                    result = algorithmAPI.getSVMResult(fileList.get(0).getParentFile().getPath(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, cTime.getText(), gammaTime.getText(), kTime.getText());
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    fileAction.wirteTempSVM(dataOut(1), getLabel(), dataOut(2), dataOut(6), fileList.get(0).getParentFile());
+                    ArrayList<Double[][]> result = null;
+                    try {
+                        result = algorithmAPI.getSVMResult(fileList.get(0).getParentFile().getPath(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, cTime.getText(), gammaTime.getText(), kTime.getText());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    trianResult = result.get(0);
+                    testResult = result.get(1);
+                    validationResult = result.get(2);
+
+                    String error = algorithmAPI.Error;
+                    String trianCompare = compareSvm(trianResult);
+                    error += System.getProperty("line.separator");
+                    error += "训练集：" + System.getProperty("line.separator");
+                    error += trianCompare;
+                    error += "-------------------------------------------------------------";
+                    error += System.getProperty("line.separator");
+                    error += "验证集：" + System.getProperty("line.separator");
+                    String validationCompare = compareSvm(validationResult);
+                    error += validationCompare;
+                    trianTableVales = resultForm(trianResult, 1);
+                    initTable(trianColumnNames, trianTableVales, 1);
+                    testTableVales = resultForm(testResult, 2);
+                    initTable(testColumnNames, testTableVales, 2);
+                    validationTableVales = resultForm(validationResult, 3);
+                    initTable(validationColumnNames, validationTableVales, 3);
+                    svmStage.close();
+
+
+                    //实例化文本框
+                    jta.setWrapText(true);
+                    jta.setFont(new javafx.scene.text.Font("Arial", 18));
+                    jta.setPrefSize(800, 500);
+                    jta.appendText(error);
+                    Stage errorStage = new Stage();
+                    GridPane grid = new GridPane();
+                    grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+                    grid.setVgap(1);
+                    grid.setHgap(1);
+                    Scene errorScene = new Scene(grid, 850, 500);
+                    GridPane.setConstraints(jta, 0, 0);
+                    grid.getChildren().add(jta);
+                    errorStage.setScene(errorScene);
+                    errorStage.setResizable(false);
+                    errorStage.show();
+
+                } else {
+                    HashMap trainOut = trainOut();
+                    String[] precision = new String[trainOut.size()];
+                    if(picCb.isSelected()==true)
+                    for (int i = 0; i < trainOut.size(); i++) {
+                        Double[][] trian = (Double[][]) trainOut.get(i + "");
+                        fileAction.wirteTempSVM(trian, getLabel(), dataOut(2), dataOut(6), fileList.get(0).getParentFile());
+                        try {
+                            algorithmAPI.getSVMResult(fileList.get(0).getParentFile().getPath(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, cTime.getText(), gammaTime.getText(), kTime.getText());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        precision[i] = algorithmAPI.Error;
+                    }
+                    javafx.scene.control.TextArea jta = new javafx.scene.control.TextArea();
+                    fileAction.wirteTempSVM(dataOut(1), getLabel(), dataOut(2), dataOut(6), fileList.get(0).getParentFile());
+                    ArrayList<Double[][]> result = null;
+                    try {
+                        result = algorithmAPI.getSVMResult(fileList.get(0).getParentFile().getPath(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, cTime.getText(), gammaTime.getText(), kTime.getText());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    trianResult = result.get(0);
+                    testResult = result.get(1);
+                    validationResult = result.get(2);
+
+                    String error = algorithmAPI.Error;
+                    trianTableVales = resultForm(trianResult, 1);
+                    initTable(trianColumnNames, trianTableVales, 1);
+                    testTableVales = resultForm(testResult, 2);
+                    initTable(testColumnNames, testTableVales, 2);
+                    validationTableVales = resultForm(validationResult, 3);
+                    initTable(validationColumnNames, validationTableVales, 3);
+                    svmStage.close();
+
+                    ArrayList<Double[][]> datas = new ArrayList<Double[][]>();
+                    Double[][] rowlable = getLabel();
+                    String[] name = new String[]{"实际值", "目标值"};
+                    Double[][] trainres = new Double[trianResult.length][2];
+                    Double[][] lable = new Double[rowlable.length][2];
+                    for (int i = 0; i < rowlable.length; i++) {
+                        lable[i][0] = Double.parseDouble(i + "");
+                        trainres[i][0] = Double.parseDouble(i + "");
+                        lable[i][1] = rowlable[i][0];
+                        trainres[i][1] = trianResult[i][0];
+
+                    }
+                    datas.add(lable);
+                    datas.add(trainres);
+                    PictureAPI pictureAPI = new PictureAPI();
+                    Stage chartStage = null;
+                    try {
+                        chartStage = new Stage();
+                        chartStage.setScene(pictureAPI.getScatter2DResult(datas, name, new String[]{"", ""}));
+                        chartStage.show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+
+                    }
+
+                    //实例化文本框
+                    jta.setWrapText(true);
+                    jta.setFont(new javafx.scene.text.Font("Arial", 18));
+                    jta.setPrefSize(800, 500);
+                    jta.appendText(error);
+                    Stage errorStage = new Stage();
+                    GridPane grid = new GridPane();
+                    grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+                    grid.setVgap(1);
+                    grid.setHgap(1);
+                    Scene errorScene = new Scene(grid, 850, 500);
+                    GridPane.setConstraints(jta, 0, 0);
+                    grid.getChildren().add(jta);
+                    errorStage.setScene(errorScene);
+                    errorStage.setResizable(false);
+                    errorStage.show();
                 }
-                trianResult = result.get(0);
-                testResult = result.get(1);
-                validationResult = result.get(2);
-
-                String error = algorithmAPI.Error;
-                String trianCompare = compareSvm(trianResult);
-                error += System.getProperty("line.separator");
-                error += "训练集：" + System.getProperty("line.separator");
-                error += trianCompare;
-                error += "-------------------------------------------------------------";
-                error += System.getProperty("line.separator");
-                error += "验证集：" + System.getProperty("line.separator");
-                String validationCompare = compareSvm(validationResult);
-                error += validationCompare;
-                trianTableVales = resultForm(trianResult, 1);
-                initTable(trianColumnNames, trianTableVales, 1);
-                testTableVales = resultForm(testResult, 2);
-                initTable(testColumnNames, testTableVales, 2);
-                validationTableVales = resultForm(validationResult, 3);
-                initTable(validationColumnNames, validationTableVales, 3);
-                svmStage.close();
-
-                ArrayList<Double[][]> datas = new ArrayList<Double[][]>();
-                Double[][] rowlable = getLabel();
-                String[] name = new String[]{"实际值", "目标值"};
-                Double[][] trainres = new Double[trianResult.length][2];
-                Double[][] lable = new Double[rowlable.length][2];
-                for (int i = 0; i < rowlable.length; i++) {
-                    lable[i][0] = Double.parseDouble(i + "");
-                    trainres[i][0] = Double.parseDouble(i + "");
-                    lable[i][1] = rowlable[i][0];
-                    trainres[i][1] = trianResult[i][0];
-
-                }
-                datas.add(lable);
-                datas.add(trainres);
-                PictureAPI pictureAPI = new PictureAPI();
-                Stage chartStage = null;
-                try {
-                    chartStage = new Stage();
-                    chartStage.setScene(pictureAPI.getScatter2DResult(datas, name,new String[]{"",""}));
-                    chartStage.show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-
-                }
-
-                //实例化文本框
-                jta.setWrapText(true);
-                jta.setFont(new javafx.scene.text.Font("Arial", 18));
-                jta.setPrefSize(800, 500);
-                jta.appendText(error);
-                Stage errorStage = new Stage();
-                GridPane grid = new GridPane();
-                grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
-                grid.setVgap(1);
-                grid.setHgap(1);
-                Scene errorScene = new Scene(grid, 850, 500);
-                GridPane.setConstraints(jta, 0, 0);
-                grid.getChildren().add(jta);
-                errorStage.setScene(errorScene);
-                errorStage.setResizable(false);
-                errorStage.show();
 
             });
 
@@ -750,6 +800,7 @@ public class MianFrame extends Application {
             grid.add(gammaTime, 2, 4);
             grid.add(new Label("请输入k折: "), 1, 5);
             grid.add(kTime, 2, 5);
+            grid.add(picCb,2,6);
             grid.add(button, 3, 6);
 
             Group root = (Group) svmScene.getRoot();
@@ -910,7 +961,7 @@ public class MianFrame extends Application {
             PictureAPI pictureAPI = new PictureAPI();
             try {
                 Stage chartStage = new Stage();
-                chartStage.setScene(pictureAPI.getChatingResult(picMap, fileListName,new String[]{"wavenumber","wavelength"}));
+                chartStage.setScene(pictureAPI.getChatingResult(picMap, fileListName, new String[]{"wavenumber", "wavelength"}));
                 chartStage.show();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -990,13 +1041,13 @@ public class MianFrame extends Application {
                 int[] erweiList = {Integer.valueOf(x2Times.getText()), Integer.valueOf(y2Times.getText())};
 
                 String[][] label = getFileName();
-                String temp = label[0][0].substring(0,label[0][0].lastIndexOf("-"));
+                String temp = label[0][0].substring(0, label[0][0].lastIndexOf("-"));
                 String lableName = temp;
                 int m = 0;
                 for (; m < label.length; m++) {
-                    String a = label[m][0].substring(0,label[m][0].lastIndexOf("-"));
-                    System.out.println("a:"+ a );
-                    if (temp.compareTo(a)!=0)
+                    String a = label[m][0].substring(0, label[m][0].lastIndexOf("-"));
+                    System.out.println("a:" + a);
+                    if (temp.compareTo(a) != 0)
                         break;
                 }
 
@@ -1007,8 +1058,8 @@ public class MianFrame extends Application {
                 ArrayList<Double[][]> ScattertPcaResult2D = new ArrayList<Double[][]>();
                 int temprow = 0;
                 for (int i = 0; i < trainTemp.length; i++) {
-                    String a = label[i][0].substring(0,label[i][0].lastIndexOf("-"));
-                    if (temp.compareTo(a)!=0){
+                    String a = label[i][0].substring(0, label[i][0].lastIndexOf("-"));
+                    if (temp.compareTo(a) != 0) {
                         temprow = i;
                         ScattertPcaResult.add(ScattertrianPcaResult);
                         ScattertPcaResult2D.add(ScattertrianPcaResult2D);
@@ -1037,11 +1088,11 @@ public class MianFrame extends Application {
                 ScattertPcaResult.add(ScattertrianPcaResult);
                 ScattertPcaResult2D.add(ScattertrianPcaResult2D);
                 String[] lableName1 = lableName.split(",");
-                getScatterPicture(ScattertPcaResult,lableName1);
+                getScatterPicture(ScattertPcaResult, lableName1);
                 PictureAPI pictureAPI = new PictureAPI();
                 try {
                     Stage chartStage = new Stage();
-                    chartStage.setScene(pictureAPI.getScatter2DResult(ScattertPcaResult2D, lableName1,new String[]{"",""}));
+                    chartStage.setScene(pictureAPI.getScatter2DResult(ScattertPcaResult2D, lableName1, new String[]{"", ""}));
                     chartStage.show();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1363,10 +1414,10 @@ public class MianFrame extends Application {
     /**
      * 画散点图
      */
-    public void getScatterPicture(ArrayList<Double[][]> picMap,String[] fileListName) {
+    public void getScatterPicture(ArrayList<Double[][]> picMap, String[] fileListName) {
         PictureAPI pictureAPI = new PictureAPI();
         try {
-            pictureAPI.getScatterResult(picMap,fileListName);
+            pictureAPI.getScatterResult(picMap, fileListName);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1749,7 +1800,6 @@ public class MianFrame extends Application {
     }
 
 
-
     private String[][] resultForm(Double[][] result, int type) {
         String[][] data = null;
         switch (type) {
@@ -1952,6 +2002,19 @@ public class MianFrame extends Application {
             for (int j = start; j <= end; j++)
                 Y[i][j - start] = X[i][j];
         return Y;
+    }
+
+    private HashMap<String, Double[][]> trainOut() {
+        HashMap<String, Double[][]> trainOut = new HashMap<>();
+        for (int i = 0; i < trianTableVales[0].length - 4; i++) {
+            int length = 0;
+            Double[][] temp = new Double[trianTableVales.length][length + 1];
+            for (int l = 0; l < trianTableVales.length; l++)
+                for (int k = 0; k <= length; k++)
+                    temp[l][k] = Double.parseDouble(trianTableVales[l][k + 4]);
+            trainOut.put(length + "", temp);
+        }
+        return trainOut;
     }
 
     private String compareSvm(Double[][] trianResult) {
