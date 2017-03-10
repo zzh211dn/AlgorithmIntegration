@@ -17,6 +17,7 @@ import java.util.TreeMap;
 public class algorithmAPI {
     public Double[][] result ;
     public String Error = "";
+    public String accuracy = "";
     public Double[][] double2Double(double[][] doubleData)
     {
         Double[][] result = new Double[doubleData.length][doubleData[0].length];
@@ -50,6 +51,7 @@ public class algorithmAPI {
         svm.trainSVM(trainPath,SVMtype,kenelType,  c, g,k);
         String  trainTest = trainPath+"\\trainFile";
         trianResult = svm.computeSVM(trainTest,1,trainPath+"\\trainResultFile");
+        accuracy = svm.accuracy+"";
         Error = "模型训练准确率"+svm.accuracy+"\n"+"========================================"+"\n"+svm.crossAccuary+"\n"+"========================================";
         String testPath = trainPath+"\\testFile" ;
         String validationPath = trainPath+"\\" +
@@ -135,10 +137,27 @@ public class algorithmAPI {
         {
             e.printStackTrace();
         }
-
-
-
     }
+
+    /**
+     *  计算分高归一化
+     *  输入为读取的文件
+     */
+    public boolean getFenGaoNormalization(ArrayList<Double[][]> datas1,String dirName,String[] fileListName)
+    {
+        FenGaoNormalization fenGaoNormalization = new FenGaoNormalization();
+        boolean flag = true;
+        for(int i = 0;i<datas1.size();i++)
+        {
+            flag = fenGaoNormalization.fengaoNormalize(datas1.get(i),dirName,fileListName[i]);
+            if (!flag)
+                return false;
+        }
+        return true;
+    }
+
+
+
 
 
     /**

@@ -124,7 +124,7 @@ public final class FileAction {
      * @param file      写入文件
      * @param tableData 写入数据
      */
-    public void saveData(File file, String[][] tableData) {
+    public boolean saveData(File file, String[][] tableData) {
 
         try {
             FileWriter out = new FileWriter(file, false);
@@ -142,12 +142,13 @@ public final class FileAction {
             }
 
             out.close();
+            return true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        return false;
     }
 
 }

@@ -107,7 +107,8 @@ public class MianFrame extends Application {
 
         //添加数据预处理菜单
         javafx.scene.control.MenuItem menuItemPre = new javafx.scene.control.MenuItem("数据预处理");
-        menuPre.getItems().addAll(menuItemPre);
+        javafx.scene.control.MenuItem menuItemPre2 = new javafx.scene.control.MenuItem("分高归一化");
+        menuPre.getItems().addAll(menuItemPre,menuItemPre2);
         //添加文件子菜单
         javafx.scene.control.MenuItem addTrainSet = new javafx.scene.control.MenuItem("打开训练集");
         javafx.scene.control.MenuItem addTestSet = new javafx.scene.control.MenuItem("打开测试集");
@@ -150,6 +151,38 @@ public class MianFrame extends Application {
             smoothGUI.setModal(true);
             smoothGUI.show();
         });
+
+
+        /**
+         * 分高归一化
+         */
+        menuItemPre2.setOnAction((ActionEvent t) -> {
+            String dirName = "";
+            FileChooser fileChooser = new FileChooser();
+            configureOpenFileChooser(fileChooser, 1);
+            fileList = fileChooser.showOpenMultipleDialog(stage);
+            if (fileList != null)
+                dirName = fileList.get(0).getParentFile().getAbsolutePath();
+            LinkedHashMap<String, List<String[]>> picFileData = new LinkedHashMap<>();
+            initChooserData(fileList, picFileData, "");
+            String[] fileListName = new String[fileList.size()];
+            for (int i = 0; i < fileList.size(); i++) {
+                String name = fileList.get(i).getName();
+                fileListName[i] = name;
+            }
+            ArrayList<Double[][]> picMap = picMap(picFileData);
+            if(algorithmAPI.getFenGaoNormalization(picMap,dirName,fileListName))
+            {
+                //Alert 完成
+            }
+            else
+            {
+
+            }
+
+        });
+
+
 
         /**
          * 打开训练集
@@ -688,7 +721,6 @@ public class MianFrame extends Application {
                     initTable(validationColumnNames, validationTableVales, 3);
                     svmStage.close();
 
-
                     //实例化文本框
                     jta.setWrapText(true);
                     jta.setFont(new javafx.scene.text.Font("Arial", 18));
@@ -708,17 +740,32 @@ public class MianFrame extends Application {
 
                 } else {
                     HashMap trainOut = trainOut();
-                    String[] precision = new String[trainOut.size()];
-                    if(picCb.isSelected()==true)
-                    for (int i = 0; i < trainOut.size(); i++) {
-                        Double[][] trian = (Double[][]) trainOut.get(i + "");
-                        fileAction.wirteTempSVM(trian, getLabel(), dataOut(2), dataOut(6), fileList.get(0).getParentFile());
-                        try {
-                            algorithmAPI.getSVMResult(fileList.get(0).getParentFile().getPath(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, cTime.getText(), gammaTime.getText(), kTime.getText());
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                    Double[][] precision = new Double[trainOut.size()][2];
+                    if(picCb.isSelected()==true) {
+                        for (int i = 0; i < trainOut.size(); i++) {
+                            Double[][] trian = (Double[][]) trainOut.get(i + "");
+                            fileAction.wirteTempSVM(trian, getLabel(), dataOut(2), dataOut(6), fileList.get(0).getParentFile());
+                            try {
+                                algorithmAPI.getSVMResult(fileList.get(0).getParentFile().getPath(), svmComboBox.getSelectionModel().getSelectedIndex() + 1, coreComboBox.getSelectionModel().getSelectedIndex() + 1, cTime.getText(), gammaTime.getText(), kTime.getText());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            precision[i][0] = i+1.0;
+                            precision[i][1] = Double.valueOf(algorithmAPI.accuracy);
                         }
-                        precision[i] = algorithmAPI.Error;
+                        ArrayList<Double[][]> datas = new ArrayList<Double[][]>();
+                        datas.add(precision);
+                        String[] name = new String[]{"precision"};
+
+//                        PictureAPI pictureAPI = new PictureAPI();
+//                        Stage chartStage = null;
+//                        try {
+//                            chartStage = new Stage();
+//                            chartStage.setScene(pictureAPI.getChatingResult(datas, name, new String[]{"", ""}));
+//                            chartStage.show();
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
                     }
                     javafx.scene.control.TextArea jta = new javafx.scene.control.TextArea();
                     fileAction.wirteTempSVM(dataOut(1), getLabel(), dataOut(2), dataOut(6), fileList.get(0).getParentFile());
