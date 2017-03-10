@@ -96,6 +96,7 @@ class svm_predict {
 					((total*sumvy-sumv*sumy)*(total*sumvy-sumv*sumy))/
 							((total*sumvv-sumv*sumv)*(total*sumyy-sumy*sumy))+
 					" (regression)\n");
+			accuracy = (double)error/total;
 		}
 		else
 		{
