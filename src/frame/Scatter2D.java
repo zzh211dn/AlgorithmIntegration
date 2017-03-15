@@ -95,18 +95,6 @@ public class Scatter2D {
             chart.getData().add(series);
         }
 
-//        for(int j= 0;j<nodeSize;j++)
-//        {
-//            averag[j][0] = thisDatas.get(0)[j][0];
-////            averag[j][1] = averageList.get(j);
-//        }
-
-//        XYChart.Series<Number, Number> averagseries = new XYChart.Series<Number, Number>();
-//        averagseries.setName("averagLine");
-//        addSample(averagseries,averag);
-//        chart.getData().add(averagseries);
-
-
         chart.setOnMouseMoved( new EventHandler<MouseEvent>() {
             public void handle( MouseEvent mouseEvent ) {
                 double xStart = chart.getXAxis().getLocalToParentTransform().getTx();
@@ -114,11 +102,11 @@ public class Scatter2D {
                 double axisXRelativeMousePosition = mouseEvent.getX() - xStart;
                 double axisYRelativeMousePosition = mouseEvent.getY() - YStart;
                 outputLabel.setText( String.format(
-                        "%d, %d (%d, %d); %f - %d",
+                        "%d, %d (%d, %d); %f - %f",
                         (int) mouseEvent.getSceneX(), (int) mouseEvent.getSceneY(),
                         (int) mouseEvent.getX(), (int) mouseEvent.getY(),
                         chart.getYAxis().getValueForDisplay( axisYRelativeMousePosition ).floatValue()
-                        ,chart.getXAxis().getValueForDisplay( axisXRelativeMousePosition ).intValue()
+                        ,chart.getXAxis().getValueForDisplay( axisXRelativeMousePosition ).floatValue()
                 ) );
             }
         } );

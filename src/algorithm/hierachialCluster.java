@@ -81,9 +81,8 @@ public class hierachialCluster {
 
     public static void main(String[] args) {
 
-
         String inputPath = "C:\\Users\\fish123\\Desktop\\input.txt";
-        int k = Integer.parseInt("4");
+        int k = Integer.parseInt("3");
 
         // Load input file.
         try{

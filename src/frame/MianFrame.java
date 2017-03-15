@@ -6,6 +6,8 @@ package frame;
 
 import algorithm.Kmeans;
 import algorithm.PCA;
+import algorithm.PLSpackage.Data;
+import algorithm.PLSpackage.PLS_method;
 import algorithm.PictureAPI;
 import algorithm.algorithmAPI;
 import com.smooth.gui.SmoothGUI;
@@ -34,6 +36,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+
+import static algorithm.PLSpackage.helpers.predict;
+import static algorithm.PLSpackage.helpers.readCSV;
+import static algorithm.PLSpackage.helpers.reportAccuracy;
 
 public class MianFrame extends Application {
 
@@ -108,7 +114,8 @@ public class MianFrame extends Application {
         //添加数据预处理菜单
         javafx.scene.control.MenuItem menuItemPre = new javafx.scene.control.MenuItem("数据预处理");
         javafx.scene.control.MenuItem menuItemPre2 = new javafx.scene.control.MenuItem("分高归一化");
-        menuPre.getItems().addAll(menuItemPre,menuItemPre2);
+        javafx.scene.control.MenuItem canchaItemPre = new javafx.scene.control.MenuItem("学生化残差");
+        menuPre.getItems().addAll(menuItemPre,menuItemPre2,canchaItemPre);
         //添加文件子菜单
         javafx.scene.control.MenuItem addTrainSet = new javafx.scene.control.MenuItem("打开训练集");
         javafx.scene.control.MenuItem addTestSet = new javafx.scene.control.MenuItem("打开测试集");
@@ -130,7 +137,8 @@ public class MianFrame extends Application {
         menuClassif.getItems().addAll(addSVM, addKNN, addHCA);
         //添加回归算法子菜单
         javafx.scene.control.MenuItem addBPNN = new javafx.scene.control.MenuItem("人工神经网络");
-        menuRegression.getItems().addAll(addBPNN);
+        javafx.scene.control.MenuItem addPLSForest = new javafx.scene.control.MenuItem("PLS回归");
+        menuRegression.getItems().addAll(addBPNN,addPLSForest);
         //添加Maping子菜单
         javafx.scene.control.MenuItem addKmeans = new javafx.scene.control.MenuItem("K-聚类");
         menuMaping.getItems().addAll(addKmeans);
@@ -182,6 +190,36 @@ public class MianFrame extends Application {
 
         });
 
+        /**
+         * 学生化残差
+         * */
+
+        canchaItemPre.setOnAction((ActionEvent t)->{
+            Double[][] data = dataOut(1);
+            System.out.println(data.length);
+            Double[][] dataLabel = getLabel();
+            Double[][] residualsResult = algorithmAPI.getResiduals(data,dataLabel);
+            Double[][] transposeResidualResult = new Double[residualsResult.length][2];
+            ArrayList<Double[][]> datas = new ArrayList<Double[][]>();
+
+            for(int i = 0;i<transposeResidualResult.length;i++)
+            {
+                transposeResidualResult[i][1] = residualsResult[i][0];
+                transposeResidualResult[i][0] = Double.valueOf(i);
+            }
+            datas.add(transposeResidualResult);
+
+            PictureAPI pictureAPI = new PictureAPI();
+            Stage chartStage = null;
+            try {
+                chartStage = new Stage();
+                chartStage.setScene(pictureAPI.getChatingResult(datas, new String[]{"学生化残差"}, new String[]{"", ""}));
+                chartStage.show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        });
 
 
         /**
@@ -282,7 +320,6 @@ public class MianFrame extends Application {
                 trianColumnNames = initZYZColumnNames(zyzData);
             }
             initTable(trianColumnNames, trianTableVales, 1);
-
         });
 
         /**
@@ -447,8 +484,6 @@ public class MianFrame extends Application {
                 }
 
                 String[][] label = getFileName();
-
-
                 String temp = label[0][0].substring(0, label[0][0].lastIndexOf("-"));
                 String lableName = temp;
                 int m = 0;
@@ -506,9 +541,7 @@ public class MianFrame extends Application {
                     e.printStackTrace();
                 }
 
-
                 String[][] trianPcaString = addInf(trianPcaResult, 0);
-
                 Stage pcaStage = new Stage();
                 Scene pcaScence = new Scene(new VBox(), width, high);
 
@@ -757,15 +790,15 @@ public class MianFrame extends Application {
                         datas.add(precision);
                         String[] name = new String[]{"precision"};
 
-//                        PictureAPI pictureAPI = new PictureAPI();
-//                        Stage chartStage = null;
-//                        try {
-//                            chartStage = new Stage();
-//                            chartStage.setScene(pictureAPI.getChatingResult(datas, name, new String[]{"", ""}));
-//                            chartStage.show();
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
+                        PictureAPI pictureAPI = new PictureAPI();
+                        Stage chartStage = null;
+                        try {
+                            chartStage = new Stage();
+                            chartStage.setScene(pictureAPI.getChatingResult(datas, name, new String[]{"", "MSE\n"}));
+                            chartStage.show();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                     javafx.scene.control.TextArea jta = new javafx.scene.control.TextArea();
                     fileAction.wirteTempSVM(dataOut(1), getLabel(), dataOut(2), dataOut(6), fileList.get(0).getParentFile());
@@ -794,8 +827,8 @@ public class MianFrame extends Application {
                     Double[][] trainres = new Double[trianResult.length][2];
                     Double[][] lable = new Double[rowlable.length][2];
                     for (int i = 0; i < rowlable.length; i++) {
-                        lable[i][0] = Double.parseDouble(i + "");
-                        trainres[i][0] = Double.parseDouble(i + "");
+                        lable[i][0] = rowlable[i][0];
+                        trainres[i][0] = rowlable[i][0];
                         lable[i][1] = rowlable[i][0];
                         trainres[i][1] = trianResult[i][0];
 
@@ -865,17 +898,25 @@ public class MianFrame extends Application {
             grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
             grid.setVgap(3);
             grid.setHgap(1);
-            Scene bpnnScene = new Scene(grid, 200, 100);
+            Scene bpnnScene = new Scene(grid, 300, 100);
+
+            final Label hiddenLable = new Label("请输入隐藏层数 ");
+            GridPane.setConstraints(hiddenLable, 0, 0);
+            grid.getChildren().add(hiddenLable);
 
             final javafx.scene.control.TextField hiddenLayer = new javafx.scene.control.TextField();
             hiddenLayer.setPromptText("请输入隐藏层数");
             hiddenLayer.deselect();
-            GridPane.setConstraints(hiddenLayer, 0, 0);
+            GridPane.setConstraints(hiddenLayer, 1, 0);
             grid.getChildren().add(hiddenLayer);
+
+            final Label iterateTimesLable = new Label("请输入迭代次数 ");
+            GridPane.setConstraints(iterateTimesLable, 0, 1);
+            grid.getChildren().add(iterateTimesLable);
 
             final javafx.scene.control.TextField iterateTimes = new javafx.scene.control.TextField();
             iterateTimes.setPromptText("请输入迭代次数");
-            GridPane.setConstraints(iterateTimes, 0, 1);
+            GridPane.setConstraints(iterateTimes, 1, 1);
             grid.getChildren().add(iterateTimes);
 
             Button button = new Button("确定");
@@ -1159,7 +1200,7 @@ public class MianFrame extends Application {
             grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
             grid.setVgap(3);
             grid.setHgap(1);
-            Scene knnScene = new Scene(grid, 200, 100);
+            Scene knnScene = new Scene(grid, 300, 100);
 
             final Label knnLabel = new Label("请输入k值：");
             GridPane.setConstraints(knnLabel, 0, 0);
@@ -1167,7 +1208,7 @@ public class MianFrame extends Application {
 
             final javafx.scene.control.TextField kTimes = new javafx.scene.control.TextField();
             kTimes.setPromptText("请输入k");
-            GridPane.setConstraints(kTimes, 0, 1);
+            GridPane.setConstraints(kTimes, 1, 0);
             grid.getChildren().add(kTimes);
 
             Button button = new Button("确定");
@@ -1192,7 +1233,7 @@ public class MianFrame extends Application {
         });
 
         /**
-         * PLS方法调用
+         * PLS降维方法调用
          */
         addPLS.setOnAction(event -> {
             Stage textStage = new Stage();
@@ -1200,63 +1241,59 @@ public class MianFrame extends Application {
             grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
             grid.setVgap(4);
             grid.setHgap(1);
-            Scene textScene = new Scene(grid, 200, 250);
+            Scene textScene = new Scene(grid, 300, 100);
 
-            final Label plsLabel = new Label("请输入Y的开始序列：");
+            final Label plsLabel = new Label("请输入因子数量：");
             GridPane.setConstraints(plsLabel, 0, 0);
             grid.getChildren().add(plsLabel);
 
-            final javafx.scene.control.TextField leftY = new javafx.scene.control.TextField();
-            leftY.setPromptText("请输入Y的开始序列号：");
-            GridPane.setConstraints(leftY, 0, 1);
-            grid.getChildren().add(leftY);
+            final javafx.scene.control.TextField factors = new javafx.scene.control.TextField();
+            factors.setPromptText("请输入因子数量：");
+            GridPane.setConstraints(factors, 1, 0);
+            grid.getChildren().add(factors);
 
-            final javafx.scene.control.TextField rightY = new javafx.scene.control.TextField();
-            rightY.setPromptText("请输入Y的结束序列号：");
-            GridPane.setConstraints(rightY, 0, 2);
-            grid.getChildren().add(rightY);
+            CheckBox testCb = new CheckBox("测试集");
+            GridPane.setConstraints(testCb, 0, 2);
+            grid.getChildren().add(testCb);
+            CheckBox validationCb = new CheckBox("验证集");
+            GridPane.setConstraints(validationCb, 1, 2);
+            grid.getChildren().add(validationCb);
 
             Button button = new Button("确定");
-            GridPane.setConstraints(button, 0, 3);
+            GridPane.setConstraints(button,0, 3);
             grid.getChildren().add(button);
             textStage.setScene(textScene);
             textStage.show();
 
             button.setOnAction(event1 -> {
-                Double[][] X = dataOut(4);
-                int yLength = Integer.valueOf(rightY.getText()) - Integer.valueOf(leftY.getText()) + 1;
-                Double[][] Y = gePlsY(X, Integer.valueOf(leftY.getText()), Integer.valueOf(rightY.getText()));
-                Double[][] plsResult = algorithmAPI.getPLSResult(X, Y, X[0].length - yLength);
+                textStage.close();
+                Double[][] trainData = dataOut(1);//训练集数据
+                Double[][] testData = null;
+                Double[][] validationplsData = null;
+                int type = 1;
+                if (testCb.isSelected() == true )
+                    testData = dataOut(2);
+                if (validationCb.isSelected() == true)
+                    validationplsData = dataOut(6);
 
-                Double[][] trianplsResult = separData(plsResult, 1);
-                Double[][] testplsResult = separData(plsResult, 2);
-                Double[][] validationplsResult = separData(plsResult, 3);
+                HashMap<String,Double[][]> result= algorithmAPI.getPLSDimReductionResult(trainData,getLabel(),Integer.valueOf(factors.getText()),testData,validationplsData);
+
+                Double[][] trianplsResult = result.get("train");
+                Double[][] testplsResult = result.get("test");
+                Double[][] validationplsResult = result.get("validation");
 
                 String[][] trianPlsString = addInf(trianplsResult, 0);
-                String[][] testPlsString = addInf(testplsResult, 1);
-                String[][] validationPlsString = addInf(validationplsResult, 2);
+                String[][] testPlsString = null;
+                String[][] validationPlsString = null;
+
                 Stage plsStage = new Stage();
                 Scene plsScence = new Scene(new VBox(), width, high);
-
 
                 String[] plsTrianColumnNames = initPCAColumnNames(trianPlsString);
                 DefaultTableModel plsTrianTableModel = new DefaultTableModel(trianPlsString, plsTrianColumnNames);
                 JTable plsTrianTable = new JTable(plsTrianTableModel);
                 plsTrianTable.setRowHeight(50);
                 plsTrianTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
-                String[] plsTestColumnNames = initPCAColumnNames(testPlsString);
-                DefaultTableModel plsTestTableModel = new DefaultTableModel(testPlsString, plsTestColumnNames);
-                JTable plsTestTable = new JTable(plsTestTableModel);
-                plsTestTable.setRowHeight(50);
-                plsTestTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
-                String[] plsValidationColumnNames = initPCAColumnNames(validationPlsString);
-                DefaultTableModel plsValidationTableModel = new DefaultTableModel(validationPlsString, plsValidationColumnNames);
-                JTable plsValidationTable = new JTable(plsValidationTableModel);
-                plsValidationTable.setRowHeight(50);
-                plsValidationTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
 
                 Button trianPlsAddButton = new Button("保存");
                 HBox trianPlsLabelBox = new HBox();
@@ -1266,7 +1303,6 @@ public class MianFrame extends Application {
                 trianPlsLabelBox.setSpacing(5);
                 trianPlsLabelBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
 
-
                 initColumn(plsTrianTable);
                 JScrollPane trianPlsScroll = new JScrollPane(plsTrianTable);
                 trianPlsScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -1275,45 +1311,94 @@ public class MianFrame extends Application {
                 VBox trianPlsBox = new VBox();
                 trianPlsBox.getChildren().addAll(trianPlsLabelBox, trianPlsSwingNode);
 
-                Button testPlsAddButton = new Button("保存");
-                HBox testPlsLabelBox = new HBox();
-                Label testPlsLabel = new Label("  测试集   ");
-                testPlsLabel.setFont(new javafx.scene.text.Font("Arial", 20));
-                testPlsLabelBox.getChildren().addAll(testPlsLabel, testPlsAddButton);
-                testPlsLabelBox.setSpacing(5);
-                testPlsLabelBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
-
-                initColumn(plsTestTable);
-                JScrollPane testPlsScroll = new JScrollPane(plsTestTable);
-                testPlsScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                SwingNode testPlsSwingNode = new SwingNode();
-                testPlsSwingNode.setContent(testPlsScroll);
                 VBox testPlsBox = new VBox();
-                testPlsBox.getChildren().addAll(testPlsLabelBox, testPlsSwingNode);
-
-                Button validationPlsAddButton = new Button("保存");
-                HBox validationPlsLabelBox = new HBox();
-                Label validationPlsLabel = new Label("  验证集   ");
-                validationPlsLabel.setFont(new javafx.scene.text.Font("Arial", 20));
-                validationPlsLabelBox.getChildren().addAll(validationPlsLabel, validationPlsAddButton);
-                validationPlsLabelBox.setSpacing(5);
-                validationPlsLabelBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
-
-                initColumn(plsValidationTable);
-                JScrollPane validationPlsScroll = new JScrollPane(plsValidationTable);
-                validationPlsScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                SwingNode validationPlsSwingNode = new SwingNode();
-                validationPlsSwingNode.setContent(validationPlsScroll);
                 VBox validationPlsBox = new VBox();
-                validationPlsBox.getChildren().addAll(validationPlsLabelBox, validationPlsSwingNode);
+                ((VBox) plsScence.getRoot()).getChildren().addAll(trianPlsBox);
+                if(testplsResult!=null)
+                {
+                    testPlsString = addInf(testplsResult, 1);
 
-                ((VBox) plsScence.getRoot()).getChildren().addAll(trianPlsBox, testPlsBox, validationPlsBox);
+                    String[] plsTestColumnNames = initPCAColumnNames(testPlsString);
+                    DefaultTableModel plsTestTableModel = new DefaultTableModel(testPlsString, plsTestColumnNames);
+                    JTable plsTestTable = new JTable(plsTestTableModel);
+                    plsTestTable.setRowHeight(50);
+                    plsTestTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+                    Button testPlsAddButton = new Button("保存");
+                    HBox testPlsLabelBox = new HBox();
+                    Label testPlsLabel = new Label("  测试集   ");
+                    testPlsLabel.setFont(new javafx.scene.text.Font("Arial", 20));
+                    testPlsLabelBox.getChildren().addAll(testPlsLabel, testPlsAddButton);
+                    testPlsLabelBox.setSpacing(5);
+                    testPlsLabelBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+
+                    initColumn(plsTestTable);
+                    JScrollPane testPlsScroll = new JScrollPane(plsTestTable);
+                    testPlsScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                    SwingNode testPlsSwingNode = new SwingNode();
+                    testPlsSwingNode.setContent(testPlsScroll);
+                    testPlsBox.getChildren().addAll(testPlsLabelBox, testPlsSwingNode);
+                    ((VBox) plsScence.getRoot()).getChildren().addAll( testPlsBox);
+                    final String[][] testPls = testPlsString;
+                    testPlsAddButton.setOnAction(event2 -> {
+                        FileChooser fileSaveChooser = new FileChooser();
+
+                        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+                                "zyz 文件 (*.zyz)", "*.zyz");
+                        fileSaveChooser.getExtensionFilters().add(extFilter);
+                        File file = fileSaveChooser.showSaveDialog(stage);
+                        if (file != null) {
+                            fileAction.saveData(file, testPls);
+                        }
+                    });
+
+                }
+                if(validationplsResult!=null)
+                {
+                    validationPlsString= addInf(validationplsResult, 2);
+
+                    String[] plsValidationColumnNames = initPCAColumnNames(validationPlsString);
+                    DefaultTableModel plsValidationTableModel = new DefaultTableModel(validationPlsString, plsValidationColumnNames);
+                    JTable plsValidationTable = new JTable(plsValidationTableModel);
+                    plsValidationTable.setRowHeight(50);
+                    plsValidationTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+                    Button validationPlsAddButton = new Button("保存");
+                    HBox validationPlsLabelBox = new HBox();
+                    Label validationPlsLabel = new Label("  验证集   ");
+                    validationPlsLabel.setFont(new javafx.scene.text.Font("Arial", 20));
+                    validationPlsLabelBox.getChildren().addAll(validationPlsLabel, validationPlsAddButton);
+                    validationPlsLabelBox.setSpacing(5);
+                    validationPlsLabelBox.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+
+                    initColumn(plsValidationTable);
+                    JScrollPane validationPlsScroll = new JScrollPane(plsValidationTable);
+                    validationPlsScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                    SwingNode validationPlsSwingNode = new SwingNode();
+                    validationPlsSwingNode.setContent(validationPlsScroll);
+
+                    validationPlsBox.getChildren().addAll(validationPlsLabelBox, validationPlsSwingNode);
+                    ((VBox) plsScence.getRoot()).getChildren().addAll( validationPlsBox);
+                    final String[][] validationPls = validationPlsString;
+                    validationPlsAddButton.setOnAction(event2 -> {
+                        FileChooser fileSaveChooser = new FileChooser();
+
+                        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+                                "zyz 文件 (*.zyz)", "*.zyz");
+                        fileSaveChooser.getExtensionFilters().add(extFilter);
+                        File file = fileSaveChooser.showSaveDialog(stage);
+                        if (file != null) {
+                            fileAction.saveData(file, validationPls);
+                        }
+
+                    });
+                }
+
                 plsStage.setScene(plsScence);
                 plsStage.show();
 
                 trianPlsAddButton.setOnAction(event2 -> {
                     FileChooser fileSaveChooser = new FileChooser();
-
                     FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
                             "zyz 文件 (*.zyz)", "*.zyz");
                     fileSaveChooser.getExtensionFilters().add(extFilter);
@@ -1322,34 +1407,56 @@ public class MianFrame extends Application {
                         fileAction.saveData(file, trianPlsString);
                     }
                 });
-
-                testPlsAddButton.setOnAction(event2 -> {
-                    FileChooser fileSaveChooser = new FileChooser();
-
-                    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
-                            "zyz 文件 (*.zyz)", "*.zyz");
-                    fileSaveChooser.getExtensionFilters().add(extFilter);
-                    File file = fileSaveChooser.showSaveDialog(stage);
-                    if (file != null) {
-                        fileAction.saveData(file, testPlsString);
-                    }
-
-                });
-                validationPlsAddButton.setOnAction(event2 -> {
-                    FileChooser fileSaveChooser = new FileChooser();
-
-                    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
-                            "zyz 文件 (*.zyz)", "*.zyz");
-                    fileSaveChooser.getExtensionFilters().add(extFilter);
-                    File file = fileSaveChooser.showSaveDialog(stage);
-                    if (file != null) {
-                        fileAction.saveData(file, validationPlsString);
-                    }
-
-                });
             });
+        });
+
+        /**
+         * pls预测方法
+         */
+        addPLSForest.setOnAction(event -> {
+            Double[][] trainData = dataOut(1);//训练集数据
+            if(testTableVales.length==0||validationTableVales.length==0)
+            {
+//                Alert alert = new Alert
+            }
+            else {
+                Double[][] testData = dataOut(2);
+                Double[][] validationplsData = dataOut(6);
+
+                HashMap<String, Double[][]> forestResultMap = algorithmAPI.getPLSforestResult(trainData, getLabel(), testData, validationplsData, getValidationLabel());
+
+                trianResult = forestResultMap.get("train");
+                testResult = forestResultMap.get("test");
+                validationResult = forestResultMap.get("validation");
+                Double[][] error = forestResultMap.get("trainMeanpercentError");
+                trianTableVales = resultForm(trianResult, 1);
+                initTable(trianColumnNames, trianTableVales, 1);
+                testTableVales = resultForm(testResult, 2);
+                initTable(testColumnNames, testTableVales, 2);
+                validationTableVales = resultForm(validationResult, 3);
+                initTable(validationColumnNames, validationTableVales, 3);
+
+                javafx.scene.control.TextArea jta = new javafx.scene.control.TextArea();
+                jta.setWrapText(true);
+                jta.setFont(new javafx.scene.text.Font("Arial", 18));
+                jta.setPrefSize(500, 50);
+                jta.appendText("训练集平均预测误差：" + error[0][0] + "\t验证集平均预测误差：" + error[1][0]);
+                Stage errorStage = new Stage();
+                GridPane errorGrid = new GridPane();
+                errorGrid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
+                errorGrid.setVgap(1);
+                errorGrid.setHgap(1);
+                Scene errorScene = new Scene(errorGrid, 550, 90);
+                GridPane.setConstraints(jta, 0, 0);
+                errorGrid.getChildren().add(jta);
+                errorStage.setScene(errorScene);
+                errorStage.setResizable(false);
+                errorStage.show();
+
+            }
 
         });
+
         /**
          * kmeans方法调用
          */
@@ -1832,6 +1939,20 @@ public class MianFrame extends Application {
         return label;
     }
 
+    /**
+     * 导出验证集标签
+     *
+     * @return
+     */
+    public Double[][] getValidationLabel() {
+        Double[][] label;
+        label = new Double[validationTableVales.length][1];
+        for (int i = 0; i < validationTableVales.length; i++)
+            label[i][0] = Double.valueOf(validationTableVales[i][2]);
+        return label;
+    }
+
+
 
     /**
      * 导出训练集文件名
@@ -2128,27 +2249,27 @@ public class MianFrame extends Application {
         return result;
     }
 
-    private Double[][] separData(Double[][] data, int type) {
-        if (type == 1) {
-            Double[][] result = new Double[trianTableVales.length][data[0].length];
-            for (int i = 0; i < result.length; i++)
-                for (int j = 0; j < data[i].length; j++)
-                    result[i][j] = data[i][j];
-            return result;
-        } else if (type == 2) {
-            Double[][] result = new Double[testTableVales.length][data[0].length];
-            for (int i = trianTableVales.length; i < data.length - validationTableVales.length; i++)
-                for (int j = 0; j < data[i].length; j++)
-                    result[i - trianTableVales.length][j] = data[i][j];
-            return result;
-        } else {
-            Double[][] result = new Double[validationTableVales.length][data[0].length];
-            for (int i = trianTableVales.length + testTableVales.length; i < data.length; i++)
-                for (int j = 0; j < data[i].length; j++)
-                    result[i - trianTableVales.length - testTableVales.length][j] = data[i][j];
-            return result;
-
-        }
-    }
+//    private Double[][] separData(Double[][] data, int type) {
+//        if (type == 1) {
+//            Double[][] result = new Double[trianTableVales.length][data[0].length];
+//            for (int i = 0; i < result.length; i++)
+//                for (int j = 0; j < data[i].length; j++)
+//                    result[i][j] = data[i][j];
+//            return result;
+//        } else if (type == 2) {
+//            Double[][] result = new Double[testTableVales.length][data[0].length];
+//            for (int i = trianTableVales.length; i < data.length - validationTableVales.length; i++)
+//                for (int j = 0; j < data[i].length; j++)
+//                    result[i - trianTableVales.length][j] = data[i][j];
+//            return result;
+//        } else {
+//            Double[][] result = new Double[validationTableVales.length][data[0].length];
+//            for (int i = trianTableVales.length + testTableVales.length; i < data.length; i++)
+//                for (int j = 0; j < data[i].length; j++)
+//                    result[i - trianTableVales.length - testTableVales.length][j] = data[i][j];
+//            return result;
+//
+//        }
+//    }
 
 }

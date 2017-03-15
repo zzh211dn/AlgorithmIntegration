@@ -37,7 +37,7 @@ public class BPNN {
         do {
             train.iteration();
             ++epoch;
-            System.out.println( ("迭代次数:" + Format.formatInteger(epoch) + " 错误率:" + Format.formatPercent(train.getError()) + " Target Error: " + Format.formatPercent(error)));
+//            System.out.println( ("迭代次数:" + Format.formatInteger(epoch) + " 错误率:" + Format.formatPercent(train.getError()) + " Target Error: " + Format.formatPercent(error)));
         } while(train.getError() > error && !train.isTrainingDone() && epoch< maxIteration);
         Error = ("迭代次数:" + Format.formatInteger(epoch) + " 错误率:" + Format.formatPercent(train.getError()) + " Target Error: " + Format.formatPercent(error));
         train.finishTraining();
