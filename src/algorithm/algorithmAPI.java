@@ -1,6 +1,7 @@
 package algorithm;
 import algorithm.PLSpackage.PLS_method;
-import algorithm.Regression.LinerRegression;
+import algorithm.Regression.MultyLinerRegression;
+import ml.regression.LinearRegression;
 import algorithm.Regression.Residuals;
 import javafx.stage.Stage;
 import la.matrix.DenseMatrix;
@@ -93,7 +94,7 @@ public class algorithmAPI {
 
     public Double[][] getResiduals(Double[][] data,Double[][] lable)
     {
-        LinerRegression linerRegression = new LinerRegression();
+        MultyLinerRegression linerRegression = new MultyLinerRegression();
 
         double[][] pridictLabel = linerRegression.getLinerRegression(Double2double(data),Double2double(lable));
         Residuals residuals  = new Residuals();
