@@ -3,14 +3,11 @@ package algorithm.Regression;
 import la.matrix.DenseMatrix;
 import la.matrix.Matrix;
 import ml.options.Options;
-import ml.regression.LinearRegression;
-import ml.regression.Regression;
 import ml.utils.Matlab;
 
 import static ml.utils.Printer.display;
 import static ml.utils.Printer.fprintf;
-import static ml.utils.Time.tic;
-import static ml.utils.Time.toc;
+
 
 public class MultyLinerRegression{
 
