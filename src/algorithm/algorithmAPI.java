@@ -206,27 +206,6 @@ public class algorithmAPI {
         Jama.Matrix x = new Jama.Matrix(Double2double(trainX));
         Jama.Matrix w = new Jama.Matrix(pls.getW());
 
-        double[][] t = pls.getT();
-
-        System.out.println("t:");
-        for(int i =0;i<t.length;i++) {
-            for (int j = 0; j < t[0].length; j++) {
-                System.out.print(t[i][j]+"  ");
-            }
-            System.out.println();
-        }
-
-        double[][] W = pls.getW();
-
-        System.out.println("w:");
-        for(int i =0;i<W.length;i++) {
-            for (int j = 0; j < W[0].length; j++) {
-                System.out.print(W[i][j]+"  ");
-            }
-            System.out.println();
-        }
-
-
         result.put("train",double2Double(x.times(w).getArray()));
         if(testX!=null)
         {

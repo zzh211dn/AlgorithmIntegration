@@ -182,7 +182,7 @@ public class MianFrame extends Application {
             ArrayList<Double[][]> picMap = picMap(picFileData);
             if(algorithmAPI.getFenGaoNormalization(picMap,dirName,fileListName))
             {
-                Alert _alert = new Alert(Alert.AlertType.CONFIRMATION, "运算完成");
+                Alert _alert = new Alert(Alert.AlertType.CONFIRMATION, "运算完成，文件保存在:"+dirName+"\\nomal");
                 _alert.show();
             }
             else
@@ -234,21 +234,35 @@ public class MianFrame extends Application {
             grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
             grid.setVgap(4);
             grid.setHgap(1);
-            Scene knnScene = new Scene(grid, 200, 100);
+            Scene knnScene = new Scene(grid, 350, 160);
+
+
+            final Label areaNormalizationLabe1 = new Label("请输入初始坐标");
+            GridPane.setConstraints(areaNormalizationLabe1, 0, 0);
+            grid.getChildren().add(areaNormalizationLabe1);
 
             final javafx.scene.control.TextField x0 = new javafx.scene.control.TextField();
             x0.setPromptText("请输入初始坐标");
-            GridPane.setConstraints(x0, 0, 0);
+            GridPane.setConstraints(x0, 1, 0);
             grid.getChildren().add(x0);
 
+
+            final Label areaNormalizationLabe2 = new Label("请输入结束坐标 ");
+            GridPane.setConstraints(areaNormalizationLabe2, 0, 1);
+            grid.getChildren().add(areaNormalizationLabe2);
+
             final javafx.scene.control.TextField xn = new javafx.scene.control.TextField();
-            xn.setPromptText("请输入结束坐标");
-            GridPane.setConstraints(xn, 0, 1);
+            xn.setPromptText("请输入结束坐标 ");
+            GridPane.setConstraints(xn, 1, 1);
             grid.getChildren().add(xn);
+
+            final Label areaNormalizationLabe3 = new Label("请输入分组数 ");
+            GridPane.setConstraints(areaNormalizationLabe3, 0, 2);
+            grid.getChildren().add(areaNormalizationLabe3);
 
             final javafx.scene.control.TextField nTxt = new javafx.scene.control.TextField();
             nTxt.setPromptText("请输入分组数");
-            GridPane.setConstraints(nTxt, 0, 2);
+            GridPane.setConstraints(nTxt, 1, 2);
             grid.getChildren().add(nTxt);
 
             Button button = new Button("确定");
@@ -1317,7 +1331,7 @@ public class MianFrame extends Application {
             grid.setPadding(new javafx.geometry.Insets(10, 10, 10, 10));
             grid.setVgap(4);
             grid.setHgap(1);
-            Scene textScene = new Scene(grid, 300, 100);
+            Scene textScene = new Scene(grid, 350, 150);
 
             final Label plsLabel = new Label("请输入因子数量：");
             GridPane.setConstraints(plsLabel, 0, 0);
@@ -2072,6 +2086,11 @@ public class MianFrame extends Application {
         Double[][] data = null;
         switch (type) {
             case 1: {
+                if(trianTableVales==null) {
+                    Alert _alert = new Alert(Alert.AlertType.ERROR, "无训练集数据");
+                    _alert.show();
+                    break;
+                }
                 data = new Double[trianTableVales.length][trianTableVales[0].length - 4];
                 for (int i = 0; i < data.length; i++)
                     for (int j = 4; j < trianTableVales[0].length; j++) {
@@ -2081,6 +2100,12 @@ public class MianFrame extends Application {
                 break;
             }
             case 2: {
+                if(testTableVales==null) {
+                    Alert _alert = new Alert(Alert.AlertType.ERROR, "无测试集数据");
+                    _alert.show();
+                    break;
+                }
+
                 data = new Double[testTableVales.length][testTableVales[0].length - 4];
                 for (int i = 0; i < data.length; i++)
                     for (int j = 4; j < testTableVales[0].length; j++) {
@@ -2090,6 +2115,16 @@ public class MianFrame extends Application {
                 break;
             }
             case 3: {
+                if(trianTableVales==null) {
+                    Alert _alert = new Alert(Alert.AlertType.ERROR, "无训练集数据");
+                    _alert.show();
+                    break;
+                }
+                if(testTableVales==null) {
+                    Alert _alert = new Alert(Alert.AlertType.ERROR, "无测试集数据");
+                    _alert.show();
+                    break;
+                }
                 data = new Double[trianTableVales.length + testTableVales.length][testTableVales[0].length - 4];
                 for (int i = 0; i < trianTableVales.length; i++)
                     for (int j = 4; j < trianTableVales[0].length; j++) {
@@ -2104,6 +2139,22 @@ public class MianFrame extends Application {
                 break;
             }
             case 4: {
+                if(trianTableVales==null) {
+                    Alert _alert = new Alert(Alert.AlertType.ERROR, "无训练集数据");
+                    _alert.show();
+                    break;
+                }
+                if(testTableVales==null) {
+                    Alert _alert = new Alert(Alert.AlertType.ERROR, "无测试集数据");
+                    _alert.show();
+                    break;
+                }
+                if(validationTableVales==null) {
+                    Alert _alert = new Alert(Alert.AlertType.ERROR, "无验证集数据");
+                    _alert.show();
+                    break;
+                }
+
                 data = new Double[trianTableVales.length + testTableVales.length + validationTableVales.length][testTableVales[0].length - 4];
                 for (int i = 0; i < trianTableVales.length; i++)
                     for (int j = 4; j < trianTableVales[0].length; j++) {
@@ -2123,6 +2174,18 @@ public class MianFrame extends Application {
                 break;
             }
             case 5: {
+
+                if(testTableVales==null) {
+                    Alert _alert = new Alert(Alert.AlertType.ERROR, "无测试集数据");
+                    _alert.show();
+                    break;
+                }
+                if(validationTableVales==null) {
+                    Alert _alert = new Alert(Alert.AlertType.ERROR, "无验证集数据");
+                    _alert.show();
+                    break;
+                }
+
                 data = new Double[testTableVales.length + validationTableVales.length][testTableVales[0].length - 4];
                 for (int i = 0; i < testTableVales.length; i++)
                     for (int j = 4; j < testTableVales[0].length; j++) {
@@ -2137,6 +2200,12 @@ public class MianFrame extends Application {
                 break;
             }
             case 6: {
+                if(validationTableVales==null) {
+                    Alert _alert = new Alert(Alert.AlertType.ERROR, "无验证集数据");
+                    _alert.show();
+                    break;
+                }
+
                 data = new Double[validationTableVales.length][validationTableVales[0].length - 4];
                 for (int i = 0; i < data.length; i++)
                     for (int j = 4; j < validationTableVales[0].length; j++) {
