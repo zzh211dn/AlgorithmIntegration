@@ -182,11 +182,13 @@ public class MianFrame extends Application {
             ArrayList<Double[][]> picMap = picMap(picFileData);
             if(algorithmAPI.getFenGaoNormalization(picMap,dirName,fileListName))
             {
-                //Alert 完成
+                Alert _alert = new Alert(Alert.AlertType.CONFIRMATION, "运算完成");
+                _alert.show();
             }
             else
             {
-
+                Alert _alert = new Alert(Alert.AlertType.CONFIRMATION, "运算出错");
+                _alert.show();
             }
 
         });
@@ -275,11 +277,13 @@ public class MianFrame extends Application {
                 int n = Integer.valueOf(nTxt.getText());
                 if(algorithmAPI.getAreaNormalization(start,end,n,fileMap,dirName,fileListName))
                 {
-                    //Alert 完成
+                    Alert _alert = new Alert(Alert.AlertType.CONFIRMATION, "运算完成");
+                    _alert.show();
                 }
                 else
                 {
-
+                    Alert _alert = new Alert(Alert.AlertType.CONFIRMATION, "运算出错");
+                    _alert.show();
                 }
             });
 
@@ -736,8 +740,8 @@ public class MianFrame extends Application {
                         algorithmAPI xloading = new algorithmAPI();
                         xloading.getXLoading(var11);
                     } else {
-//                        Alert _alert = new Alert(Alert.AlertType.CONFIRMATION, "请先运行PCA方法");
-//                        _alert.show();
+                        Alert _alert = new Alert(Alert.AlertType.CONFIRMATION, "请先运行PCA方法");
+                        _alert.show();
                     }
                 }
         );
@@ -1138,7 +1142,8 @@ public class MianFrame extends Application {
             LinkedHashMap<String, List<String[]>> picFileData = new LinkedHashMap<>();
             initChooserData(fileList, picFileData, "");
             ArrayList<Double[][]> picMap = picMap(picFileData);
-//          getScatterPicture(picMap);
+            String[] fileName = (String[])picFileData.keySet().toArray(new String[0]);
+           getScatterPicture(picMap,fileName);
         });
 
 
